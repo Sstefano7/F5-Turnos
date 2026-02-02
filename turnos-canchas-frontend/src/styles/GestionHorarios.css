@@ -1,0 +1,51 @@
+.info-box {
+  background: #e3f2fd;
+  border-left: 4px solid #1976d2;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.info-box h3 {
+  margin: 0 0 10px 0;
+  color: #1976d2;
+}
+
+.info-box p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.canchas-horarios {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.canchas-horarios h2 {
+  margin: 0 0 25px 0;
+  color: #333;
+}
+
+.cancha-horario-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #667eea;
+}
+
+.cancha-horario-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.horario-info {
+  margin: 8px 0;
+  color: #666;
+}
+
+.horario-info strong {
+  color: #333;
+}
