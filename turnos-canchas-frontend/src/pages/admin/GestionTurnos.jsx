@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { turnoService } from '../../services/turnoService';
+import { useDashboard } from '../../context/DashboardContext';
 import '../../styles/GestionTurnos.css';
 
 function GestionTurnos() {
@@ -13,6 +14,7 @@ function GestionTurnos() {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { triggerRefresh } = useDashboard();
 
   useEffect(() => {
     fetchTurnos();
@@ -69,6 +71,7 @@ function GestionTurnos() {
     try {
       await turnoService.update(turnoId, { estado: nuevoEstado });
       fetchTurnos();
+      triggerRefresh(); // Actualizar el dashboard
     } catch (err) {
       alert('Error al cambiar el estado del turno');
     }
@@ -82,6 +85,7 @@ function GestionTurnos() {
     try {
       await turnoService.delete(turnoId);
       fetchTurnos();
+      triggerRefresh(); // Actualizar el dashboard
     } catch (err) {
       alert('Error al eliminar el turno');
     }

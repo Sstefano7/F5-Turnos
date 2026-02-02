@@ -13,9 +13,63 @@
 
 .filtros-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   align-items: end;
+}
+
+@media (min-width: 640px) {
+  .filtros-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .filtros-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .filtros-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Ultra desktops (1920px y arriba) */
+@media (min-width: 1920px) {
+  .filtros-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 25px;
+  }
+
+  .filtros-section {
+    padding: 30px;
+    margin-bottom: 35px;
+  }
+
+  .filtro-item label {
+    font-size: 15px;
+  }
+
+  .filtro-item input,
+  .filtro-item select {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  th, td {
+    padding: 18px;
+    font-size: 17px;
+  }
+
+  .estado-badge {
+    font-size: 14px;
+    padding: 7px 14px;
+  }
 }
 
 .filtro-item label {

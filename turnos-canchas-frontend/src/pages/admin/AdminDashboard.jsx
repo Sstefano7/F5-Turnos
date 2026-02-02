@@ -34,25 +34,18 @@ function AdminDashboard() {
         pagoService.getAll()
       ]);
 
-      console.log('Datos obtenidos:', { canchas, turnos, clientes, pagos });
-
       const turnosPendientes = turnos.filter(t => t.estado === 'pendiente').length;
       
       // Calcular ingresos del mes actual basándose en pagos confirmados
       const mesActual = new Date().getMonth();
-      console.log('Mes actual:', mesActual);
-      console.log('Pagos recibidos:', pagos);
       
       const ingresosMes = pagos
         .filter(p => {
           const fechaPago = new Date(p.created_at || p.fecha);
           const mesDelPago = fechaPago.getMonth();
-          console.log(`Pago: ${p.monto}, Mes: ${mesDelPago}, Estado: ${p.estado}`);
           return mesDelPago === mesActual && (p.estado === 'confirmado' || p.estado === 'completado');
         })
         .reduce((sum, p) => sum + parseFloat(p.monto), 0);
-
-      console.log('Ingresos del mes:', ingresosMes);
 
       setStats({
         totalCanchas: canchas.length,

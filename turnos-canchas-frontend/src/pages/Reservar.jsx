@@ -4,12 +4,14 @@ import { canchaService } from '../services/canchaService';
 import { turnoService } from '../services/turnoService';
 import { clienteService } from '../services/clienteService';
 import { useAuth } from '../context/AuthContext';
+import { useDashboard } from '../context/DashboardContext';
 import '../styles/Reservar.css';
 
 function Reservar() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { triggerRefresh } = useDashboard();
 
   const [cancha, setCancha] = useState(null);
   const [fecha, setFecha] = useState('');
@@ -115,6 +117,7 @@ function Reservar() {
 
     await turnoService.create(turnoData);
     setSuccess(true);
+    triggerRefresh(); // Actualizar el dashboard
 
     // Redirigir después de 2 segundos
     setTimeout(() => {

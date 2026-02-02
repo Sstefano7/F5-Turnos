@@ -1,36 +1,42 @@
 .home-container {
   min-height: 100vh;
   background: #f5f5f5;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 .header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 20px 40px;
+  padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .user-info span {
   font-weight: 500;
+  font-size: 13px;
 }
 
 .btn-logout,
 .btn-login {
-  padding: 8px 20px;
+  padding: 8px 15px;
   background: white;
   color: #667eea;
   border: none;
@@ -38,6 +44,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s;
+  font-size: 13px;
 }
 
 .btn-logout:hover,
@@ -46,27 +53,28 @@
 }
 
 .main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  width: 100%;
+  padding: 20px 15px;
+  box-sizing: border-box;
 }
 
 .main-content h2 {
   color: #333;
-  margin-bottom: 30px;
-  font-size: 28px;
+  margin-bottom: 20px;
+  font-size: 20px;
 }
 
 .canchas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  width: 100%;
 }
 
 .cancha-card {
   background: white;
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -80,19 +88,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .cancha-header h3 {
   margin: 0;
   color: #333;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .tipo-badge {
-  padding: 5px 12px;
+  padding: 5px 10px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -109,28 +119,31 @@
 
 .cancha-descripcion {
   color: #666;
-  margin: 15px 0;
+  margin: 12px 0;
   line-height: 1.5;
+  font-size: 14px;
 }
 
 .cancha-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 15px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .precio {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #27ae60;
   margin: 0;
 }
 
 .btn-reservar {
-  padding: 10px 25px;
+  padding: 8px 18px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -138,6 +151,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s;
+  font-size: 13px;
 }
 
 .btn-reservar:hover {
@@ -147,8 +161,8 @@
 .loading,
 .error {
   text-align: center;
-  padding: 40px;
-  font-size: 18px;
+  padding: 30px 20px;
+  font-size: 16px;
 }
 
 .error {
@@ -156,7 +170,7 @@
 }
 
 .btn-reservas {
-  padding: 8px 20px;
+  padding: 8px 15px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
@@ -164,6 +178,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
+  font-size: 13px;
 }
 
 .btn-reservas:hover {
@@ -171,7 +186,7 @@
 }
 
 .btn-admin {
-  padding: 8px 20px;
+  padding: 8px 15px;
   background: #ff9800;
   color: white;
   border: none;
@@ -179,8 +194,262 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
+  font-size: 13px;
 }
 
 .btn-admin:hover {
   background: #f57c00;
+}
+
+/* MEDIA QUERIES */
+
+/* Tablets (640px y arriba) */
+@media (min-width: 640px) {
+  .header {
+    padding: 18px 25px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .user-info span {
+    font-size: 14px;
+  }
+
+  .btn-logout,
+  .btn-login,
+  .btn-reservas,
+  .btn-admin {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .main-content {
+    padding: 25px 20px;
+  }
+
+  .main-content h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+
+  .canchas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .cancha-card {
+    padding: 22px;
+  }
+
+  .cancha-header h3 {
+    font-size: 19px;
+  }
+
+  .tipo-badge {
+    font-size: 12px;
+  }
+
+  .cancha-descripcion {
+    font-size: 15px;
+  }
+
+  .precio {
+    font-size: 20px;
+  }
+
+  .btn-reservar {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Tablets grandes (768px y arriba) */
+@media (min-width: 768px) {
+  .header {
+    padding: 20px 30px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .main-content {
+    padding: 30px 25px;
+  }
+
+  .main-content h2 {
+    font-size: 26px;
+    margin-bottom: 30px;
+  }
+
+  .canchas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .cancha-card {
+    padding: 25px;
+  }
+
+  .cancha-header h3 {
+    font-size: 20px;
+  }
+
+  .precio {
+    font-size: 22px;
+  }
+
+  .btn-reservar {
+    padding: 10px 22px;
+  }
+}
+
+/* Desktops (1024px y arriba) */
+@media (min-width: 1024px) {
+  .header {
+    padding: 25px 40px;
+    flex-wrap: nowrap;
+  }
+
+  .header h1 {
+    font-size: 26px;
+  }
+
+  .user-info {
+    gap: 15px;
+  }
+
+  .user-info span {
+    font-size: 15px;
+  }
+
+  .btn-logout,
+  .btn-login,
+  .btn-reservas,
+  .btn-admin {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  .main-content {
+    padding: 40px;
+  }
+
+  .main-content h2 {
+    font-size: 28px;
+    margin-bottom: 35px;
+  }
+
+  .canchas-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .cancha-card {
+    padding: 30px;
+  }
+
+  .cancha-header h3 {
+    font-size: 22px;
+  }
+
+  .cancha-descripcion {
+    font-size: 16px;
+  }
+
+  .precio {
+    font-size: 24px;
+  }
+
+  .btn-reservar {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+
+  .loading,
+  .error {
+    padding: 60px 20px;
+    font-size: 18px;
+  }
+}
+
+/* Desktops muy grandes (1280px y arriba) */
+@media (min-width: 1280px) {
+  .header {
+    padding: 30px 50px;
+  }
+
+  .main-content {
+    padding: 50px;
+  }
+
+  .canchas-grid {
+    gap: 35px;
+  }
+}
+
+/* Ultra desktops (1920px y arriba) */
+@media (min-width: 1920px) {
+  .header {
+    padding: 35px 60px;
+  }
+
+  .header h1 {
+    font-size: 30px;
+  }
+
+  .user-info {
+    gap: 20px;
+  }
+
+  .user-info span {
+    font-size: 16px;
+  }
+
+  .btn-logout,
+  .btn-login,
+  .btn-reservas,
+  .btn-admin {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+
+  .main-content {
+    padding: 60px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .main-content h2 {
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+
+  .canchas-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+
+  .cancha-card {
+    padding: 35px;
+  }
+
+  .cancha-header h3 {
+    font-size: 24px;
+  }
+
+  .cancha-descripcion {
+    font-size: 17px;
+  }
+
+  .precio {
+    font-size: 26px;
+  }
+
+  .btn-reservar {
+    padding: 14px 28px;
+    font-size: 17px;
+  }
 }
