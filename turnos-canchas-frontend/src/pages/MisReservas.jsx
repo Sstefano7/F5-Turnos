@@ -15,18 +15,17 @@ function MisReservas() {
     fetchTurnos();
   }, []);
 
-  const fetchTurnos = async () => {
-    try {
-      // Por ahora obtenemos todos los turnos
-      // En producción filtrarías por el cliente del usuario
-      const data = await turnoService.getAll();
-      setTurnos(data);
-      setLoading(false);
-    } catch (err) {
-      setError('Error al cargar las reservas');
-      setLoading(false);
-    }
-  };
+const fetchTurnos = async () => {
+  try {
+    // Usar la ruta /mis-turnos que filtra por usuario autenticado
+    const data = await turnoService.getMisTurnos();
+    setTurnos(data);
+    setLoading(false);
+  } catch (err) {
+    setError('Error al cargar las reservas');
+    setLoading(false);
+  }
+};
 
   const handleCancelar = async (turnoId) => {
     if (!window.confirm('¿Estás seguro de que deseas cancelar esta reserva?')) {

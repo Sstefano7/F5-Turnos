@@ -12,6 +12,7 @@ class Turno extends Model
     protected $fillable = [
         'cancha_id',
         'cliente_id',
+        'user_id',
         'fecha',
         'hora_inicio',
         'hora_fin',

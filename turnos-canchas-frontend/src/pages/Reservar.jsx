@@ -74,61 +74,71 @@ function Reservar() {
     });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
 
-  if (!horarioSeleccionado) {
-    setError('Debe seleccionar un horario');
-    return;
-  }
-
-  try {
-    // Intentar crear el cliente, si ya existe usar ese ID
-    let clienteId;
-    
-    try {
-      const cliente = await clienteService.create(clienteData);
-      clienteId = cliente.id;
-    } catch (err) {
-      // Si el email ya existe, obtener todos los clientes y buscar por email
-      if (err.response?.data?.errors?.email) {
-        const clientes = await clienteService.getAll();
-        const clienteExistente = clientes.find(c => c.email === clienteData.email);
-        if (clienteExistente) {
-          clienteId = clienteExistente.id;
-        } else {
-          throw err;
-        }
-      } else {
-        throw err;
-      }
+    // Validaciones básicas
+    if (!clienteData.nombre.trim()) {
+      setError('El nombre es requerido');
+      return;
+    }
+    if (!clienteData.apellido.trim()) {
+      setError('El apellido es requerido');
+      return;
+    }
+    if (!clienteData.email.trim()) {
+      setError('El email es requerido');
+      return;
+    }
+    if (!clienteData.telefono.trim()) {
+      setError('El teléfono es requerido');
+      return;
+    }
+    if (!horarioSeleccionado) {
+      setError('Debe seleccionar un horario');
+      return;
     }
 
-    // Crear el turno
-    const turnoData = {
-      cancha_id: parseInt(id),
-      cliente_id: clienteId,
-      fecha: fecha,
-      hora_inicio: horarioSeleccionado.hora_inicio,
-      hora_fin: horarioSeleccionado.hora_fin,
-      observaciones: ''
-    };
+     try {
+      // Buscar si el cliente ya existe por email
+      let clienteId;
+      const clientes = await clienteService.getAll();
+      const clienteExistente = clientes.find(c => c.email === clienteData.email);
+      
+      if (clienteExistente) {
+        // Usar el cliente existente
+        clienteId = clienteExistente.id;
+      } else {
+        // Crear nuevo cliente
+        const cliente = await clienteService.create(clienteData);
+        clienteId = cliente.id;
+      }
 
-    await turnoService.create(turnoData);
-    setSuccess(true);
-    triggerRefresh(); // Actualizar el dashboard
+      // Crear el turno
+      const turnoData = {
+        cancha_id: parseInt(id),
+        cliente_id: clienteId,
+        fecha: fecha,
+        hora_inicio: horarioSeleccionado.hora_inicio,
+        hora_fin: horarioSeleccionado.hora_fin,
+        observaciones: ''
+      };
 
-    // Redirigir después de 2 segundos
-    setTimeout(() => {
-      navigate('/mis-reservas');
-    }, 2000);
+      await turnoService.create(turnoData);
+      setSuccess(true);
+      triggerRefresh(); // Actualizar el dashboard
 
-  } catch (err) {
-    console.error('Error completo:', err.response?.data);
-    setError(err.response?.data?.message || 'Error al crear la reserva');
-  }
-};
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
+        navigate('/mis-reservas');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Error completo:', err.response?.data);
+      setError(err.response?.data?.message || 'Error al crear la reserva');
+    }
+  };
 
   // Obtener fecha mínima (hoy)
   const getMinDate = () => {

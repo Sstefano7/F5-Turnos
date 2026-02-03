@@ -31,10 +31,8 @@ export const turnoService = {
         return response.data;
     },
 
-    getMisTurnos: async (clienteId) => {
-        const response = await api.get('/mis-turnos', {
-            params: { cliente_id: clienteId }
-        });
+    getMisTurnos: async () => {
+        const response = await api.get('/mis-turnos');
         return response.data;
     }
 };

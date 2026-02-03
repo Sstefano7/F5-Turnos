@@ -32,6 +32,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/mis-turnos', [TurnoController::class, 'misTurnos']);
     Route::patch('/turnos/{id}/cancelar', [TurnoController::class, 'cancelar']);
     
+    // Gestión de clientes (usuarios autenticados pueden ver, crear y consultar)
+    Route::get('/clientes', [ClienteController::class, 'index']);
+    Route::post('/clientes', [ClienteController::class, 'store']);
+    Route::get('/clientes/{id}', [ClienteController::class, 'show']);
+    
     // Rutas solo para administradores
     Route::middleware('admin')->group(function () {
         // Gestión de canchas
@@ -43,13 +48,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/turnos/{id}', [TurnoController::class, 'update']);
         Route::delete('/turnos/{id}', [TurnoController::class, 'destroy']);
         
-        // Gestión de clientes
-        Route::apiResource('clientes', ClienteController::class);
+        // Gestión de clientes (admin puede editar y eliminar)
+        Route::put('/clientes/{id}', [ClienteController::class, 'update']);
+        Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
         
         // Gestión de horarios
         Route::apiResource('horarios', HorarioController::class);
 
-        // Gestión de pagos - AGREGAR EN ESTE ORDEN
+        // Gestión de pagos
         Route::get('/pagos/estadisticas', [\App\Http\Controllers\Api\PagoController::class, 'estadisticas']);
         Route::get('/pagos/turno/{turnoId}', [\App\Http\Controllers\Api\PagoController::class, 'porTurno']);
         Route::get('/pagos', [\App\Http\Controllers\Api\PagoController::class, 'index']);

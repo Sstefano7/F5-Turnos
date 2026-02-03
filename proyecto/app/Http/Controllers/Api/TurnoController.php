@@ -72,6 +72,7 @@ public function index(Request $request)
         $turno = Turno::create([
             'cancha_id' => $request->cancha_id,
             'cliente_id' => $request->cliente_id,
+            'user_id' => $request->user() ? $request->user()->id : null, // ← CAMBIAR A ESTO
             'fecha' => $request->fecha,
             'hora_inicio' => $request->hora_inicio,
             'hora_fin' => $request->hora_fin,
@@ -79,7 +80,6 @@ public function index(Request $request)
             'estado' => 'pendiente',
             'observaciones' => $request->observaciones,
         ]);
-
         return response()->json($turno->load(['cancha', 'cliente']), 201);
     }
 
@@ -142,27 +142,27 @@ public function index(Request $request)
         ]);
     }
 
-    // Obtener los turnos del cliente autenticado
+    // Obtener los turnos del usuario autenticado
     public function misTurnos(Request $request)
     {
-        // Aquí asumimos que el cliente está autenticado
-        // Tendrías que ajustar según tu lógica de autenticación
-        $clienteId = $request->query('cliente_id');
-
-        if (!$clienteId) {
+        // Obtener el usuario autenticado
+        $user = $request->user();
+        
+        if (!$user) {
             return response()->json([
-                'message' => 'Debe proporcionar el ID del cliente'
-            ], 400);
+                'message' => 'Usuario no autenticado'
+            ], 401);
         }
-
-        $turnos = Turno::with(['cancha'])
-            ->where('cliente_id', $clienteId)
-            ->proximos()
+        
+        // Buscar turnos del usuario
+        $turnos = Turno::with(['cancha', 'cliente'])
+            ->where('user_id', $user->id)
+            ->orderBy('fecha')
+            ->orderBy('hora_inicio')
             ->get();
 
         return response()->json($turnos);
     }
-
     // Cancelar un turno
 public function cancelar($id)
 {

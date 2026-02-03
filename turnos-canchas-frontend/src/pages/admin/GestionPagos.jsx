@@ -54,6 +54,11 @@ function GestionPagos() {
         await pagoService.update(editingPago.id, formData);
       } else {
         await pagoService.create(formData);
+        
+        // Si el pago está confirmado o completado, actualizar el turno a confirmado
+        if ((formData.estado === 'confirmado' || formData.estado === 'completado') && formData.turno_id) {
+          await turnoService.update(formData.turno_id, { estado: 'confirmado' });
+        }
       }
       
       setShowModal(false);
@@ -215,6 +220,7 @@ function GestionPagos() {
                 <th>ID</th>
                 <th>Turno</th>
                 <th>Cliente</th>
+                <th>Teléfono</th>
                 <th>Monto</th>
                 <th>Método</th>
                 <th>Estado</th>
@@ -225,7 +231,7 @@ function GestionPagos() {
             <tbody>
               {pagos.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="9" style={{ textAlign: 'center', padding: '40px' }}>
                     No hay pagos registrados
                   </td>
                 </tr>
@@ -242,6 +248,11 @@ function GestionPagos() {
                     </td>
                     <td>
                       {pago.turno.cliente.nombre} {pago.turno.cliente.apellido}
+                    </td>
+                    <td>
+                      <a href={`tel:${pago.turno.cliente.telefono}`} style={{ color: '#007bff', textDecoration: 'none' }}>
+                        {pago.turno.cliente.telefono || '-'}
+                      </a>
                     </td>
                     <td className="precio">${pago.monto}</td>
                     <td>
