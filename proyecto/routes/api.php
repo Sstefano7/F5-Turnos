@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Ruta pública para reportar bugs (cualquiera puede reportar)
+Route::post('/bug-reports', [\App\Http\Controllers\Api\BugReportController::class, 'store']);
+
 // Consultar canchas y horarios disponibles (público)
 Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
@@ -41,7 +44,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('admin')->group(function () {
 
         Route::get('/dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats']);
-    
+        
+        Route::get('/audits', [\App\Http\Controllers\Api\AuditController::class, 'index']);
+        Route::get('/audits/{id}', [\App\Http\Controllers\Api\AuditController::class, 'show']);
+
         // Gestión de canchas
         Route::get('/canchas/paginated', [CanchaController::class, 'indexPaginated']);
         Route::post('/canchas', [CanchaController::class, 'store']);
@@ -67,5 +73,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/pagos/{id}', [\App\Http\Controllers\Api\PagoController::class, 'show']);
         Route::put('/pagos/{id}', [\App\Http\Controllers\Api\PagoController::class, 'update']);
         Route::delete('/pagos/{id}', [\App\Http\Controllers\Api\PagoController::class, 'destroy']);
+
+         // Gestión de reportes de bugs (admin)
+        Route::get('/bug-reports', [\App\Http\Controllers\Api\BugReportController::class, 'index']);
+        Route::get('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'show']);
+        Route::put('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'update']);
+        Route::delete('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'destroy']);
+        
+        // Auditoría
+        Route::get('/audits', [\App\Http\Controllers\Api\AuditController::class, 'index']);
+        Route::get('/audits/{id}', [\App\Http\Controllers\Api\AuditController::class, 'show']);
     });
 });
