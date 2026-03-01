@@ -2,12 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PagoController;
 use App\Http\Controllers\Api\CanchaController;
 use App\Http\Controllers\Api\TurnoController;
 use App\Http\Controllers\Api\ClienteController;
 use App\Http\Controllers\Api\HorarioController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PagoController;
 
 // Rutas públicas (sin autenticación)
 Route::post('/register', [AuthController::class, 'register']);
@@ -39,7 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Rutas solo para administradores
     Route::middleware('admin')->group(function () {
+
+        Route::get('/dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats']);
+    
         // Gestión de canchas
+        Route::get('/canchas/paginated', [CanchaController::class, 'indexPaginated']);
         Route::post('/canchas', [CanchaController::class, 'store']);
         Route::put('/canchas/{id}', [CanchaController::class, 'update']);
         Route::delete('/canchas/{id}', [CanchaController::class, 'destroy']);

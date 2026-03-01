@@ -103,8 +103,13 @@ function Reservar() {
      try {
       // Buscar si el cliente ya existe por email
       let clienteId;
-      const clientes = await clienteService.getAll();
-      const clienteExistente = clientes.find(c => c.email === clienteData.email);
+      const respuestaClientes = await clienteService.getAll();
+
+      const listaClientes = Array.isArray(respuestaClientes) 
+        ? respuestaClientes 
+        : respuestaClientes.data;
+        
+      const clienteExistente = listaClientes.find(c => c.email === clienteData.email);
       
       if (clienteExistente) {
         // Usar el cliente existente
@@ -122,7 +127,9 @@ function Reservar() {
         fecha: fecha,
         hora_inicio: horarioSeleccionado.hora_inicio,
         hora_fin: horarioSeleccionado.hora_fin,
-        observaciones: ''
+        precio: cancha.precio_hora, 
+        observaciones: '',
+        estado: 'pendiente'
       };
 
       await turnoService.create(turnoData);

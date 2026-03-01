@@ -10,27 +10,30 @@ use Carbon\Carbon;
 
 class TurnoController extends Controller
 {
-public function index(Request $request)
-{
-    $query = Turno::with(['cancha', 'cliente']); // ← AGREGAR with()
+    public function index(Request $request)
+    {
+        $query = Turno::with(['cancha', 'cliente']);
 
-    // Filtros opcionales
-    if ($request->has('fecha')) {
-        $query->whereDate('fecha', $request->fecha);
+        // Filtros opcionales
+        if ($request->has('fecha')) {
+            $query->whereDate('fecha', $request->fecha);
+        }
+
+        if ($request->has('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->has('cancha_id')) {
+            $query->where('cancha_id', $request->cancha_id);
+        }
+
+        // Paginación
+        $turnos = $query->orderBy('fecha', 'desc')
+                       ->orderBy('hora_inicio')
+                       ->paginate(15);
+
+        return response()->json($turnos);
     }
-
-    if ($request->has('estado')) {
-        $query->where('estado', $request->estado);
-    }
-
-    if ($request->has('cancha_id')) {
-        $query->where('cancha_id', $request->cancha_id);
-    }
-
-    $turnos = $query->orderBy('fecha')->orderBy('hora_inicio')->get();
-
-    return response()->json($turnos);
-}
 
     public function show($id)
     {
@@ -62,17 +65,19 @@ public function index(Request $request)
             ], 422);
         }
 
-        // Calcular el precio
+        // Calcular el precio (CORREGIDO: siempre positivo y soporta decimales)
         $cancha = Cancha::findOrFail($request->cancha_id);
         $horaInicio = Carbon::parse($request->hora_inicio);
         $horaFin = Carbon::parse($request->hora_fin);
-        $duracionHoras = $horaFin->diffInHours($horaInicio);
+        
+        // Usamos diffInMinutes y dividimos por 60 para exactitud (ej: 1.5 horas)
+        $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60; 
         $precio = $cancha->precio_hora * $duracionHoras;
 
         $turno = Turno::create([
             'cancha_id' => $request->cancha_id,
             'cliente_id' => $request->cliente_id,
-            'user_id' => $request->user() ? $request->user()->id : null, // ← CAMBIAR A ESTO
+            'user_id' => $request->user() ? $request->user()->id : null,
             'fecha' => $request->fecha,
             'hora_inicio' => $request->hora_inicio,
             'hora_fin' => $request->hora_fin,
@@ -80,6 +85,7 @@ public function index(Request $request)
             'estado' => 'pendiente',
             'observaciones' => $request->observaciones,
         ]);
+
         return response()->json($turno->load(['cancha', 'cliente']), 201);
     }
 
@@ -117,13 +123,16 @@ public function index(Request $request)
             }
         }
 
-        // Recalcular precio si cambia la cancha o duración
+        // Recalcular precio si cambia la cancha o duración (CORREGIDO)
         if ($request->has('cancha_id') || $request->has('hora_inicio') || $request->has('hora_fin')) {
             $canchaId = $request->cancha_id ?? $turno->cancha_id;
             $cancha = Cancha::findOrFail($canchaId);
             $horaInicio = Carbon::parse($request->hora_inicio ?? $turno->hora_inicio);
             $horaFin = Carbon::parse($request->hora_fin ?? $turno->hora_fin);
-            $duracionHoras = $horaFin->diffInHours($horaInicio);
+            
+            // Misma lógica de minutos para evitar números negativos y cobrar fracciones justas
+            $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
+            
             $request->merge(['precio' => $cancha->precio_hora * $duracionHoras]);
         }
 
@@ -142,10 +151,8 @@ public function index(Request $request)
         ]);
     }
 
-    // Obtener los turnos del usuario autenticado
     public function misTurnos(Request $request)
     {
-        // Obtener el usuario autenticado
         $user = $request->user();
         
         if (!$user) {
@@ -154,7 +161,6 @@ public function index(Request $request)
             ], 401);
         }
         
-        // Buscar turnos del usuario
         $turnos = Turno::with(['cancha', 'cliente'])
             ->where('user_id', $user->id)
             ->orderBy('fecha')
@@ -163,40 +169,28 @@ public function index(Request $request)
 
         return response()->json($turnos);
     }
-    // Cancelar un turno
-public function cancelar($id)
-{
-    $turno = Turno::findOrFail($id);
 
-    if ($turno->estado === 'cancelado') {
+    public function cancelar($id)
+    {
+        $turno = Turno::findOrFail($id);
+
+        if ($turno->estado === 'cancelado') {
+            return response()->json([
+                'message' => 'El turno ya está cancelado'
+            ], 422);
+        }
+
+        if ($turno->estado === 'completado') {
+            return response()->json([
+                'message' => 'No se puede cancelar un turno completado'
+            ], 422);
+        }
+
+        $turno->update(['estado' => 'cancelado']);
+
         return response()->json([
-            'message' => 'El turno ya está cancelado'
-        ], 422);
+            'message' => 'Turno cancelado correctamente',
+            'turno' => $turno->load(['cancha', 'cliente'])
+        ]);
     }
-
-    if ($turno->estado === 'completado') {
-        return response()->json([
-            'message' => 'No se puede cancelar un turno completado'
-        ], 422);
-    }
-
-    // Comentamos temporalmente la validación de 24 horas para que puedas probar
-    /*
-    $fechaTurno = Carbon::parse($turno->fecha . ' ' . $turno->hora_inicio);
-    $horasRestantes = now()->diffInHours($fechaTurno, false);
-
-    if ($horasRestantes < 24) {
-        return response()->json([
-            'message' => 'Debe cancelar con al menos 24 horas de anticipación'
-        ], 422);
-    }
-    */
-
-    $turno->update(['estado' => 'cancelado']);
-
-    return response()->json([
-        'message' => 'Turno cancelado correctamente',
-        'turno' => $turno->load(['cancha', 'cliente'])
-    ]);
-}
 }

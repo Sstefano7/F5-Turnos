@@ -13,15 +13,19 @@ function Home() {
 
   useEffect(() => {
     const fetchCanchas = async () => {
-      try {
-        const data = await canchaService.getAll();
-        setCanchas(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  try {
+    const data = await canchaService.getAll();
+    
+    // Si la respuesta viene paginada, usar data.data, sino usar data directamente
+    const canchasArray = data.data || data;
+    
+    setCanchas(canchasArray);
+    setLoading(false);
+  } catch (err) {
+    setError(err.message);
+    setLoading(false);
+  }
+};
 
     fetchCanchas();
   }, []);

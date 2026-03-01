@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { canchaService } from '../../services/canchaService';
-import { turnoService } from '../../services/turnoService';
-import { clienteService } from '../../services/clienteService';
-import { pagoService } from '../../services/pagoService';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
+import { dashboardService } from '../../services/dashboardService';
 import '../../styles/AdminDashboard.css';
 
 function AdminDashboard() {
@@ -17,6 +14,7 @@ function AdminDashboard() {
     ingresosMes: 0
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { user, logout } = useAuth();
   const { refreshDashboard } = useDashboard();
   const navigate = useNavigate();
@@ -27,37 +25,18 @@ function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const [canchas, turnos, clientes, pagos] = await Promise.all([
-        canchaService.getAll(),
-        turnoService.getAll(),
-        clienteService.getAll(),
-        pagoService.getAll()
-      ]);
-
-      const turnosPendientes = turnos.filter(t => t.estado === 'pendiente').length;
-      
-      // Calcular ingresos del mes actual basándose en pagos confirmados
-      const mesActual = new Date().getMonth();
-      
-      const ingresosMes = pagos
-        .filter(p => {
-          const fechaPago = new Date(p.created_at || p.fecha);
-          const mesDelPago = fechaPago.getMonth();
-          return mesDelPago === mesActual && (p.estado === 'confirmado' || p.estado === 'completado');
-        })
-        .reduce((sum, p) => sum + parseFloat(p.monto), 0);
-
+      const statsData = await dashboardService.getStats();
       setStats({
-        totalCanchas: canchas.length,
-        totalTurnos: turnos.length,
-        totalClientes: clientes.length,
-        turnosPendientes,
-        ingresosMes
+        totalCanchas: statsData?.totalCanchas || 0,
+        totalTurnos: statsData?.totalTurnos || 0,
+        totalClientes: statsData?.totalClientes || 0,
+        turnosPendientes: statsData?.turnosPendientes || 0,
+        ingresosMes: statsData?.ingresosMes || 0
       });
-
       setLoading(false);
     } catch (error) {
       console.error('Error al cargar estadísticas:', error);
+      setError('Error al cargar las estadísticas del dashboard');
       setLoading(false);
     }
   };
@@ -69,6 +48,17 @@ function AdminDashboard() {
 
   if (loading) {
     return <div className="loading">Cargando panel de administración...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <div className="error-message">{error}</div>
+        <button onClick={() => navigate('/')} className="btn-primary">
+          Volver al Inicio
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -122,7 +112,7 @@ function AdminDashboard() {
           <div className="stat-card red">
             <div className="stat-icon">💰</div>
             <div className="stat-info">
-              <h3>${stats.ingresosMes.toFixed(2)}</h3>
+              <h3>${(stats.ingresosMes || 0).toFixed(2)}</h3>
               <p>Ingresos del Mes</p>
             </div>
           </div>
@@ -167,11 +157,10 @@ function AdminDashboard() {
               <p>Configurar horarios disponibles</p>
             </button>
           
-              
-             <button
+            <button
               className="menu-card"
               onClick={() => navigate('/admin/pagos')} 
-             >
+            >
               <div className="menu-icon">💰</div>
               <h3>Gestionar Pagos</h3>
               <p>Ver y administrar pagos</p>

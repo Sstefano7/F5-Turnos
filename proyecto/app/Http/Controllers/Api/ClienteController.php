@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
-    $clientes = Cliente::with('turnos')->get(); 
+    $perPage = $request->get('per_page', 15);
+    $clientes = Cliente::with('turnos')->paginate($perPage);
     return response()->json($clientes);
 }
     public function show($id)

@@ -1,8 +1,8 @@
 import api from '../config/api';
 
 export const clienteService = {
-    getAll: async () => {
-        const response = await api.get('/clientes');
+   getAll: async (params = {}) => {
+        const response = await api.get('/clientes', { params });
         return response.data;
     },
 

@@ -4,6 +4,7 @@ import { pagoService } from '../../services/pagoService';
 import { turnoService } from '../../services/turnoService';
 import { useDashboard } from '../../context/DashboardContext';
 import '../../styles/GestionPagos.css';
+import Pagination from '../../components/Pagination';
 
 function GestionPagos() {
   const [pagos, setPagos] = useState([]);
@@ -22,53 +23,65 @@ function GestionPagos() {
   const navigate = useNavigate();
   const { triggerRefresh } = useDashboard();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const [pagosData, turnosData, statsData] = await Promise.all([
-        pagoService.getAll(),
-        turnoService.getAll(),
-        pagoService.getEstadisticas()
-      ]);
-      
-      setPagos(pagosData);
-      setTurnos(turnosData);
-      setEstadisticas(statsData);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error al cargar datos:', err);
-      setError('Error al cargar los datos');
-      setLoading(false);
-    }
-  };
+const fetchData = async (page = 1) => {
+  try {
+    const [pagosResponse, turnosData, statsData] = await Promise.all([
+      pagoService.getAll({ page, per_page: 15 }),
+      turnoService.getAll(),
+      pagoService.getEstadisticas()
+    ]);
+    
+    setPagos(pagosResponse.data);
+    setCurrentPage(pagosResponse.current_page);
+    setLastPage(pagosResponse.last_page);
+    
+    // --- AQUÍ ESTÁ LA MAGIA ---
+    // Extraemos el arreglo real, ya sea que venga directo o dentro de ".data"
+    const listaTurnos = Array.isArray(turnosData) ? turnosData : turnosData.data;
+    
+    // Le agregamos el || [] como un pequeño escudo protector por si acaso
+    setTurnos(listaTurnos || []); 
+    // --------------------------
+
+    setEstadisticas(statsData);
+    setLoading(false);
+  } catch (err) {
+    console.error('Error al cargar datos:', err);
+    setError('Error al cargar los datos');
+    setLoading(false);
+  }
+};
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    try {
-      if (editingPago) {
-        await pagoService.update(editingPago.id, formData);
-      } else {
-        await pagoService.create(formData);
-        
-        // Si el pago está confirmado o completado, actualizar el turno a confirmado
-        if ((formData.estado === 'confirmado' || formData.estado === 'completado') && formData.turno_id) {
-          await turnoService.update(formData.turno_id, { estado: 'confirmado' });
-        }
-      }
+  try {
+    if (editingPago) {
+      await pagoService.update(editingPago.id, formData);
+    } else {
+      await pagoService.create(formData);
       
-      setShowModal(false);
-      resetForm();
-      fetchData();
-      triggerRefresh(); // Actualizar el dashboard
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al guardar el pago');
+      if ((formData.estado === 'confirmado' || formData.estado === 'completado') && formData.turno_id) {
+        await turnoService.update(formData.turno_id, { estado: 'confirmado' });
+      }
     }
-  };
+    
+    setShowModal(false);
+    resetForm();
+    fetchData(currentPage); // ← Usar página actual
+    triggerRefresh();
+  } catch (err) {
+    setError(err.response?.data?.message || 'Error al guardar el pago');
+  }
+};
 
   const handleEdit = (pago) => {
     setEditingPago(pago);
@@ -82,18 +95,18 @@ function GestionPagos() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este pago?')) {
-      return;
-    }
+  if (!window.confirm('¿Estás seguro de eliminar este pago?')) {
+    return;
+  }
 
-    try {
-      await pagoService.delete(id);
-      fetchData();
-      triggerRefresh(); // Actualizar el dashboard
-    } catch (err) {
-      alert('Error al eliminar el pago');
-    }
-  };
+  try {
+    await pagoService.delete(id);
+    fetchData(currentPage); // ← Usar página actual
+    triggerRefresh();
+  } catch (err) {
+    alert('Error al eliminar el pago');
+  }
+};
 
   const resetForm = () => {
     setFormData({
@@ -150,6 +163,10 @@ function GestionPagos() {
       case 'transferencia': return '🏦';
       default: return '💰';
     }
+  };
+    const handlePageChange = (page) => {
+    setLoading(true);
+    fetchData(page);
   };
 
   if (loading) return <div className="loading">Cargando...</div>;
@@ -290,6 +307,11 @@ function GestionPagos() {
             </tbody>
           </table>
         </div>
+                      <Pagination
+                currentPage={currentPage}
+                lastPage={lastPage}
+                onPageChange={handlePageChange}
+              />
       </div>
 
       {/* Modal */}

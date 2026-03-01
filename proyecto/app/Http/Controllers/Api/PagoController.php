@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Pago;
 use App\Models\Turno;
-use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
-    public function index()
+   public function index(Request $request)
     {
-        $pagos = Pago::with(['turno.cancha', 'turno.cliente'])->get();
-        return response()->json($pagos);
+    $perPage = $request->get('per_page', 15);
+    $pagos = Pago::with(['turno.cancha', 'turno.cliente'])->paginate($perPage);
+    return response()->json($pagos);
     }
 
     public function show($id)

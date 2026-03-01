@@ -8,10 +8,26 @@ use Illuminate\Http\Request;
 
 class CanchaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $canchas = Cancha::activas()->get();
-        return response()->json($canchas);
+        // Iniciamos la consulta vacía
+        $query = Cancha::query();
+
+        // 1. FILTRO DE ESTADO:
+        // Si la petición NO tiene el parámetro ?admin=true, ocultamos las inactivas
+        if (!$request->boolean('admin')) {
+            $query->where('activa', true);
+        }
+
+        // 2. PAGINACIÓN VS LISTA COMPLETA:
+        // Si React nos envía el parámetro ?per_page=..., paginamos.
+        if ($request->has('per_page')) {
+            $perPage = $request->get('per_page', 20);
+            return response()->json($query->paginate($perPage));
+        }
+
+        // Si no piden paginación, devolvemos el arreglo limpio con todas
+        return response()->json($query->get());
     }
 
     public function show($id)
@@ -20,54 +36,55 @@ class CanchaController extends Controller
         return response()->json($cancha);
     }
 
-   public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string|max:255',
-        'tipo' => 'required|in:futbol5,padel',
-        'descripcion' => 'nullable|string',
-        'precio_hora' => 'required|numeric|min:0',
-        'activa' => 'boolean',
-        'imagen' => 'nullable|string',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'tipo' => 'required|in:futbol5,padel',
+            'descripcion' => 'nullable|string',
+            'precio_hora' => 'required|numeric|min:0',
+            'activa' => 'boolean',
+            'imagen' => 'nullable|string',
+        ]);
 
-    $cancha = Cancha::create($request->all());
+        $cancha = Cancha::create($request->all());
 
-    // Crear horarios automáticamente para la nueva cancha
-    $dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-    
-    $horarios = [
-        ['08:00', '09:00'],
-        ['09:00', '10:00'],
-        ['10:00', '11:00'],
-        ['11:00', '12:00'],
-        ['12:00', '13:00'],
-        ['13:00', '14:00'],
-        ['14:00', '15:00'],
-        ['15:00', '16:00'],
-        ['16:00', '17:00'],
-        ['17:00', '18:00'],
-        ['18:00', '19:00'],
-        ['19:00', '20:00'],
-        ['20:00', '21:00'],
-        ['21:00', '22:00'],
-        ['22:00', '23:00'],
-    ];
+        // Crear horarios automáticamente para la nueva cancha
+        $dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        
+        $horarios = [
+            ['08:00', '09:00'],
+            ['09:00', '10:00'],
+            ['10:00', '11:00'],
+            ['11:00', '12:00'],
+            ['12:00', '13:00'],
+            ['13:00', '14:00'],
+            ['14:00', '15:00'],
+            ['15:00', '16:00'],
+            ['16:00', '17:00'],
+            ['17:00', '18:00'],
+            ['18:00', '19:00'],
+            ['19:00', '20:00'],
+            ['20:00', '21:00'],
+            ['21:00', '22:00'],
+            ['22:00', '23:00'],
+        ];
 
-    foreach ($dias as $dia) {
-        foreach ($horarios as $horario) {
-            \App\Models\Horario::create([
-                'cancha_id' => $cancha->id,
-                'hora_inicio' => $horario[0],
-                'hora_fin' => $horario[1],
-                'dia_semana' => $dia,
-                'disponible' => true,
-            ]);
+        foreach ($dias as $dia) {
+            foreach ($horarios as $horario) {
+                \App\Models\Horario::create([
+                    'cancha_id' => $cancha->id,
+                    'hora_inicio' => $horario[0],
+                    'hora_fin' => $horario[1],
+                    'dia_semana' => $dia,
+                    'disponible' => true,
+                ]);
+            }
         }
+
+        return response()->json($cancha, 201);
     }
 
-    return response()->json($cancha, 201);
-}
     public function update(Request $request, $id)
     {
         $cancha = Cancha::findOrFail($id);

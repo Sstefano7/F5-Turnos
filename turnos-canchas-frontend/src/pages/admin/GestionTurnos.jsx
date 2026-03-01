@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { turnoService } from '../../services/turnoService';
 import { useDashboard } from '../../context/DashboardContext';
 import '../../styles/GestionTurnos.css';
+import Pagination from '../../components/Pagination';
 
 function GestionTurnos() {
   const [turnos, setTurnos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
+    
     fecha: '',
     estado: '',
     cancha_id: ''
@@ -15,29 +17,40 @@ function GestionTurnos() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { triggerRefresh } = useDashboard();
-
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  
   useEffect(() => {
     fetchTurnos();
   }, []);
 
-  const fetchTurnos = async () => {
-      try {
-        // Crear objeto de filtros solo con valores que no estén vacíos
-        const filtrosActivos = {};
-        if (filtros.fecha) filtrosActivos.fecha = filtros.fecha;
-        if (filtros.estado) filtrosActivos.estado = filtros.estado;
-        if (filtros.cancha_id) filtrosActivos.cancha_id = filtros.cancha_id;
+  const fetchTurnos = async (page = 1) => {
+  try {
+    // Crear objeto de filtros solo con valores que no estén vacíos
+    const filtrosActivos = {
+      page: page,
+      per_page: 15
+    };
+    
+    if (filtros.fecha) filtrosActivos.fecha = filtros.fecha;
+    if (filtros.estado) filtrosActivos.estado = filtros.estado;
+    if (filtros.cancha_id) filtrosActivos.cancha_id = filtros.cancha_id;
 
-        const data = await turnoService.getAll(filtrosActivos);
-        console.log('Turnos cargados:', data); // Para debug
-        setTurnos(data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error completo:', err);
-        setError('Error al cargar los turnos: ' + (err.message || 'Error desconocido'));
-        setLoading(false);
-      }
+    const response = await turnoService.getAll(filtrosActivos);
+    
+    setTurnos(response.data);
+    setCurrentPage(response.current_page);
+    setLastPage(response.last_page);
+    setTotal(response.total);
+    setLoading(false);
+  } catch (err) {
+    console.error('Error completo:', err);
+    setError('Error al cargar los turnos');
+    setLoading(false);
   }
+};
 
   const handleFiltroChange = (e) => {
     setFiltros({
@@ -47,9 +60,10 @@ function GestionTurnos() {
   };
 
   const aplicarFiltros = () => {
-    setLoading(true);
-    fetchTurnos();
-  };
+  setLoading(true);
+  setCurrentPage(1);
+  fetchTurnos(1);
+};
 
   const limpiarFiltros = () => {
     setFiltros({
@@ -109,6 +123,10 @@ function GestionTurnos() {
       case 'completado': return 'Completado';
       default: return estado;
     }
+  };
+    const handlePageChange = (page) => {
+    setLoading(true);
+    fetchTurnos(page);
   };
 
   if (loading) return <div className="loading">Cargando...</div>;
@@ -246,6 +264,11 @@ function GestionTurnos() {
             </tbody>
           </table>
         </div>
+                  <Pagination
+            currentPage={currentPage}
+            lastPage={lastPage}
+            onPageChange={handlePageChange}
+          />
       </div>
     </div>
   );

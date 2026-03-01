@@ -24,7 +24,7 @@ function GestionCanchas() {
 
   const fetchCanchas = async () => {
     try {
-      const data = await canchaService.getAll();
+      const data = await canchaService.getAll(true);
       setCanchas(data);
       setLoading(false);
     } catch (err) {

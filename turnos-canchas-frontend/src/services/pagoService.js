@@ -1,11 +1,11 @@
 import api from '../config/api';
 
 export const pagoService = {
-    getAll: async () => {
-        const response = await api.get('/pagos');
+    getAll: async (params = {}) => {
+        const response = await api.get('/pagos', { params });
         return response.data;
     },
-
+    
     getById: async (id) => {
         const response = await api.get(`/pagos/${id}`);
         return response.data;

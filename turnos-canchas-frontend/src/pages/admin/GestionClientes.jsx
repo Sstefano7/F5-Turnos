@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clienteService } from '../../services/clienteService';
 import '../../styles/GestionClientes.css';
+import Pagination from '../../components/Pagination';
 
 function GestionClientes() {
   const [clientes, setClientes] = useState([]);
@@ -9,33 +10,42 @@ function GestionClientes() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+
   useEffect(() => {
     fetchClientes();
   }, []);
 
-  const fetchClientes = async () => {
-    try {
-      const data = await clienteService.getAll();
-      setClientes(data);
-      setLoading(false);
-    } catch (err) {
-      setError('Error al cargar los clientes');
-      setLoading(false);
-    }
-  };
+ const fetchClientes = async (page = 1) => {
+  try {
+    const response = await clienteService.getAll({ page, per_page: 15 });
+    setClientes(response.data);
+    setCurrentPage(response.current_page);
+    setLastPage(response.last_page);
+    setLoading(false);
+  } catch (err) {
+    setError('Error al cargar los clientes');
+    setLoading(false);
+  }
+};
 
   const handleEliminar = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este cliente? Esto también eliminará sus turnos.')) {
-      return;
-    }
+  if (!window.confirm('¿Estás seguro de eliminar este cliente? Esto también eliminará sus turnos.')) {
+    return;
+  }
 
-    try {
-      await clienteService.delete(id);
-      fetchClientes();
-    } catch (err) {
-      alert('Error al eliminar el cliente');
-    }
-  };
+  try {
+    await clienteService.delete(id);
+    fetchClientes(currentPage); // ← Usar página actual
+  } catch (err) {
+    alert('Error al eliminar el cliente');
+  }
+};
+  const handlePageChange = (page) => {
+  setLoading(true);
+  fetchClientes(page);
+};
 
   if (loading) return <div className="loading">Cargando...</div>;
 
@@ -98,6 +108,11 @@ function GestionClientes() {
             </tbody>
           </table>
         </div>
+                  <Pagination
+            currentPage={currentPage}
+            lastPage={lastPage}
+            onPageChange={handlePageChange}
+          />
       </div>
     </div>
   );
