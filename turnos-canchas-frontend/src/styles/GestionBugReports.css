@@ -1,0 +1,177 @@
+.reports-table {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.tipo-icon {
+  font-size: 24px;
+}
+
+.prioridad-select,
+.estado-select {
+  padding: 6px 10px;
+  border: 2px solid;
+  border-radius: 5px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.prioridad-select {
+  width: 120px;
+}
+
+.estado-select {
+  width: 140px;
+}
+
+/* Prioridades */
+.prioridad-baja,
+.prioridad-select[value="baja"] {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.prioridad-media,
+.prioridad-select[value="media"] {
+  border-color: #ffc107;
+  color: #ff8c00;
+}
+
+.prioridad-alta,
+.prioridad-select[value="alta"] {
+  border-color: #fd7e14;
+  color: #fd7e14;
+}
+
+.prioridad-critica,
+.prioridad-select[value="critica"] {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+/* Estados */
+.estado-nuevo,
+.estado-select[value="nuevo"] {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.estado-revision,
+.estado-select[value="en_revision"] {
+  border-color: #6f42c1;
+  color: #6f42c1;
+}
+
+.estado-progreso,
+.estado-select[value="en_progreso"] {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.estado-resuelto,
+.estado-select[value="resuelto"] {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.estado-cerrado,
+.estado-select[value="cerrado"] {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-ver {
+  padding: 6px 15px;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+  margin-right: 5px;
+}
+
+.btn-ver:hover {
+  background: #138496;
+}
+
+/* Modal de detalles */
+.detail-modal {
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.detail-content {
+  padding: 20px 30px;
+}
+
+.detail-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+}
+
+.detail-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 22px;
+}
+
+.detail-section h4 {
+  margin: 0 0 10px 0;
+  color: #555;
+  font-size: 16px;
+}
+
+.detail-section p {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.detail-section pre {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  border-left: 4px solid #667eea;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.detail-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detail-section ul li {
+  padding: 8px 0;
+  color: #666;
+}
+
+.detail-badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.detail-badges .badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}

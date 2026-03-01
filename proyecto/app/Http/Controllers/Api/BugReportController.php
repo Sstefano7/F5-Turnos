@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BugReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class BugReportController extends Controller
 {
@@ -27,7 +28,9 @@ class BugReportController extends Controller
             $query->where('prioridad', $request->prioridad);
         }
 
-        $reports = $query->paginate(15);
+        // --- EL ÚNICO CAMBIO ES ESTA LÍNEA ---
+        // Cambiamos $query->paginate(15) por $query->get()
+        $reports = $query->get();
 
         return response()->json($reports);
     }
@@ -121,7 +124,7 @@ class BugReportController extends Controller
                 }
             );
         } catch (\Exception $e) {
-            \Log::error('Error al enviar email de bug report: ' . $e->getMessage());
+            Log::error('Error al enviar email de bug report: ' . $e->getMessage());
         }
     }
 }

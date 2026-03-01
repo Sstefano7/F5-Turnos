@@ -165,6 +165,16 @@ function AdminDashboard() {
               <h3>Gestionar Pagos</h3>
               <p>Ver y administrar pagos</p>
             </button>
+
+            <button 
+              className="menu-card"
+              onClick={() => navigate('/admin/bug-reports')}
+            >
+              <div className="menu-icon">🐛</div>
+              <h3>Reportes de Bugs</h3>
+              <p>Ver y gestionar reportes</p>
+            </button>
+            
           </div> 
         </div>
 

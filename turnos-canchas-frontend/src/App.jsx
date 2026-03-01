@@ -11,84 +11,104 @@ import GestionHorarios from './pages/admin/GestionHorarios';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import GestionPagos from './pages/admin/GestionPagos';
-
+import ReportBugButton from './components/ReportBugButton';
+import GestionBugReports from './pages/admin/GestionBugReports';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      
-      <Route 
-        path="/reservar/:id" 
-        element={
-          <ProtectedRoute>
-            <Reservar />
-          </ProtectedRoute>
-        } 
-      />
+    <> {/* <--- Abrimos Fragmento */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        
+        <Route 
+          path="/reservar/:id" 
+          element={
+            <ProtectedRoute>
+              <Reservar />
+            </ProtectedRoute>
+          } 
+        />
 
-      <Route 
-        path="/mis-reservas" 
-        element={
-          <ProtectedRoute>
-            <MisReservas />
-          </ProtectedRoute>
-        } 
-      />
+        <Route 
+          path="/mis-reservas" 
+          element={
+            <ProtectedRoute>
+              <MisReservas />
+            </ProtectedRoute>
+          } 
+        />
 
-      {/* Rutas de Administración */}
-      <Route 
-        path="/admin" 
-        element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        } 
-      />
+        {/* Rutas de Administración */}
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          } 
+        />
 
-      <Route 
-        path="/admin/canchas" 
-        element={
-          <AdminRoute>
-            <GestionCanchas />
-          </AdminRoute>
-        } 
-      />
+        <Route 
+          path="/admin/canchas" 
+          element={
+            <AdminRoute>
+              <GestionCanchas />
+            </AdminRoute>
+          } 
+        />
 
-      <Route 
-        path="/admin/turnos" 
-        element={
-          <AdminRoute>
-            <GestionTurnos />
-          </AdminRoute>
-        } 
-      />
+        <Route 
+          path="/admin/turnos" 
+          element={
+            <AdminRoute>
+              <GestionTurnos />
+            </AdminRoute>
+          } 
+        />
 
-      <Route 
-        path="/admin/clientes" 
-        element={
-          <AdminRoute>
-            <GestionClientes />
-          </AdminRoute>
-        } 
-      />
-      
-      <Route 
-        path="/admin/horarios" 
-        element={
-          <AdminRoute>
-            <GestionHorarios />
-          </AdminRoute>
-        } 
-      />
+        <Route 
+          path="/admin/clientes" 
+          element={
+            <AdminRoute>
+              <GestionClientes />
+            </AdminRoute>
+          } 
+        />
+        
+        <Route 
+          path="/admin/horarios" 
+          element={
+            <AdminRoute>
+              <GestionHorarios />
+            </AdminRoute>
+          } 
+        />
 
-      
-      <Route path="/admin/pagos" element={<GestionPagos />} />
-    
+        <Route 
+          path="/admin/bug-reports" 
+          element={
+            <AdminRoute>
+              <GestionBugReports />
+            </AdminRoute>
+          } 
+        />
+        
+        <Route 
+          path="/admin/pagos" 
+          element={
+            <AdminRoute>
+              <GestionPagos />
+            </AdminRoute>
+          } 
+        />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* ✅ Ahora el botón está DENTRO de la función y AFUERA de las rutas */}
+      <ReportBugButton />
+    </> 
   );
 }
 

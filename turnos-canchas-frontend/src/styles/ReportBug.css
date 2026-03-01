@@ -1,0 +1,49 @@
+/* Botón Flotante Optimizado */
+.report-bug-btn {
+  position: fixed; /* Mantiene el botón fijo en la ventana */
+  bottom: 25px; /* Un poco más de aire desde el fondo */
+  right: 25px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  /* Sombra más profunda para dar sensación de elevación */
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 9999; /* Valor más alto para asegurar que flote sobre tablas y modales */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-bug-btn:hover {
+  /* Efecto de levitación y escala */
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 25px rgba(102, 126, 234, 0.5);
+}
+
+.report-bug-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Modal y mensajes permanecen igual de funcionales */
+.bug-modal {
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  margin: 20px 0;
+  border: 1px solid #c3e6cb;
+}
