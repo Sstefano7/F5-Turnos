@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ClienteController;
 use App\Http\Controllers\Api\HorarioController;
 use App\Http\Controllers\Api\AuthController;
 
+
 // Rutas públicas (sin autenticación)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -76,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
          // Gestión de reportes de bugs (admin)
         Route::get('/bug-reports', [\App\Http\Controllers\Api\BugReportController::class, 'index']);
+        Route::get('/bug-reports/export-pdf', [\App\Http\Controllers\Api\BugReportController::class, 'exportPdf']);
         Route::get('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'show']);
         Route::put('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'update']);
         Route::delete('/bug-reports/{id}', [\App\Http\Controllers\Api\BugReportController::class, 'destroy']);

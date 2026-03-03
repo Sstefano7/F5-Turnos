@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { canchaService } from '../../services/canchaService';
 import '../../styles/GestionCanchas.css';
+import Swal from 'sweetalert2';
 
 function GestionCanchas() {
   const [canchas, setCanchas] = useState([]);
@@ -64,16 +65,39 @@ function GestionCanchas() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar esta cancha?')) {
-      return;
-    }
+ const handleDelete = async (id) => {
+    // 1. Lanzamos el modal de confirmación de SweetAlert
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "La cancha será eliminada del sistema.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
 
-    try {
-      await canchaService.delete(id);
-      fetchCanchas();
-    } catch (err) {
-      alert('Error al eliminar la cancha');
+    // 2. Si el usuario hace clic en "Sí, eliminar"
+    if (result.isConfirmed) {
+      try {
+        await canchaService.delete(id);
+        fetchCanchas(); // Recargamos la tabla
+        
+        // Mostramos cartel de éxito
+        Swal.fire(
+          '¡Eliminada!',
+          'La cancha ha sido eliminada correctamente.',
+          'success'
+        );
+      } catch (err) {
+        // Mostramos cartel de error si algo falla
+        Swal.fire(
+          'Error',
+          'Hubo un problema al eliminar la cancha.',
+          'error'
+        );
+      }
     }
   };
 

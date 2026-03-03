@@ -57,6 +57,29 @@ function GestionBugReports() {
   }
 };
 
+const handleExportarPDF = async () => {
+    try {
+      // 1. Llamamos a tu servicio (que ya nos devuelve los datos del blob)
+      const blobData = await bugReportService.exportPdf();
+
+      // 2. Magia de JavaScript para descargar el archivo
+      const url = window.URL.createObjectURL(new Blob([blobData]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_bugs_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // 3. Limpiamos la memoria
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Error al exportar el PDF:', error);
+      alert('Hubo un problema al generar el PDF.');
+    }
+  };
+
   const handleFiltroChange = (e) => {
     setFiltros({
       ...filtros,
@@ -368,7 +391,11 @@ function GestionBugReports() {
           </div>
         </div>
       )}
-    </div>
+          <button onClick={handleExportarPDF} className="btn-export">
+       📄 Exportar a PDF
+        </button>
+        </div>
+
   );
 }
 

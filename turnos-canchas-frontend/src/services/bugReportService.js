@@ -24,5 +24,13 @@ export const bugReportService = {
     delete: async (id) => {
         const response = await api.delete(`/bug-reports/${id}`);
         return response.data;
+    },
+
+    
+    exportPdf: async () => {
+        const response = await api.get('/bug-reports/export-pdf', {
+            responseType: 'blob' // Súper importante para que entienda que es un archivo
+        });
+        return response.data;
     }
 };
