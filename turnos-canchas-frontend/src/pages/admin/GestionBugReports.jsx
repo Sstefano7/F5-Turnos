@@ -3,6 +3,89 @@ import { useNavigate } from 'react-router-dom';
 import { bugReportService } from '../../services/bugReportService';
 import Pagination from '../../components/Pagination';
 import '../../styles/GestionBugReports.css';
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
+
+
+function AdminDashboard() {
+  // ... código existente ...
+  const { user, logout, isSuperAdmin } = useAuth(); // ← AGREGAR isSuperAdmin
+  
+  // ... resto del código ...
+
+  return (
+    <div className="admin-dashboard">
+      {/* ... header y stats ... */}
+
+      <div className="admin-menu">
+        <h2>Gestión</h2>
+        <div className="menu-grid">
+          <button className="menu-card" onClick={() => navigate('/admin/canchas')}>
+            <div className="menu-icon">🏟️</div>
+            <h3>Gestionar Canchas</h3>
+            <p>Crear, editar y eliminar canchas</p>
+          </button>
+
+          <button className="menu-card" onClick={() => navigate('/admin/turnos')}>
+            <div className="menu-icon">📅</div>
+            <h3>Gestionar Turnos</h3>
+            <p>Ver y administrar todas las reservas</p>
+          </button>
+
+          <button className="menu-card" onClick={() => navigate('/admin/clientes')}>
+            <div className="menu-icon">👥</div>
+            <h3>Gestionar Clientes</h3>
+            <p>Ver y administrar clientes</p>
+          </button>
+
+          <button className="menu-card" onClick={() => navigate('/admin/horarios')}>
+            <div className="menu-icon">🕐</div>
+            <h3>Gestionar Horarios</h3>
+            <p>Configurar horarios disponibles</p>
+          </button>
+
+          <button className="menu-card" onClick={() => navigate('/admin/pagos')}>
+            <div className="menu-icon">💰</div>
+            <h3>Gestionar Pagos</h3>
+            <p>Ver y administrar pagos</p>
+          </button>
+
+          {/* Botones SOLO para Super Admin */}
+          {isSuperAdmin() && (
+            <>
+              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/bug-reports')}>
+                <div className="menu-icon">🐛</div>
+                <h3>Reportes de Bugs</h3>
+                <p>Ver y gestionar reportes</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+
+              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/audits')}>
+                <div className="menu-icon">📋</div>
+                <h3>Auditoría</h3>
+                <p>Ver registro de acciones</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+
+              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/logs')}>
+                <div className="menu-icon">📝</div>
+                <h3>Logs del Sistema</h3>
+                <p>Ver y exportar logs</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="quick-actions">
+        <button className="btn-primary" onClick={() => navigate('/')}>
+          Ver Sitio Público
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function GestionBugReports() {
   const [reports, setReports] = useState([]);
@@ -77,6 +160,56 @@ const handleExportarPDF = async () => {
     } catch (error) {
       console.error('Error al exportar el PDF:', error);
       alert('Hubo un problema al generar el PDF.');
+    }
+  };
+
+  const exportarLogs = async () => {
+    try {
+        // Obtenemos el token del localStorage (ajusta según cómo lo guardes)
+        const token = localStorage.getItem('token'); 
+        
+        const response = await axios.get('http://localhost:8000/api/logs/export-pdf', {
+            responseType: 'blob', // Importante para manejar archivos binarios
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        // Creamos un link temporal para la descarga
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'reporte_logs_sistema.pdf');
+        document.body.appendChild(link);
+        link.click();
+        
+        // Limpieza
+        link.parentNode.removeChild(link);
+    } catch (error) {
+        console.error("Error al exportar los logs:", error);
+        alert("No se pudo generar el reporte de logs. Verifica los permisos de administrador.");
+    }
+};
+
+// Función para exportar las Auditorías a PDF
+  const exportarAuditoriasPDF = async () => {
+    try {
+      const token = localStorage.getItem('token'); // Asegúrate de obtener el token
+      const response = await axios.get('http://localhost:8000/api/audits/export-pdf', {
+        responseType: 'blob',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Auditorias_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error("Error al exportar las auditorías:", error);
+      alert("Hubo un error al intentar descargar el PDF de Auditorías.");
     }
   };
 
@@ -391,9 +524,34 @@ const handleExportarPDF = async () => {
           </div>
         </div>
       )}
-          <button onClick={handleExportarPDF} className="btn-export">
-       📄 Exportar a PDF
-        </button>
+        {/* Contenedor Flexbox para alinear y separar los botones uniformemente */}
+        <div style={{ display: 'flex', gap: '15px', marginTop: '20px', flexWrap: 'wrap' }}>
+            
+            {/* Botón de Bugs */}
+            <button 
+                onClick={handleExportarPDF} 
+                style={{ backgroundColor: '#222', color: '#fff', padding: '10px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', transition: '0.3s' }}
+            >
+                <span>🐛</span> Exportar Bugs a PDF
+            </button>
+
+            {/* Botón de Logs */}
+            <button 
+                onClick={exportarLogs} 
+                style={{ backgroundColor: '#222', color: '#fff', padding: '10px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', transition: '0.3s' }}
+            >
+                <span>📋</span> Exportar Logs a PDF
+            </button>
+
+            {/* Botón de Auditorías */}
+            <button 
+                onClick={exportarAuditoriasPDF} 
+                style={{ backgroundColor: '#222', color: '#fff', padding: '10px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', transition: '0.3s' }}
+            >
+                <span>🔍</span> Exportar Auditorías a PDF
+            </button>
+
+        </div>
         </div>
 
   );

@@ -13,6 +13,10 @@ import AdminRoute from './components/AdminRoute';
 import GestionPagos from './pages/admin/GestionPagos';
 import ReportBugButton from './components/ReportBugButton';
 import GestionBugReports from './pages/admin/GestionBugReports';
+import SuperAdminRoute from './components/SuperAdminRoute';
+
+import GestionAudits from './pages/admin/GestionAudits'; 
+import GestionLogs from './pages/admin/GestionBugReports'; 
 
 function App() {
   return (
@@ -84,15 +88,6 @@ function App() {
             </AdminRoute>
           } 
         />
-
-        <Route 
-          path="/admin/bug-reports" 
-          element={
-            <AdminRoute>
-              <GestionBugReports />
-            </AdminRoute>
-          } 
-        />
         
         <Route 
           path="/admin/pagos" 
@@ -102,6 +97,36 @@ function App() {
             </AdminRoute>
           } 
         />
+
+        {/* Rutas de Super Admin */}
+        <Route 
+          path="/admin/bug-reports" 
+          element={
+            <SuperAdminRoute>
+              <GestionBugReports />
+            </SuperAdminRoute>
+          } 
+        />
+
+        <Route 
+          path="/admin/audits" 
+          element={
+            <SuperAdminRoute>
+              <GestionAudits />
+            </SuperAdminRoute>
+          } 
+        />
+
+        <Route 
+          path="/admin/logs" 
+          element={
+            <SuperAdminRoute>
+              <GestionLogs />
+            </SuperAdminRoute>
+          } 
+        />
+    
+
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

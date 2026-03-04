@@ -8,24 +8,27 @@ function Home() {
   const [canchas, setCanchas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, logout } = useAuth();
+  
+  // 1. AÑADIMOS isAdmin AQUÍ
+  const { user, logout, isAdmin } = useAuth(); 
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCanchas = async () => {
-  try {
-    const data = await canchaService.getAll();
-    
-    // Si la respuesta viene paginada, usar data.data, sino usar data directamente
-    const canchasArray = data.data || data;
-    
-    setCanchas(canchasArray);
-    setLoading(false);
-  } catch (err) {
-    setError(err.message);
-    setLoading(false);
-  }
-};
+      try {
+        const data = await canchaService.getAll();
+        
+        // Si la respuesta viene paginada, usar data.data, sino usar data directamente
+        const canchasArray = data.data || data;
+        
+        setCanchas(canchasArray);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
 
     fetchCanchas();
   }, []);
@@ -45,7 +48,8 @@ function Home() {
           <div className="user-info">
             {user ? (
               <>
-                {user.role === 'admin' && (
+                {/* 2. CAMBIAMOS LA CONDICIÓN AQUÍ */}
+                {isAdmin() && (
                   <button onClick={() => navigate('/admin')} className="btn-admin">
                     Panel Admin
                   </button>

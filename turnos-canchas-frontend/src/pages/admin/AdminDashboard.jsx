@@ -15,7 +15,7 @@ function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, logout } = useAuth();
+  const { user, logout, isSuperAdmin } = useAuth();
   const { refreshDashboard } = useDashboard();
   const navigate = useNavigate();
 
@@ -166,14 +166,17 @@ function AdminDashboard() {
               <p>Ver y administrar pagos</p>
             </button>
 
+           {isSuperAdmin() && (
             <button 
-              className="menu-card"
+              className="menu-card super-admin-card"
               onClick={() => navigate('/admin/bug-reports')}
             >
               <div className="menu-icon">🐛</div>
               <h3>Reportes de Bugs</h3>
               <p>Ver y gestionar reportes</p>
+              <span className="superadmin-badge">Super Admin</span>
             </button>
+          )}
             
           </div> 
         </div>

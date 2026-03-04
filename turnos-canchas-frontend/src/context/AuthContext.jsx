@@ -48,9 +48,23 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      // Aunque falle, limpiamos el estado local
+      // Aunque falle en el backend, limpiamos el estado local
       setUser(null);
     }
+  };
+
+  // Funciones de verificación de roles
+  const isAuthenticated = () => {
+    return !!user;
+  };
+
+  const isAdmin = () => {
+  // Un superadmin también puede acceder a funciones de admin
+  return user?.role === 'admin' || user?.role === 'superadmin';
+};
+
+  const isSuperAdmin = () => {
+    return user?.role === 'superadmin';
   };
 
   const value = {
@@ -58,8 +72,10 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    isAuthenticated: !!user,
-    loading
+    isAuthenticated,
+    loading,
+    isAdmin,
+    isSuperAdmin
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

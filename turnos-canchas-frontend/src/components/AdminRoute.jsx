@@ -1,30 +1,26 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authService } from '../services/authService';
 
 function AdminRoute({ children }) {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
 
-  if (loading) {
-    return <div style={{ textAlign: 'center', padding: '40px' }}>Cargando...</div>;
-  }
-
-  if (!isAuthenticated) {
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role !== 'admin') {
+  if (!isAdmin()) { // ← Esta función ya valida admin O superadmin
     return (
       <div style={{ 
-        textAlign: 'center', 
-        padding: '60px 20px',
+        padding: '50px', 
+        textAlign: 'center',
         maxWidth: '600px',
-        margin: '0 auto'
+        margin: '100px auto'
       }}>
-        <h2>Acceso Denegado</h2>
+        <h2>🔒 Acceso Denegado</h2>
         <p>No tienes permisos para acceder a esta sección.</p>
+        <p>Esta área es solo para administradores.</p>
         <button 
-          onClick={() => window.location.href = '/'}
+          onClick={() => window.history.back()}
           style={{
             marginTop: '20px',
             padding: '10px 20px',
@@ -35,7 +31,7 @@ function AdminRoute({ children }) {
             cursor: 'pointer'
           }}
         >
-          Volver al Inicio
+          Volver
         </button>
       </div>
     );

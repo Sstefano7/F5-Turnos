@@ -3,37 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
+use Barryvdh\DomPDF\Facade\Pdf; // 1. IMPORTANTE: Agregar esta línea para usar el PDF
 
 class AuditController extends Controller
 {
-    public function index(Request $request)
+    // Función para llenar la tabla en React (La que ya tenías)
+    public function index()
     {
-        $query = Audit::with(['user'])
-            ->orderBy('created_at', 'desc');
-
-        // Filtros
-        if ($request->has('auditable_type')) {
-            $query->where('auditable_type', $request->auditable_type);
-        }
-
-        if ($request->has('event')) {
-            $query->where('event', $request->event);
-        }
-
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        $audits = $query->paginate(20);
-
+        $audits = Audit::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        
         return response()->json($audits);
     }
 
-    public function show($id)
+    // 2. NUEVA FUNCIÓN: Para generar y descargar el PDF
+    public function exportPdf()
     {
-        $audit = Audit::with(['user'])->findOrFail($id);
-        return response()->json($audit);
+        // Traemos las últimas 500 auditorías (no usamos paginación aquí para que el PDF salga completo)
+        $audits = Audit::with('user')->orderBy('created_at', 'desc')->limit(500)->get();
+
+        // Le pasamos los datos a la vista que creamos
+        $pdf = Pdf::loadView('pdf.audits', compact('audits'));
+
+        // Retornamos el archivo PDF para que el navegador lo descargue
+        return $pdf->download('auditorias.pdf');
     }
 }
