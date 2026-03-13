@@ -58,6 +58,17 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+
+            'dump' => [
+               'dump_binary_path' => 'C:/xampp/mysql/bin/', 
+               'use_single_transaction',
+               'timeout' => 60 * 5, // Le damos 5 minutos máximo para hacer el backup
+            ],
+
+            'env' => [
+                   'SystemRoot' => 'C:\\Windows',
+               ],
+               
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],

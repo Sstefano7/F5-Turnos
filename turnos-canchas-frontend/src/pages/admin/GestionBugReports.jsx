@@ -551,6 +551,18 @@ const handleExportarPDF = async () => {
                 <span>🔍</span> Exportar Auditorías a PDF
             </button>
 
+            <div>
+              <button 
+              className="menu-card super-admin-card"
+              onClick={() => navigate('/admin/backups')}
+            >
+              <div className="menu-icon">💾</div>
+              <h3>Backups</h3>
+              <p>Copias de seguridad del sistema</p>
+              <span className="superadmin-badge">Super Admin</span>
+            </button>
+            </div>
+
         </div>
         </div>
 

@@ -44,5 +44,21 @@ export const authService = {
         if (!user) return false;
         const userData = JSON.parse(user);
         return userData.role === 'admin';
+    },
+
+        forgotPassword: async (email) => {
+        const response = await api.post('/forgot-password', { email });
+        return response.data;
+    },
+
+    resetPassword: async (email, token, password, passwordConfirmation) => {
+        const response = await api.post('/reset-password', {
+            email,
+            token,
+            password,
+            password_confirmation: passwordConfirmation
+        });
+        return response.data;
     }
+
 };

@@ -174,3 +174,56 @@
 .link-button:hover {
   color: #764ba2;
 }
+
+
+.info-message {
+  background: #d1ecf1;
+  color: #0c5460;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #bee5eb;
+  font-size: 14px;
+  word-break: break-all;
+}
+
+.success-message {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-message h2 {
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.success-message p {
+  color: #666;
+  margin: 10px 0;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: #764ba2;
+}
+
+.btn-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

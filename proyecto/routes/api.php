@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\DashboardController;
 // Rutas públicas (sin autenticación)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs
 Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
@@ -93,14 +95,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/logs', [LogController::class, 'index']);
         Route::delete('/logs/{id}', [LogController::class, 'destroy']);
         
-        // Gestión de usuarios (SOLO SUPERADMIN - opcional)
+        // Gestión de usuarios (SOLO SUPERADMIN)
         Route::get('/users', [AuthController::class, 'getAllUsers']);
         Route::put('/users/{id}/role', [AuthController::class, 'updateUserRole']);
         Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
         
-        // Backups (SOLO SUPERADMIN - si lo tienes implementado)
-        // Route::get('/backups', [BackupController::class, 'index']);
-        // Route::post('/backups/create', [BackupController::class, 'create']);
-        // Route::delete('/backups/{filename}', [BackupController::class, 'delete']);
+        /// Backups (SOLO SUPERADMIN)
+        Route::get('/backups', [\App\Http\Controllers\Api\BackupController::class, 'index']);
+        Route::post('/backups/create', [\App\Http\Controllers\Api\BackupController::class, 'create']);
+        Route::get('/backups/download/{filename}', [\App\Http\Controllers\Api\BackupController::class, 'download']);
     });
 });

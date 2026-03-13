@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+
 import Reservar from './pages/Reservar';
 import MisReservas from './pages/MisReservas';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -18,13 +20,19 @@ import SuperAdminRoute from './components/SuperAdminRoute';
 import GestionAudits from './pages/admin/GestionAudits'; 
 import GestionLogs from './pages/admin/GestionBugReports'; 
 
+import GestionBackups from './pages/admin/GestionBackups';
+
+
+
 function App() {
   return (
     <> {/* <--- Abrimos Fragmento */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
+         {/* Rutas protegidas para usuarios autenticados */}
         <Route 
           path="/reservar/:id" 
           element={
@@ -33,7 +41,7 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+        
         <Route 
           path="/mis-reservas" 
           element={
@@ -126,7 +134,14 @@ function App() {
           } 
         />
     
-
+        <Route 
+          path="/admin/backups" 
+          element={
+            <SuperAdminRoute>
+              <GestionBackups />
+            </SuperAdminRoute>
+          } 
+        />  
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

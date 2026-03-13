@@ -124,11 +124,28 @@ function Login() {
                 minLength="8"
               />
             </div>
-          )}
+                    )}
 
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Cargando...' : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
-          </button>
+                    <button type="submit" className="btn-primary" disabled={loading}>
+                      {loading ? 'Cargando...' : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
+                    </button>
+                    <div className="form-footer" style={{ marginTop: '15px', textAlign: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/forgot-password')}
+                      className="btn-link"
+                      style={{ 
+                        background: 'none', 
+                        border: 'none', 
+                        color: '#667eea', 
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        textDecoration: 'underline'
+                    }}
+                    >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
         </form>
 
         <div className="toggle-form">
