@@ -18,7 +18,7 @@ import GestionBugReports from './pages/admin/GestionBugReports';
 import SuperAdminRoute from './components/SuperAdminRoute';
 
 import GestionAudits from './pages/admin/GestionAudits'; 
-import GestionLogs from './pages/admin/GestionBugReports'; 
+import GestionLogs from './pages/admin/GestionLogs';
 
 import GestionBackups from './pages/admin/GestionBackups';
 

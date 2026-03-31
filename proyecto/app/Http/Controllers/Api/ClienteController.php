@@ -10,7 +10,7 @@ class ClienteController extends Controller
 {
     public function index(Request $request)
 {
-    $perPage = $request->get('per_page', 15);
+    $perPage = min((int) $request->get('per_page', 15), 100); // máximo 100 registros por página
     $clientes = Cliente::with('turnos')->paginate($perPage);
     return response()->json($clientes);
 }
@@ -30,7 +30,9 @@ class ClienteController extends Controller
             'dni' => 'nullable|string|unique:clientes,dni',
         ]);
 
-        $cliente = Cliente::create($request->all());
+        $cliente = Cliente::create($request->only([
+            'nombre', 'apellido', 'email', 'telefono', 'dni',
+        ]));
 
         return response()->json($cliente, 201);
     }
@@ -47,7 +49,9 @@ class ClienteController extends Controller
             'dni' => 'nullable|string|unique:clientes,dni,' . $id,
         ]);
 
-        $cliente->update($request->all());
+        $cliente->update($request->only([
+            'nombre', 'apellido', 'email', 'telefono', 'dni',
+        ]));
 
         return response()->json($cliente);
     }

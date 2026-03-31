@@ -9,31 +9,31 @@ use App\Models\Turno;
 use App\Models\Cliente;
 use App\Models\Pago;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
     public function stats()
     {
-        $totalCanchas = Cancha::count();
-        $totalTurnos = Turno::count();
-        $totalClientes = Cliente::count();
-        $turnosPendientes = Turno::where('estado', 'pendiente')->count();
-        
-        // Ingresos del mes actual
-        $mesActual = Carbon::now()->month;
-        $añoActual = Carbon::now()->year;
-        
-        $ingresosMes = Pago::whereMonth('created_at', $mesActual)
-            ->whereYear('created_at', $añoActual)
-            ->where('estado', 'completado')
-            ->sum('monto');
-            
-        return response()->json([
-            'totalCanchas' => $totalCanchas,
-            'totalTurnos' => $totalTurnos,
-            'totalClientes' => $totalClientes,
-            'turnosPendientes' => $turnosPendientes,
-            'ingresosMes' => floatval($ingresosMes)
-        ]);
+        // Caché de 5 minutos para evitar recalcular en cada visita al panel
+        $stats = Cache::remember('dashboard.stats', 300, function () {
+            $mesActual = Carbon::now()->month;
+            $añoActual = Carbon::now()->year;
+
+            $ingresosMes = Pago::whereMonth('created_at', $mesActual)
+                ->whereYear('created_at', $añoActual)
+                ->where('estado', 'completado')
+                ->sum('monto');
+
+            return [
+                'totalCanchas'     => Cancha::count(),
+                'totalTurnos'      => Turno::count(),
+                'totalClientes'    => Cliente::count(),
+                'turnosPendientes' => Turno::where('estado', 'pendiente')->count(),
+                'ingresosMes'      => floatval($ingresosMes),
+            ];
+        });
+
+        return response()->json($stats);
     }
 }

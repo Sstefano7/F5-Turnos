@@ -10,9 +10,23 @@ use Carbon\Carbon;
 
 class HorarioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $horarios = Horario::with('cancha')->get();
+        $query = Horario::with('cancha');
+
+        // Filtro por cancha (recomendado para no cargar todos los horarios)
+        if ($request->has('cancha_id')) {
+            $query->where('cancha_id', $request->cancha_id);
+        }
+
+        // Filtro por día de la semana
+        if ($request->has('dia_semana')) {
+            $query->where('dia_semana', $request->dia_semana);
+        }
+
+        $perPage = min((int) $request->get('per_page', 50), 200);
+        $horarios = $query->paginate($perPage);
+
         return response()->json($horarios);
     }
 
@@ -32,7 +46,9 @@ class HorarioController extends Controller
             'disponible' => 'boolean',
         ]);
 
-        $horario = Horario::create($request->all());
+        $horario = Horario::create($request->only([
+            'cancha_id', 'hora_inicio', 'hora_fin', 'dia_semana', 'disponible',
+        ]));
 
         return response()->json($horario, 201);
     }
@@ -49,7 +65,9 @@ class HorarioController extends Controller
             'disponible' => 'boolean',
         ]);
 
-        $horario->update($request->all());
+        $horario->update($request->only([
+            'cancha_id', 'hora_inicio', 'hora_fin', 'dia_semana', 'disponible',
+        ]));
 
         return response()->json($horario);
     }

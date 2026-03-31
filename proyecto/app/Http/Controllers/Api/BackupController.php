@@ -69,18 +69,34 @@ class BackupController extends Controller
         return response()->json($backups);
     }
 
-    // 3. Descargar un backup específico (Queda igual, usando la ruta absoluta que solucionó la línea roja)
+    // 3. Descargar un backup específico con validación de path traversal
     public function download($fileName)
     {
+        // Sanitizar: extraer solo el nombre base, ignorar cualquier ruta
+        $fileName = basename($fileName);
+
+        // Solo permitir archivos .zip para evitar exponer otros archivos del servidor
+        if (pathinfo($fileName, PATHINFO_EXTENSION) !== 'zip') {
+            return response()->json(['error' => 'Tipo de archivo no permitido'], 403);
+        }
+
+        // Buscar solo dentro del directorio de backups (no en todo el storage)
         $files = Storage::disk('local')->allFiles();
-        
+
         foreach ($files as $file) {
             if (basename($file) === $fileName) {
                 $rutaAbsoluta = storage_path('app/' . $file);
+
+                // Verificar que la ruta absoluta está dentro del directorio storage
+                // para prevenir cualquier intento de path traversal residual
+                if (!str_starts_with(realpath($rutaAbsoluta), realpath(storage_path('app')))) {
+                    return response()->json(['error' => 'Acceso no permitido'], 403);
+                }
+
                 return response()->download($rutaAbsoluta);
             }
         }
-        
+
         return response()->json(['error' => 'Archivo de backup no encontrado'], 404);
     }
 }

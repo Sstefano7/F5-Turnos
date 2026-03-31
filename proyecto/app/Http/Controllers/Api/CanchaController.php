@@ -47,40 +47,40 @@ class CanchaController extends Controller
             'imagen' => 'nullable|string',
         ]);
 
-        $cancha = Cancha::create($request->all());
+        $cancha = Cancha::create($request->only([
+            'nombre', 'tipo', 'descripcion', 'precio_hora', 'activa', 'imagen',
+        ]));
 
         // Crear horarios automáticamente para la nueva cancha
+        // Optimizado: 1 sola query INSERT en lugar de 105 (7 días × 15 franjas)
         $dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        
-        $horarios = [
-            ['08:00', '09:00'],
-            ['09:00', '10:00'],
-            ['10:00', '11:00'],
-            ['11:00', '12:00'],
-            ['12:00', '13:00'],
-            ['13:00', '14:00'],
-            ['14:00', '15:00'],
-            ['15:00', '16:00'],
-            ['16:00', '17:00'],
-            ['17:00', '18:00'],
-            ['18:00', '19:00'],
-            ['19:00', '20:00'],
-            ['20:00', '21:00'],
-            ['21:00', '22:00'],
-            ['22:00', '23:00'],
+
+        $franjas = [
+            ['08:00', '09:00'], ['09:00', '10:00'], ['10:00', '11:00'],
+            ['11:00', '12:00'], ['12:00', '13:00'], ['13:00', '14:00'],
+            ['14:00', '15:00'], ['15:00', '16:00'], ['16:00', '17:00'],
+            ['17:00', '18:00'], ['18:00', '19:00'], ['19:00', '20:00'],
+            ['20:00', '21:00'], ['21:00', '22:00'], ['22:00', '23:00'],
         ];
 
+        $horariosAInsertar = [];
+        $ahora = now();
+
         foreach ($dias as $dia) {
-            foreach ($horarios as $horario) {
-                \App\Models\Horario::create([
-                    'cancha_id' => $cancha->id,
-                    'hora_inicio' => $horario[0],
-                    'hora_fin' => $horario[1],
-                    'dia_semana' => $dia,
-                    'disponible' => true,
-                ]);
+            foreach ($franjas as $franja) {
+                $horariosAInsertar[] = [
+                    'cancha_id'   => $cancha->id,
+                    'hora_inicio' => $franja[0],
+                    'hora_fin'    => $franja[1],
+                    'dia_semana'  => $dia,
+                    'disponible'  => true,
+                    'created_at'  => $ahora,
+                    'updated_at'  => $ahora,
+                ];
             }
         }
+
+        \App\Models\Horario::insert($horariosAInsertar); // 1 sola query
 
         return response()->json($cancha, 201);
     }
@@ -98,7 +98,9 @@ class CanchaController extends Controller
             'imagen' => 'nullable|string',
         ]);
 
-        $cancha->update($request->all());
+        $cancha->update($request->only([
+            'nombre', 'tipo', 'descripcion', 'precio_hora', 'activa', 'imagen',
+        ]));
 
         return response()->json($cancha);
     }

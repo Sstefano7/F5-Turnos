@@ -39,12 +39,9 @@ export const authService = {
         return !!localStorage.getItem('token');
     },
 
-    isAdmin: () => {
-        const user = localStorage.getItem('user');
-        if (!user) return false;
-        const userData = JSON.parse(user);
-        return userData.role === 'admin';
-    },
+    // NOTA: Para verificar roles (isAdmin, isSuperAdmin) usar siempre el AuthContext
+    // (useAuth hook) en lugar de este servicio, ya que el contexto tiene la lógica
+    // correcta y actualizada. authService solo maneja el almacenamiento del token.
 
         forgotPassword: async (email) => {
         const response = await api.post('/forgot-password', { email });

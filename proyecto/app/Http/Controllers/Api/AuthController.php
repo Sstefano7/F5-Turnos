@@ -122,16 +122,24 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Te hemos enviado un código de recuperación a tu email.',
-                'token_for_testing' => app()->environment('local') ? $token : null, // Solo en desarrollo
+                // Solo en local para facilitar el desarrollo sin email configurado
+                'token_for_testing' => app()->environment('local') ? $token : null,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Error al enviar email de recuperación: ' . $e->getMessage());
-            
+
+            // NUNCA exponer el token en producción, incluso si el email falla
+            if (app()->environment('local')) {
+                return response()->json([
+                    'message' => 'Email no configurado (modo desarrollo). Usa este token directamente.',
+                    'token_for_testing' => $token,
+                ]);
+            }
+
             return response()->json([
-                'message' => 'Email enviado (simulado en desarrollo)',
-                'token_for_testing' => $token, // Para desarrollo sin email configurado
-            ]);
+                'message' => 'Hubo un problema al enviar el email. Por favor intenta nuevamente más tarde.'
+            ], 500);
         }
     }
 

@@ -30,9 +30,9 @@ class BugReportController extends Controller
             $query->where('prioridad', $request->prioridad);
         }
 
-        // --- EL ÚNICO CAMBIO ES ESTA LÍNEA ---
-        // Cambiamos $query->paginate(15) por $query->get()
-        $reports = $query->get();
+        // Paginación para evitar cargar todos los reportes en memoria
+        $perPage = min((int) $request->get('per_page', 20), 100);
+        $reports = $query->paginate($perPage);
 
         return response()->json($reports);
     }

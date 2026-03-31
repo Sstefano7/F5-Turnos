@@ -52,11 +52,16 @@ class TurnoController extends Controller
             'observaciones' => 'nullable|string',
         ]);
 
-        // Verificar que no haya otro turno en ese horario
+        // Verificar que no haya otro turno que se solape en ese horario
         $turnoExistente = Turno::where('cancha_id', $request->cancha_id)
             ->whereDate('fecha', $request->fecha)
-            ->where('hora_inicio', $request->hora_inicio)
             ->whereIn('estado', ['pendiente', 'confirmado'])
+            ->where(function ($q) use ($request) {
+                // Hay solapamiento si: el turno existente empieza antes de que termine el nuevo
+                // Y termina después de que empiece el nuevo
+                $q->where('hora_inicio', '<', $request->hora_fin)
+                  ->where('hora_fin', '>', $request->hora_inicio);
+            })
             ->first();
 
         if ($turnoExistente) {
@@ -111,8 +116,11 @@ class TurnoController extends Controller
 
             $turnoExistente = Turno::where('cancha_id', $canchaId)
                 ->whereDate('fecha', $fecha)
-                ->where('hora_inicio', $horaInicio)
                 ->whereIn('estado', ['pendiente', 'confirmado'])
+                ->where(function ($q) use ($horaInicio, $horaFin) {
+                    $q->where('hora_inicio', '<', $horaFin)
+                      ->where('hora_fin', '>', $horaInicio);
+                })
                 ->where('id', '!=', $id)
                 ->first();
 
@@ -136,7 +144,11 @@ class TurnoController extends Controller
             $request->merge(['precio' => $cancha->precio_hora * $duracionHoras]);
         }
 
-        $turno->update($request->all());
+        $turno->update($request->only([
+            'cancha_id', 'cliente_id', 'fecha',
+            'hora_inicio', 'hora_fin', 'estado',
+            'observaciones', 'precio',
+        ]));
 
         return response()->json($turno->load(['cancha', 'cliente']));
     }
@@ -170,9 +182,20 @@ class TurnoController extends Controller
         return response()->json($turnos);
     }
 
-    public function cancelar($id)
+    public function cancelar($id, Request $request)
     {
         $turno = Turno::findOrFail($id);
+
+        // Verificar que el turno pertenece al usuario autenticado
+        // a menos que sea admin o superadmin
+        $user = $request->user();
+        $esAdmin = in_array($user->role, ['admin', 'superadmin']);
+
+        if (!$esAdmin && $turno->user_id !== $user->id) {
+            return response()->json([
+                'message' => 'No tenés permiso para cancelar este turno.'
+            ], 403);
+        }
 
         if ($turno->estado === 'cancelado') {
             return response()->json([

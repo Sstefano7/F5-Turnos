@@ -11,7 +11,7 @@ class PagoController extends Controller
 {
    public function index(Request $request)
     {
-    $perPage = $request->get('per_page', 15);
+    $perPage = min((int) $request->get('per_page', 15), 100); // máximo 100 registros por página
     $pagos = Pago::with(['turno.cancha', 'turno.cliente'])->paginate($perPage);
     return response()->json($pagos);
     }

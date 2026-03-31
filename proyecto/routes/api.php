@@ -14,10 +14,19 @@ use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
 
 // Rutas públicas (sin autenticación)
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+// Registro: máximo 3 intentos por minuto (evitar creación masiva de cuentas)
+Route::middleware('throttle:3,1')->post('/register', [AuthController::class, 'register']);
+
+// Login y recuperación: máximo 5 intentos por minuto (protección brute-force y spam)
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+});
+
+// Reset password: máximo 10 intentos por minuto
+Route::middleware('throttle:10,1')->post('/reset-password', [AuthController::class, 'resetPassword']);
+
 Route::post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs
 Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
@@ -37,11 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/mis-turnos', [TurnoController::class, 'misTurnos']);
     Route::patch('/turnos/{id}/cancelar', [TurnoController::class, 'cancelar']);
     
-    // Gestión de clientes (lectura para usuarios autenticados)
-    Route::get('/clientes', [ClienteController::class, 'index']);
-    Route::post('/clientes', [ClienteController::class, 'store']);
-    Route::get('/clientes/{id}', [ClienteController::class, 'show']);
-    
     // --- RUTAS DE ADMINISTRADOR NORMAL ---
     Route::middleware('admin')->group(function () {
 
@@ -54,11 +58,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/canchas/{id}', [CanchaController::class, 'update']);
         Route::delete('/canchas/{id}', [CanchaController::class, 'destroy']);
         
-        // Gestión de turnos
+        // Gestión de turnos (admin)
         Route::put('/turnos/{id}', [TurnoController::class, 'update']);
         Route::delete('/turnos/{id}', [TurnoController::class, 'destroy']);
         
-        // Gestión de clientes
+        // Gestión de clientes (solo admin — contiene datos personales: DNI, teléfono, email)
+        Route::get('/clientes', [ClienteController::class, 'index']);
+        Route::post('/clientes', [ClienteController::class, 'store']);
+        Route::get('/clientes/{id}', [ClienteController::class, 'show']);
         Route::put('/clientes/{id}', [ClienteController::class, 'update']);
         Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
         
