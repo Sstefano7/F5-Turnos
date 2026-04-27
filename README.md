@@ -6,11 +6,12 @@ Sistema web completo para la gestión de reservas de canchas de fútbol 5 y pád
 
 - **Sistema de Autenticación**: Login y registro con roles (Usuario/Admin)
 - **Gestión de Canchas**: CRUD completo de canchas deportivas
-- **Sistema de Reservas**: Reserva de turnos con selección de fecha y horario
-- **Gestión de Pagos**: Registro y seguimiento de pagos
+- **Sistema de Reservas**: Reserva de turnos con selección de fecha y horario y sistema de señas
+- **Gestión de Pagos**: Integración con MercadoPago (pagos y webhooks)
 - **Panel de Administración**: Dashboard con estadísticas en tiempo real
+- **Generación de PDFs**: Recibos y reportes descargables
 - **Reportes de Bugs**: Sistema integrado para reportar problemas
-- **Auditoría**: Registro de todas las acciones importantes
+- **Auditoría y Backups**: Registro de acciones y copias de seguridad de BD
 - **Paginación**: Manejo eficiente de grandes volúmenes de datos
 - **Responsive**: Diseño adaptable a dispositivos móviles
 
@@ -22,12 +23,16 @@ Sistema web completo para la gestión de reservas de canchas de fútbol 5 y pád
 - MySQL
 - Laravel Sanctum (Autenticación API)
 - Laravel Auditing (Logs)
+- MercadoPago SDK (Integración de Pagos)
+- Laravel DOMPDF (Generación de PDFs)
+- Spatie Backup (Copias de seguridad)
 
 ### Frontend
-- React 18
+- React 19
 - Vite
 - React Router DOM
 - Axios
+- SweetAlert2
 - CSS3
 
 ## 📦 Requisitos Previos
@@ -69,6 +74,7 @@ APP_NAME="Gestión de Turnos"
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
+APP_FRONTEND_URL=http://localhost:5173
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -78,6 +84,15 @@ DB_USERNAME=root
 DB_PASSWORD=
 
 ADMIN_EMAIL=tu-email@gmail.com
+
+# ─── MercadoPago ─────────────────────────────────────────────────────────────
+MP_PUBLIC_KEY=TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+MP_ACCESS_TOKEN=TEST-0000000000000000-000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-000000000
+MP_WEBHOOK_SECRET=
+
+# ─── Sistema de Seña ─────────────────────────────────────────────────────────
+SENIA_PORCENTAJE=30
+SENIA_MINUTOS_EXPIRACION=15
 ```
 
 #### 2.3. Generar key de aplicación

@@ -162,6 +162,14 @@
   color: #0c5460;
 }
 
+.estado-pendiente-senia {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
 .turno-info {
   display: grid;
   gap: 12px;

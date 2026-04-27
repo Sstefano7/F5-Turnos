@@ -8,10 +8,11 @@ use App\Http\Controllers\Api\TurnoController;
 use App\Http\Controllers\Api\ClienteController;
 use App\Http\Controllers\Api\HorarioController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\LogController; 
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\Api\BugReportController;
 use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\MercadoPagoController;
 
 // Rutas públicas (sin autenticación)
 
@@ -32,6 +33,9 @@ Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
 
+// Webhook de MercadoPago (público — MP lo llama desde sus servidores)
+Route::post('/mp/webhook', [MercadoPagoController::class, 'webhook']);
+
 // Rutas protegidas (requieren autenticación)
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -45,6 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/turnos/{id}', [TurnoController::class, 'show']);
     Route::get('/mis-turnos', [TurnoController::class, 'misTurnos']);
     Route::patch('/turnos/{id}/cancelar', [TurnoController::class, 'cancelar']);
+
+    // Sistema de seña con MercadoPago
+    Route::post('/turnos/{id}/iniciar-pago', [MercadoPagoController::class, 'crearPreferencia']);
+    Route::get('/turnos/{id}/estado-pago', [MercadoPagoController::class, 'estadoPago']);
     
     // --- RUTAS DE ADMINISTRADOR NORMAL ---
     Route::middleware('admin')->group(function () {

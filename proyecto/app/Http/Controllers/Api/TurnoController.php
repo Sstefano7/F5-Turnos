@@ -70,28 +70,43 @@ class TurnoController extends Controller
             ], 422);
         }
 
-        // Calcular el precio (CORREGIDO: siempre positivo y soporta decimales)
+        // Calcular el precio total
         $cancha = Cancha::findOrFail($request->cancha_id);
         $horaInicio = Carbon::parse($request->hora_inicio);
-        $horaFin = Carbon::parse($request->hora_fin);
-        
-        // Usamos diffInMinutes y dividimos por 60 para exactitud (ej: 1.5 horas)
-        $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60; 
-        $precio = $cancha->precio_hora * $duracionHoras;
+        $horaFin    = Carbon::parse($request->hora_fin);
+        $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
+        $precioTotal   = round($cancha->precio_hora * $duracionHoras, 2);
+
+        // Calcular seña y monto restante
+        $porcentajeSenia = (int) env('SENIA_PORCENTAJE', 30);
+        $montoSenia      = round($precioTotal * $porcentajeSenia / 100, 2);
+        $montoRestante   = round($precioTotal - $montoSenia, 2);
+        $minutosExpiracion = (int) env('SENIA_MINUTOS_EXPIRACION', 15);
 
         $turno = Turno::create([
-            'cancha_id' => $request->cancha_id,
-            'cliente_id' => $request->cliente_id,
-            'user_id' => $request->user() ? $request->user()->id : null,
-            'fecha' => $request->fecha,
-            'hora_inicio' => $request->hora_inicio,
-            'hora_fin' => $request->hora_fin,
-            'precio' => $precio,
-            'estado' => 'pendiente',
-            'observaciones' => $request->observaciones,
+            'cancha_id'       => $request->cancha_id,
+            'cliente_id'      => $request->cliente_id,
+            'user_id'         => $request->user() ? $request->user()->id : null,
+            'fecha'           => $request->fecha,
+            'hora_inicio'     => $request->hora_inicio,
+            'hora_fin'        => $request->hora_fin,
+            'precio'          => $precioTotal,
+            'monto_senia'     => $montoSenia,
+            'monto_restante'  => $montoRestante,
+            'senia_vence_en'  => now()->addMinutes($minutosExpiracion),
+            'estado'          => 'pendiente_senia',
+            'observaciones'   => $request->observaciones,
         ]);
 
-        return response()->json($turno->load(['cancha', 'cliente']), 201);
+        return response()->json([
+            'turno'           => $turno->load(['cancha', 'cliente']),
+            'precio_total'    => $precioTotal,
+            'monto_senia'     => $montoSenia,
+            'monto_restante'  => $montoRestante,
+            'porcentaje_senia'=> $porcentajeSenia,
+            'senia_vence_en'  => $turno->senia_vence_en,
+            'minutos_para_pagar' => $minutosExpiracion,
+        ], 201);
     }
 
     public function update(Request $request, $id)
