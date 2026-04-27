@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { pagoService } from '../../services/pagoService';
 import { turnoService } from '../../services/turnoService';
 import { useDashboard } from '../../context/DashboardContext';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/GestionPagos.css';
 import Pagination from '../../components/Pagination';
 
@@ -12,6 +13,7 @@ function GestionPagos() {
   const [estadisticas, setEstadisticas] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [editingPago, setEditingPago] = useState(null);
   const [formData, setFormData] = useState({
     turno_id: '',
@@ -22,18 +24,22 @@ function GestionPagos() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { triggerRefresh } = useDashboard();
+  const { isSuperAdmin } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchData(1, searchTerm);
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
-const fetchData = async (page = 1) => {
+const fetchData = async (page = 1, search = searchTerm) => {
   try {
     const [pagosResponse, turnosData, statsData] = await Promise.all([
-      pagoService.getAll({ page, per_page: 15 }),
+      pagoService.getAll({ page, per_page: 15, search }),
       turnoService.getAll(),
       pagoService.getEstadisticas()
     ]);
@@ -66,12 +72,14 @@ const fetchData = async (page = 1) => {
   try {
     if (editingPago) {
       await pagoService.update(editingPago.id, formData);
+      window.alert('✅ ¡Pago actualizado con éxito!');
     } else {
       await pagoService.create(formData);
       
       if ((formData.estado === 'confirmado' || formData.estado === 'completado') && formData.turno_id) {
         await turnoService.update(formData.turno_id, { estado: 'confirmado' });
       }
+      window.alert('✅ ¡Pago registrado con éxito!');
     }
     
     setShowModal(false);
@@ -178,15 +186,26 @@ const fetchData = async (page = 1) => {
           ← Volver al Panel
         </button>
         <h1>Gestión de Pagos</h1>
-        <button 
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
-          className="btn-add"
-        >
-          + Registrar Pago
-        </button>
+        
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <input 
+            type="text" 
+            placeholder="Buscar por ID, cliente, cancha..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="form-input"
+            style={{ width: '250px', margin: 0 }}
+          />
+          <button 
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+            className="btn-add"
+          >
+            + Registrar Pago
+          </button>
+        </div>
       </header>
 
       <div className="gestion-content">
@@ -288,18 +307,22 @@ const fetchData = async (page = 1) => {
                         : '-'}
                     </td>
                     <td className="acciones">
-                      <button 
-                        onClick={() => handleEdit(pago)}
-                        className="btn-edit"
-                      >
-                        Editar
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(pago.id)}
-                        className="btn-delete"
-                      >
-                        Eliminar
-                      </button>
+                      {pago.estado !== 'completado' && (
+                        <button 
+                          onClick={() => handleEdit(pago)}
+                          className="btn-edit"
+                        >
+                          Editar
+                        </button>
+                      )}
+                      {isSuperAdmin() && (
+                        <button 
+                          onClick={() => handleDelete(pago.id)}
+                          className="btn-delete"
+                        >
+                          Eliminar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

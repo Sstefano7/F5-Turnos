@@ -9,11 +9,23 @@ use Illuminate\Http\Request;
 class ClienteController extends Controller
 {
     public function index(Request $request)
-{
-    $perPage = min((int) $request->get('per_page', 15), 100); // máximo 100 registros por página
-    $clientes = Cliente::with('turnos')->paginate($perPage);
-    return response()->json($clientes);
-}
+    {
+        $perPage = min((int) $request->get('per_page', 15), 100);
+        $query = Cliente::with('turnos');
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('dni', 'like', "%{$searchTerm}%")
+                  ->orWhere('nombre', 'like', "%{$searchTerm}%")
+                  ->orWhere('apellido', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $clientes = $query->paginate($perPage);
+        return response()->json($clientes);
+    }
     public function show($id)
     {
         $cliente = Cliente::with('turnos.cancha')->findOrFail($id);

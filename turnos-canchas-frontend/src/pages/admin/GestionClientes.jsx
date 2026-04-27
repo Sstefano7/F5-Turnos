@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clienteService } from '../../services/clienteService';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/GestionClientes.css';
 import Pagination from '../../components/Pagination';
 
 function GestionClientes() {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { isSuperAdmin } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
-    fetchClientes();
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      fetchClientes(1, searchTerm);
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
 
- const fetchClientes = async (page = 1) => {
+ const fetchClientes = async (page = 1, search = searchTerm) => {
   try {
-    const response = await clienteService.getAll({ page, per_page: 15 });
+    const response = await clienteService.getAll({ page, per_page: 15, search });
     setClientes(response.data);
     setCurrentPage(response.current_page);
     setLastPage(response.last_page);
@@ -56,6 +62,16 @@ function GestionClientes() {
           ← Volver al Panel
         </button>
         <h1>Gestión de Clientes</h1>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <input 
+            type="text" 
+            placeholder="Buscar por DNI, Nombre o Email..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="form-input"
+            style={{ width: '280px', margin: 0 }}
+          />
+        </div>
       </header>
 
       <div className="gestion-content">
@@ -95,12 +111,14 @@ function GestionClientes() {
                       </span>
                     </td>
                     <td className="acciones">
-                      <button
-                        onClick={() => handleEliminar(cliente.id)}
-                        className="btn-delete"
-                      >
-                        Eliminar
-                      </button>
+                      {isSuperAdmin() && (
+                        <button
+                          onClick={() => handleEliminar(cliente.id)}
+                          className="btn-delete"
+                        >
+                          Eliminar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

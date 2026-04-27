@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { canchaService } from '../../services/canchaService';
 import '../../styles/GestionCanchas.css';
 import Swal from 'sweetalert2';
+import { useAuth } from '../../context/AuthContext';
 
 function GestionCanchas() {
   const [canchas, setCanchas] = useState([]);
@@ -18,6 +19,7 @@ function GestionCanchas() {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { isSuperAdmin } = useAuth();
 
   useEffect(() => {
     fetchCanchas();
@@ -177,12 +179,14 @@ function GestionCanchas() {
                     >
                       Editar
                     </button>
-                    <button 
-                      onClick={() => handleDelete(cancha.id)}
-                      className="btn-delete"
-                    >
-                      Eliminar
-                    </button>
+                    {isSuperAdmin() && (
+                      <button 
+                        onClick={() => handleDelete(cancha.id)}
+                        className="btn-delete"
+                      >
+                        Eliminar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

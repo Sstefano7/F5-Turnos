@@ -71,29 +71,74 @@ function Home() {
         </header>
 
       <main className="main-content">
-        <h2>Canchas Disponibles</h2>
-        <div className="canchas-grid">
-          {canchas.map((cancha) => (
-            <div key={cancha.id} className="cancha-card">
-              <div className="cancha-header">
-                <h3>{cancha.nombre}</h3>
-                <span className={`tipo-badge ${cancha.tipo}`}>
-                  {cancha.tipo === 'futbol5' ? 'Fútbol 5' : 'Pádel'}
-                </span>
-              </div>
-              <p className="cancha-descripcion">{cancha.descripcion}</p>
-              <div className="cancha-footer">
-                <p className="precio">${cancha.precio_hora} / hora</p>
-                <button 
-                  className="btn-reservar"
-                  onClick={() => navigate(`/reservar/${cancha.id}`)}
-                >
-                  Reservar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        {(() => {
+          const canchasF5 = canchas.filter(c => c.tipo === 'futbol5');
+          const canchasPadel = canchas.filter(c => c.tipo === 'padel');
+          
+          return (
+            <>
+              {canchasF5.length > 0 && (
+                <div className="cancha-section">
+                  <h2 style={{ textAlign: 'left', marginBottom: '20px', color: '#1e293b', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
+                    ⚽ Canchas de Fútbol 5
+                  </h2>
+                  <div className="canchas-grid">
+                    {canchasF5.map((cancha) => (
+                      <div key={cancha.id} className="cancha-card">
+                        <div className="cancha-header">
+                          <h3>{cancha.nombre}</h3>
+                          <span className={`tipo-badge ${cancha.tipo}`}>Fútbol 5</span>
+                        </div>
+                        <p className="cancha-descripcion">{cancha.descripcion}</p>
+                        <div className="cancha-footer">
+                          <p className="precio">${cancha.precio_hora} / hora</p>
+                          <button 
+                            className="btn-reservar"
+                            onClick={() => navigate(`/reservar/${cancha.id}`)}
+                          >
+                            Reservar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {canchasPadel.length > 0 && (
+                <div className="cancha-section" style={{ marginTop: '50px' }}>
+                  <h2 style={{ textAlign: 'left', marginBottom: '20px', color: '#1e293b', borderBottom: '2px solid #e2e8f0', paddingBottom: '10px' }}>
+                    🎾 Canchas de Pádel
+                  </h2>
+                  <div className="canchas-grid">
+                    {canchasPadel.map((cancha) => (
+                      <div key={cancha.id} className="cancha-card">
+                        <div className="cancha-header">
+                          <h3>{cancha.nombre}</h3>
+                          <span className={`tipo-badge ${cancha.tipo}`}>Pádel</span>
+                        </div>
+                        <p className="cancha-descripcion">{cancha.descripcion}</p>
+                        <div className="cancha-footer">
+                          <p className="precio">${cancha.precio_hora} / hora</p>
+                          <button 
+                            className="btn-reservar"
+                            onClick={() => navigate(`/reservar/${cancha.id}`)}
+                          >
+                            Reservar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {canchas.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#64748b' }}>No hay canchas disponibles en este momento.</p>
+              )}
+            </>
+          );
+        })()}
       </main>
     </div>
   );

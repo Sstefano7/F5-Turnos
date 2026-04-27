@@ -1,65 +1,15 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useDashboard } from '../../context/DashboardContext';
-import { dashboardService } from '../../services/dashboardService';
 import '../../styles/AdminDashboard.css';
 
 function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalCanchas: 0,
-    totalTurnos: 0,
-    totalClientes: 0,
-    turnosPendientes: 0,
-    ingresosMes: 0
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { user, logout, isSuperAdmin } = useAuth();
-  const { refreshDashboard } = useDashboard();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchStats();
-  }, [refreshDashboard]);
-
-  const fetchStats = async () => {
-    try {
-      const statsData = await dashboardService.getStats();
-      setStats({
-        totalCanchas: statsData?.totalCanchas || 0,
-        totalTurnos: statsData?.totalTurnos || 0,
-        totalClientes: statsData?.totalClientes || 0,
-        turnosPendientes: statsData?.turnosPendientes || 0,
-        ingresosMes: statsData?.ingresosMes || 0
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
-      setError('Error al cargar las estadísticas del dashboard');
-      setLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
-
-  if (loading) {
-    return <div className="loading">Cargando panel de administración...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <div className="error-message">{error}</div>
-        <button onClick={() => navigate('/')} className="btn-primary">
-          Volver al Inicio
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="admin-dashboard">
@@ -76,51 +26,18 @@ function AdminDashboard() {
       </header>
 
       <div className="admin-content">
-        <div className="stats-grid">
-          <div className="stat-card blue">
-            <div className="stat-icon">🏟️</div>
-            <div className="stat-info">
-              <h3>{stats.totalCanchas}</h3>
-              <p>Canchas</p>
-            </div>
-          </div>
-
-          <div className="stat-card green">
-            <div className="stat-icon">📅</div>
-            <div className="stat-info">
-              <h3>{stats.totalTurnos}</h3>
-              <p>Turnos Totales</p>
-            </div>
-          </div>
-
-          <div className="stat-card orange">
-            <div className="stat-icon">⏳</div>
-            <div className="stat-info">
-              <h3>{stats.turnosPendientes}</h3>
-              <p>Turnos Pendientes</p>
-            </div>
-          </div>
-
-          <div className="stat-card purple">
-            <div className="stat-icon">👥</div>
-            <div className="stat-info">
-              <h3>{stats.totalClientes}</h3>
-              <p>Clientes</p>
-            </div>
-          </div>
-
-          <div className="stat-card red">
-            <div className="stat-icon">💰</div>
-            <div className="stat-info">
-              <h3>${(stats.ingresosMes || 0).toFixed(2)}</h3>
-              <p>Ingresos del Mes</p>
-            </div>
-          </div>
-        </div>
-
         <div className="admin-menu">
           <h2>Gestión</h2>
           <div className="menu-grid">
+            <button 
+              className="menu-card"
+              onClick={() => navigate('/admin/estadisticas')}
+            >
+              <div className="menu-icon">📊</div>
+              <h3>Ver Estadísticas</h3>
+              <p>Resumen de canchas, turnos e ingresos</p>
+            </button>
+
             <button 
               className="menu-card"
               onClick={() => navigate('/admin/canchas')}
@@ -171,8 +88,8 @@ function AdminDashboard() {
               className="menu-card super-admin-card"
               onClick={() => navigate('/admin/bug-reports')}
             >
-              <div className="menu-icon">🐛</div>
-              <h3>Reportes de Bugs</h3>
+              <div className="menu-icon">⚠️</div>
+              <h3>Reportes de Errores</h3>
               <p>Ver y gestionar reportes</p>
               <span className="superadmin-badge">Super Admin</span>
             </button>

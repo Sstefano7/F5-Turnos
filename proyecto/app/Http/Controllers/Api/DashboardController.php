@@ -15,8 +15,8 @@ class DashboardController extends Controller
 {
     public function stats()
     {
-        // Caché de 5 minutos para evitar recalcular en cada visita al panel
-        $stats = Cache::remember('dashboard.stats', 300, function () {
+        // Caché de 10 segundos para evitar recalcular masivamente, pero mantener frescura
+        $stats = Cache::remember('dashboard.stats', 10, function () {
             $mesActual = Carbon::now()->month;
             $añoActual = Carbon::now()->year;
 

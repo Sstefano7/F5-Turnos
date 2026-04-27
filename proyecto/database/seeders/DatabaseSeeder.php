@@ -9,6 +9,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Crear usuario super administrador
+        User::create([
+            'name' => 'Super Administrador',
+            'email' => 'superadmin@canchas.com',
+            'password' => bcrypt('password123'),
+            'role' => 'superadmin',
+        ]);
+
         // Crear usuario administrador
         User::create([
             'name' => 'Administrador',

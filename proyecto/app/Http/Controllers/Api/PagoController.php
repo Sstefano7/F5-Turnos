@@ -11,9 +11,29 @@ class PagoController extends Controller
 {
    public function index(Request $request)
     {
-    $perPage = min((int) $request->get('per_page', 15), 100); // máximo 100 registros por página
-    $pagos = Pago::with(['turno.cancha', 'turno.cliente'])->paginate($perPage);
-    return response()->json($pagos);
+        $perPage = min((int) $request->get('per_page', 15), 100);
+        $query = Pago::with(['turno.cancha', 'turno.cliente']);
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                // Buscar por ID de pago o estado
+                $q->where('id', 'like', "%{$searchTerm}%")
+                  ->orWhere('estado', 'like', "%{$searchTerm}%")
+                  // Buscar relaciones
+                  ->orWhereHas('turno.cliente', function($clientQuery) use ($searchTerm) {
+                      $clientQuery->where('nombre', 'like', "%{$searchTerm}%")
+                                  ->orWhere('apellido', 'like', "%{$searchTerm}%")
+                                  ->orWhere('dni', 'like', "%{$searchTerm}%");
+                  })
+                  ->orWhereHas('turno.cancha', function($canchaQuery) use ($searchTerm) {
+                      $canchaQuery->where('nombre', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $pagos = $query->paginate($perPage);
+        return response()->json($pagos);
     }
 
     public function show($id)

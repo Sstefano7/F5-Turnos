@@ -328,7 +328,7 @@ const handleExportarPDF = async () => {
         <button onClick={() => navigate('/admin')} className="btn-back">
           ← Volver al Panel
         </button>
-        <h1>Gestión de Reportes de Bugs</h1>
+        <h1>Gestión de Reportes de Errores</h1>
       </header>
 
       <div className="gestion-content">
@@ -340,7 +340,7 @@ const handleExportarPDF = async () => {
               <label>Tipo</label>
               <select name="tipo" value={filtros.tipo} onChange={handleFiltroChange}>
                 <option value="">Todos</option>
-                <option value="bug">Bug</option>
+                <option value="bug">Error</option>
                 <option value="mejora">Mejora</option>
                 <option value="pregunta">Pregunta</option>
               </select>
@@ -532,7 +532,7 @@ const handleExportarPDF = async () => {
                 onClick={handleExportarPDF} 
                 style={{ backgroundColor: '#222', color: '#fff', padding: '10px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', transition: '0.3s' }}
             >
-                <span>🐛</span> Exportar Bugs a PDF
+                <span>⚠️</span> Exportar Errores a PDF
             </button>
 
             {/* Botón de Logs */}

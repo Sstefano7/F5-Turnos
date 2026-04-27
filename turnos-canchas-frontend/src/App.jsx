@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
@@ -6,6 +6,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Reservar from './pages/Reservar';
 import MisReservas from './pages/MisReservas';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Estadisticas from './pages/admin/Estadisticas';
 import GestionCanchas from './pages/admin/GestionCanchas';
 import GestionTurnos from './pages/admin/GestionTurnos';
 import GestionClientes from './pages/admin/GestionClientes';
@@ -13,7 +14,8 @@ import GestionHorarios from './pages/admin/GestionHorarios';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import GestionPagos from './pages/admin/GestionPagos';
-import ReportBugButton from './components/ReportBugButton';
+import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 import GestionBugReports from './pages/admin/GestionBugReports';
 import SuperAdminRoute from './components/SuperAdminRoute';
 
@@ -25,9 +27,13 @@ import GestionBackups from './pages/admin/GestionBackups';
 
 
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <> {/* <--- Abrimos Fragmento */}
-      <Routes>
+      <main className="main-content">
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -57,6 +63,15 @@ function App() {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          } 
+        />
+
+        <Route 
+          path="/admin/estadisticas" 
+          element={
+            <AdminRoute>
+              <Estadisticas />
             </AdminRoute>
           } 
         />
@@ -145,9 +160,13 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </main>
 
-      {/* ✅ Ahora el botón está DENTRO de la función y AFUERA de las rutas */}
-      <ReportBugButton />
+      {/* Footer principal que incluye el botón de reportar bug */}
+      <Footer />
+
+      {/* Chatbot guiado flotante */}
+      {!isAdminRoute && <Chatbot />}
     </> 
   );
 }

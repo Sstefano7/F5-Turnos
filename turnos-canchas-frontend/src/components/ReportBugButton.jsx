@@ -60,7 +60,7 @@ function ReportBugButton() {
         onClick={() => setShowModal(true)}
         title="Reportar un problema"
       >
-        🐛 Reportar Bug
+        ⚠️ Reportar Error
       </button>
 
       {showModal && (
@@ -89,7 +89,7 @@ function ReportBugButton() {
                     onChange={handleChange}
                     required
                   >
-                    <option value="bug">🐛 Bug / Error</option>
+                    <option value="bug">⚠️ Error del Sistema</option>
                     <option value="mejora">💡 Sugerencia de Mejora</option>
                     <option value="pregunta">❓ Pregunta</option>
                   </select>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { turnoService } from '../../services/turnoService';
 import { useDashboard } from '../../context/DashboardContext';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/GestionTurnos.css';
 import Pagination from '../../components/Pagination';
 
@@ -17,6 +18,7 @@ function GestionTurnos() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { triggerRefresh } = useDashboard();
+  const { isSuperAdmin } = useAuth();
   
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -251,12 +253,14 @@ function GestionTurnos() {
                           )}
                         </select>
                       </div>
-                      <button
-                        onClick={() => handleEliminar(turno.id)}
-                        className="btn-delete"
-                      >
-                        Eliminar
-                      </button>
+                      {isSuperAdmin() && (
+                        <button
+                          onClick={() => handleEliminar(turno.id)}
+                          className="btn-delete"
+                        >
+                          Eliminar
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))

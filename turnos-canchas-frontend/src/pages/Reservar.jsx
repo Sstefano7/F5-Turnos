@@ -22,6 +22,9 @@ function Reservar() {
   const [loadingHorarios, setLoadingHorarios] = useState(false);
   const [loadingPago, setLoadingPago] = useState(false);
   const [error, setError] = useState('');
+  
+  const [buscandoDni, setBuscandoDni] = useState(false);
+  const [dniEncontrado, setDniEncontrado] = useState(false);
 
   // Estado del flujo de pago
   const [turnoCreado, setTurnoCreado] = useState(null);
@@ -41,6 +44,47 @@ function Reservar() {
       .then(data => { setCancha(data); setLoading(false); })
       .catch(() => { setError('Error al cargar la cancha'); setLoading(false); });
   }, [id]);
+
+  // Efecto para autocompletar datos si el DNI ya existe
+  useEffect(() => {
+    const dni = clienteData.dni;
+    if (dni && dni.length >= 7) {
+      const delay = setTimeout(async () => {
+        setBuscandoDni(true);
+        try {
+          // Buscamos usando el nuevo endpoint de búsqueda en el backend
+          const response = await clienteService.getAll({ search: dni });
+          const clientes = Array.isArray(response) ? response : response.data;
+          
+          if (clientes && clientes.length > 0) {
+            // Coincidencia exacta por DNI
+            const clienteMatch = clientes.find(c => c.dni === dni);
+            if (clienteMatch) {
+              setClienteData(prev => ({
+                ...prev,
+                nombre: clienteMatch.nombre,
+                apellido: clienteMatch.apellido,
+                email: clienteMatch.email,
+                telefono: clienteMatch.telefono
+              }));
+              setDniEncontrado(true);
+            } else {
+              setDniEncontrado(false);
+            }
+          } else {
+            setDniEncontrado(false);
+          }
+        } catch (err) {
+          console.error("Error buscando cliente:", err);
+        } finally {
+          setBuscandoDni(false);
+        }
+      }, 600);
+      return () => clearTimeout(delay);
+    } else {
+      setDniEncontrado(false);
+    }
+  }, [clienteData.dni]);
 
   useEffect(() => {
     if (fecha && cancha) fetchHorarios();
@@ -335,14 +379,18 @@ function Reservar() {
 
           {horarioSeleccionado && (
             <div className="form-section">
-              <h3>3. Tus datos</h3>
+              <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>3. Tus datos</span>
+                {buscandoDni && <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>Buscando... ⏳</span>}
+                {dniEncontrado && <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 'normal', background: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>Datos autocompletados ✅</span>}
+              </h3>
               <div className="form-grid">
                 {[
+                  { label: 'DNI', name: 'dni', type: 'text' },
                   { label: 'Nombre *', name: 'nombre', type: 'text' },
                   { label: 'Apellido *', name: 'apellido', type: 'text' },
                   { label: 'Email *', name: 'email', type: 'email' },
                   { label: 'Teléfono *', name: 'telefono', type: 'tel' },
-                  { label: 'DNI', name: 'dni', type: 'text' },
                 ].map(({ label, name, type }) => (
                   <div className="form-group" key={name}>
                     <label>{label}</label>
@@ -352,6 +400,8 @@ function Reservar() {
                       value={clienteData[name]}
                       onChange={handleClienteChange}
                       required={label.includes('*')}
+                      placeholder={name === 'dni' ? 'Ingresá tu DNI para autocompletar...' : ''}
+                      style={name === 'dni' && dniEncontrado ? { borderColor: '#16a34a', background: '#f0fdf4' } : {}}
                     />
                   </div>
                 ))}

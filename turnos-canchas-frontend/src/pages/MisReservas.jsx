@@ -28,6 +28,10 @@ function MisReservas() {
         pendiente:{ tipo: 'warning', texto: '⏳ Tu pago está siendo procesado. Actualizaremos tu reserva pronto.' },
       };
       setPagoNotif(mensajes[pago] || null);
+      
+      if (pago === 'exitoso') {
+        window.alert('✅ ¡Pago registrado con éxito! Tu turno fue confirmado.');
+      }
       // Limpiar los query params de la URL sin recargar
       window.history.replaceState({}, '', '/mis-reservas');
     }
