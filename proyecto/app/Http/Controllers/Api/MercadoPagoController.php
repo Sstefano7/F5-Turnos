@@ -123,11 +123,26 @@ class MercadoPagoController extends Controller
             $dataId       = $request->query('data.id') ?? $request->input('data.id');
 
             if ($xSignature && $xRequestId && $dataId) {
-                $manifest = "id:{$dataId};request-id:{$xRequestId};";
-                $sha       = hash_hmac('sha256', $manifest, $secret);
-                $expected  = "ts=" . explode(',', $xSignature)[0] . ",v1={$sha}";
+                // Formato esperado: ts=<timestamp>,v1=<hash>
+                $parts = explode(',', $xSignature);
+                $signatureParts = [];
+                foreach ($parts as $part) {
+                    $item = explode('=', $part, 2);
+                    if (count($item) === 2) {
+                        $signatureParts[$item[0]] = $item[1];
+                    }
+                }
 
-                if (!hash_equals($expected, $xSignature)) {
+                $receivedHash = $signatureParts['v1'] ?? null;
+                if (!$receivedHash) {
+                    Log::warning('Webhook MP: no se encontró v1 en la firma');
+                    return response()->json(['error' => 'Firma inválida'], 400);
+                }
+
+                $manifest = "id:{$dataId};request-id:{$xRequestId};";
+                $expectedHash = hash_hmac('sha256', $manifest, $secret);
+
+                if (!hash_equals($expectedHash, $receivedHash)) {
                     Log::warning('Webhook MP con firma inválida');
                     return response()->json(['error' => 'Firma inválida'], 400);
                 }
