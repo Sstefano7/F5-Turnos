@@ -60,8 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dashboard
         Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
         
-        // Gestión de canchas
-        Route::get('/canchas/paginated', [CanchaController::class, 'indexPaginated']);
+        // Gestión de canchas (usar ?per_page= para paginación en index)
         Route::post('/canchas', [CanchaController::class, 'store']);
         Route::put('/canchas/{id}', [CanchaController::class, 'update']);
         Route::delete('/canchas/{id}', [CanchaController::class, 'destroy']);
