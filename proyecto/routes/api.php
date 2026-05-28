@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\BugReportController;
 use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MercadoPagoController;
+use App\Http\Controllers\Api\BackupScheduleController;
 
 // Rutas públicas (sin autenticación)
 
@@ -118,5 +119,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/backups', [\App\Http\Controllers\Api\BackupController::class, 'index']);
         Route::post('/backups/create', [\App\Http\Controllers\Api\BackupController::class, 'create']);
         Route::get('/backups/download/{filename}', [\App\Http\Controllers\Api\BackupController::class, 'download']);
+        Route::get('/backups/schedule', [BackupScheduleController::class, 'index']);
+        Route::post('/backups/schedule', [BackupScheduleController::class, 'store']);
+        Route::put('/backups/schedule/{id}', [BackupScheduleController::class, 'update']);
+        Route::delete('/backups/schedule/{id}', [BackupScheduleController::class, 'destroy']);
     });
 });
