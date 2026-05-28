@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import Swal from 'sweetalert2';
+import backupScheduleService from '../../services/backupScheduleService';
+
+const DIAS = [
+  'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'
+];
 
 function GestionBackups() {
   const [backups, setBackups] = useState([]);
@@ -10,6 +15,10 @@ function GestionBackups() {
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [schedules, setSchedules] = useState([]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState({ dia_semana: 'lunes', hora: '08:00', activo: true });
 
   const fetchBackups = async () => {
     setLoading(true);
@@ -27,8 +36,18 @@ function GestionBackups() {
     }
   };
 
+  const fetchSchedules = async () => {
+    try {
+      const data = await backupScheduleService.getAll();
+      setSchedules(data);
+    } catch (error) {
+      console.error('Error al cargar programaciones:', error);
+    }
+  };
+
   useEffect(() => {
     fetchBackups();
+    fetchSchedules();
   }, []);
 
 const crearBackup = async () => {
@@ -49,10 +68,9 @@ const crearBackup = async () => {
       });
       
       Swal.fire('¡Éxito!', 'El backup se ha generado y comprimido correctamente.', 'success');
-      fetchBackups(); // Recargamos la tabla
+      fetchBackups();
     } catch (error) {
       console.error('Error al crear backup:', error.response?.data);
-      // Aquí mostramos el error EXACTO que nos devuelve Laravel
       const mensajeError = error.response?.data?.error || 'Hubo un problema de conexión al generar el backup.';
       Swal.fire('Error del Servidor', mensajeError, 'error');
     } finally {
@@ -68,7 +86,6 @@ const crearBackup = async () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Lógica para descargar el archivo zip
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -79,6 +96,49 @@ const crearBackup = async () => {
     } catch (error) {
       console.error("Error al descargar:", error);
       Swal.fire('Error', 'No se pudo descargar el archivo.', 'error');
+    }
+  };
+
+  const handleCreateSchedule = async (e) => {
+    e.preventDefault();
+    try {
+      await backupScheduleService.create(scheduleForm);
+      Swal.fire('¡Creado!', 'Backup programado correctamente.', 'success');
+      setShowScheduleModal(false);
+      setScheduleForm({ dia_semana: 'lunes', hora: '08:00', activo: true });
+      fetchSchedules();
+    } catch (error) {
+      Swal.fire('Error', error.response?.data?.message || 'Error al programar el backup.', 'error');
+    }
+  };
+
+  const handleDeleteSchedule = async (id) => {
+    const result = await Swal.fire({
+      title: '¿Eliminar programación?',
+      text: 'El backup programado se eliminará',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await backupScheduleService.delete(id);
+      Swal.fire('Eliminado', 'Programación eliminada.', 'success');
+      fetchSchedules();
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo eliminar la programación.', 'error');
+    }
+  };
+
+  const handleToggleActive = async (schedule) => {
+    try {
+      await backupScheduleService.update(schedule.id, { activo: !schedule.activo });
+      fetchSchedules();
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
     }
   };
 
@@ -93,7 +153,6 @@ const crearBackup = async () => {
 
       <div className="admin-content" style={{ padding: '20px' }}>
         
-        {/* ARREGLO VISUAL DEL TEXTO Y EL BOTÓN */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
           <p style={{ color: '#333', fontSize: '1.1rem', margin: 0 }}>
             Historial de copias de seguridad de la base de datos y archivos.
@@ -146,6 +205,131 @@ const crearBackup = async () => {
           </table>
         </div>
 
+        {/* ── SECCIÓN BACKUPS AUTOMÁTICOS ── */}
+        <div style={{ marginTop: '40px', borderTop: '2px solid #e2e8f0', paddingTop: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h2 style={{ margin: 0, fontSize: '1.3rem' }}>🔄 Backups Automáticos</h2>
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              className="btn-primary"
+              style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}
+            >
+              + Agregar Programación
+            </button>
+          </div>
+
+          {schedules.length === 0 ? (
+            <p style={{ color: '#94a3b8', textAlign: 'center', padding: '20px' }}>
+              No hay backups automáticos configurados. Agregá uno para que se ejecute solo.
+            </p>
+          ) : (
+            <table className="admin-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #ddd' }}>
+                  <th>Día</th>
+                  <th>Hora</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {schedules.map((s) => (
+                  <tr key={s.id} style={{ borderBottom: '1px solid #eee' }}>
+                    <td style={{ textTransform: 'capitalize' }}>{s.dia_semana}</td>
+                    <td>{s.hora}</td>
+                    <td>
+                      <span
+                        onClick={() => handleToggleActive(s)}
+                        style={{
+                          cursor: 'pointer',
+                          padding: '4px 12px',
+                          borderRadius: '12px',
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                          background: s.activo ? '#dcfce7' : '#f1f5f9',
+                          color: s.activo ? '#16a34a' : '#64748b',
+                        }}
+                      >
+                        {s.activo ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteSchedule(s.id)}
+                        style={{ background: 'none', border: '1px solid #fca5a5', color: '#dc2626', padding: '4px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginTop: '12px' }}>
+            ⏱️ El sistema verifica cada minuto si hay un backup programado para el día y hora actual.
+          </p>
+        </div>
+
+        {/* ── MODAL AGREGAR PROGRAMACIÓN ── */}
+        {showScheduleModal && (
+          <div className="modal-overlay" onClick={() => setShowScheduleModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+              <div className="modal-header">
+                <h2>Programar Backup Automático</h2>
+                <button onClick={() => setShowScheduleModal(false)} className="btn-close">×</button>
+              </div>
+
+              <form onSubmit={handleCreateSchedule}>
+                <div className="form-group">
+                  <label>Día de la semana</label>
+                  <select
+                    value={scheduleForm.dia_semana}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, dia_semana: e.target.value })}
+                    required
+                  >
+                    {DIAS.map((dia) => (
+                      <option key={dia} value={dia}>
+                        {dia.charAt(0).toUpperCase() + dia.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Hora</label>
+                  <input
+                    type="time"
+                    value={scheduleForm.hora}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, hora: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="checkbox"
+                    id="schedule-active"
+                    checked={scheduleForm.activo}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, activo: e.target.checked })}
+                    style={{ width: 'auto' }}
+                  />
+                  <label htmlFor="schedule-active" style={{ margin: 0 }}>Activo al crearlo</label>
+                </div>
+
+                <div className="modal-actions">
+                  <button type="button" onClick={() => setShowScheduleModal(false)} className="btn-cancel">
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-save">
+                    Guardar Programación
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
