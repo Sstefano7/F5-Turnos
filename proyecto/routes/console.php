@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Liberar turnos pendientes de seña que expiraron — corre cada minuto
 Schedule::command('turnos:liberar-expirados')->everyMinute();
+
+// Backups automáticos programados — corre cada minuto y verifica si hay schedules activos
+Schedule::command('backups:check-schedule')->everyMinute();
