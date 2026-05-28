@@ -124,9 +124,10 @@ class TurnoController extends Controller
         ]);
 
         // Si se cambia la fecha u hora, verificar disponibilidad
-        if ($request->has('fecha') || $request->has('hora_inicio')) {
+        if ($request->has('fecha') || $request->has('hora_inicio') || $request->has('hora_fin')) {
             $fecha = $request->fecha ?? $turno->fecha;
             $horaInicio = $request->hora_inicio ?? $turno->hora_inicio;
+            $horaFin = $request->hora_fin ?? $turno->hora_fin;
             $canchaId = $request->cancha_id ?? $turno->cancha_id;
 
             $turnoExistente = Turno::where('cancha_id', $canchaId)
