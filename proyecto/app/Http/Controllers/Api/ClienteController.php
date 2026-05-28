@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClienteResource;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 
@@ -24,12 +25,12 @@ class ClienteController extends Controller
         }
 
         $clientes = $query->paginate($perPage);
-        return response()->json($clientes);
+        return ClienteResource::collection($clientes);
     }
     public function show($id)
     {
         $cliente = Cliente::with('turnos.cancha')->findOrFail($id);
-        return response()->json($cliente);
+        return new ClienteResource($cliente);
     }
 
     public function store(Request $request)
@@ -46,7 +47,7 @@ class ClienteController extends Controller
             'nombre', 'apellido', 'email', 'telefono', 'dni',
         ]));
 
-        return response()->json($cliente, 201);
+        return (new ClienteResource($cliente))->response()->setStatusCode(201);
     }
 
     public function update(Request $request, $id)
@@ -65,7 +66,7 @@ class ClienteController extends Controller
             'nombre', 'apellido', 'email', 'telefono', 'dni',
         ]));
 
-        return response()->json($cliente);
+        return new ClienteResource($cliente);
     }
 
     public function destroy($id)

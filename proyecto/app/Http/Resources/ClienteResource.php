@@ -7,13 +7,26 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClienteResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        $user = $request->user();
+        $esAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+
+        $data = [
+            'id' => $this->id,
+            'nombre' => $this->nombre,
+            'apellido' => $this->apellido,
+            'nombre_completo' => $this->nombre_completo,
+            'turnos_count' => $this->whenLoaded('turnos', fn() => $this->turnos->count()),
+        ];
+
+        // Datos sensibles solo para administradores
+        if ($esAdmin) {
+            $data['email'] = $this->email;
+            $data['telefono'] = $this->telefono;
+            $data['dni'] = $this->dni;
+        }
+
+        return $data;
     }
 }

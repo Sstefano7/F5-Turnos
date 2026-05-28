@@ -107,7 +107,7 @@ function GestionClientes() {
                     <td>{cliente.dni || '-'}</td>
                     <td>
                       <span className="turnos-count">
-                        {cliente.turnos?.length || 0} turnos
+                        {cliente.turnos_count || 0} turnos
                       </span>
                     </td>
                     <td className="acciones">
