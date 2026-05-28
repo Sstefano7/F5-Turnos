@@ -78,10 +78,10 @@ class TurnoController extends Controller
         $precioTotal   = round($cancha->precio_hora * $duracionHoras, 2);
 
         // Calcular seña y monto restante
-        $porcentajeSenia = (int) env('SENIA_PORCENTAJE', 30);
+        $porcentajeSenia = config('turnos.senia.porcentaje');
         $montoSenia      = round($precioTotal * $porcentajeSenia / 100, 2);
         $montoRestante   = round($precioTotal - $montoSenia, 2);
-        $minutosExpiracion = (int) env('SENIA_MINUTOS_EXPIRACION', 15);
+        $minutosExpiracion = config('turnos.senia.minutos_expiracion');
 
         $turno = Turno::create([
             'cancha_id'       => $request->cancha_id,

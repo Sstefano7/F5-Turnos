@@ -108,7 +108,7 @@ class BugReportController extends Controller
     {
         try {
             // Email del administrador (configúralo en el .env)
-            $adminEmail = env('ADMIN_EMAIL', 'admin@canchas.com');
+            $adminEmail = config('turnos.admin_email');
 
             Mail::raw(
                 "Nuevo reporte de bug:\n\n" .
@@ -119,7 +119,7 @@ class BugReportController extends Controller
                 "Usuario: " . ($bugReport->user ? $bugReport->user->name : 'Anónimo') . "\n" .
                 "Página: {$bugReport->pagina}\n" .
                 "Navegador: {$bugReport->navegador}\n\n" .
-                "Ver más detalles en: " . env('APP_URL') . "/admin/bug-reports/{$bugReport->id}",
+                "Ver más detalles en: " . config('app.url') . "/admin/bug-reports/{$bugReport->id}",
                 function ($message) use ($adminEmail, $bugReport) {
                     $message->to($adminEmail)
                         ->subject("Nuevo Bug Report: {$bugReport->titulo}");

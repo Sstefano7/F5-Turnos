@@ -15,7 +15,7 @@ class MercadoPagoController extends Controller
     public function __construct()
     {
         // Configurar el Access Token de MP con las credenciales del .env
-        MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+        MercadoPagoConfig::setAccessToken(config('mercadopago.mp_access_token'));
     }
 
     /**
@@ -58,7 +58,7 @@ class MercadoPagoController extends Controller
                 [
                     'id'          => 'senia_turno_' . $turno->id,
                     'title'       => "Seña - {$turno->cancha->nombre} ({$fechaFormateada} {$horaInicio}-{$horaFin})",
-                    'description' => "Seña del " . env('SENIA_PORCENTAJE', 30) . "% para reservar tu turno. Resto se abona en el local.",
+                    'description' => "Seña del " . config('turnos.senia.porcentaje') . "% para reservar tu turno. Resto se abona en el local.",
                     'quantity'    => 1,
                     'unit_price'  => (float) $turno->monto_senia,
                     'currency_id' => 'ARS',
@@ -69,9 +69,9 @@ class MercadoPagoController extends Controller
                 'email' => $turno->cliente->email,
             ],
             'back_urls' => [
-                'success' => env('APP_FRONTEND_URL', 'http://localhost:5173') . '/mis-reservas?pago=exitoso&turno=' . $turno->id,
-                'failure' => env('APP_FRONTEND_URL', 'http://localhost:5173') . '/mis-reservas?pago=fallido&turno=' . $turno->id,
-                'pending' => env('APP_FRONTEND_URL', 'http://localhost:5173') . '/mis-reservas?pago=pendiente&turno=' . $turno->id,
+                'success' => config('mercadopago.frontend_url') . '/mis-reservas?pago=exitoso&turno=' . $turno->id,
+                'failure' => config('mercadopago.frontend_url') . '/mis-reservas?pago=fallido&turno=' . $turno->id,
+                'pending' => config('mercadopago.frontend_url') . '/mis-reservas?pago=pendiente&turno=' . $turno->id,
             ],
             'auto_return'        => 'approved',
             'external_reference' => (string) $turno->id,
@@ -80,7 +80,7 @@ class MercadoPagoController extends Controller
         ];
 
         // Solo agregar notification_url si hay una URL pública configurada (no funciona en localhost)
-        $webhookUrl = env('MP_WEBHOOK_URL');
+        $webhookUrl = config('mercadopago.mp_webhook_url');
         if ($webhookUrl) {
             $preferenceData['notification_url'] = $webhookUrl;
         }
@@ -116,7 +116,7 @@ class MercadoPagoController extends Controller
     public function webhook(Request $request)
     {
         // Validar firma del webhook si hay secret configurado
-        $secret = env('MP_WEBHOOK_SECRET');
+        $secret = config('mercadopago.mp_webhook_secret');
         if ($secret) {
             $xSignature   = $request->header('x-signature');
             $xRequestId   = $request->header('x-request-id');
