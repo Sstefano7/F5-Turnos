@@ -28,7 +28,7 @@ Route::middleware('throttle:5,1')->group(function () {
 // Reset password: máximo 10 intentos por minuto
 Route::middleware('throttle:10,1')->post('/reset-password', [AuthController::class, 'resetPassword']);
 
-Route::post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs
+Route::middleware('throttle:5,1')->post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs (máx 5/min)
 Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
