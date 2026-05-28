@@ -17,7 +17,11 @@ class Pago extends Model implements Auditable
         'monto',
         'metodo_pago',
         'estado',
-        'fecha_pago'
+        'fecha_pago',
+        'mp_preference_id',
+        'mp_payment_id',
+        'mp_status',
+        'tipo'
     ];
 
     protected $casts = [
