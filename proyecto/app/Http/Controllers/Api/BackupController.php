@@ -85,11 +85,10 @@ class BackupController extends Controller
 
         foreach ($files as $file) {
             if (basename($file) === $fileName) {
-                $rutaAbsoluta = storage_path('app/' . $file);
+                $rutaAbsoluta = Storage::disk('local')->path($file);
 
-                // Verificar que la ruta absoluta está dentro del directorio storage
-                // para prevenir cualquier intento de path traversal residual
-                if (!str_starts_with(realpath($rutaAbsoluta), realpath(storage_path('app')))) {
+                // Verificar que la ruta absoluta está dentro del disco local
+                if (!str_starts_with(realpath($rutaAbsoluta), realpath(Storage::disk('local')->path('/')))) {
                     return response()->json(['error' => 'Acceso no permitido'], 403);
                 }
 
