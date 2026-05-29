@@ -18,7 +18,7 @@ function GestionTurnos() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { triggerRefresh } = useDashboard();
-  const { isSuperAdmin } = useAuth();
+  const { user } = useAuth();
   
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -90,20 +90,6 @@ function GestionTurnos() {
       triggerRefresh(); // Actualizar el dashboard
     } catch (err) {
       alert('Error al cambiar el estado del turno');
-    }
-  };
-
-  const handleEliminar = async (turnoId) => {
-    if (!window.confirm('¿Estás seguro de eliminar este turno?')) {
-      return;
-    }
-
-    try {
-      await turnoService.delete(turnoId);
-      fetchTurnos();
-      triggerRefresh(); // Actualizar el dashboard
-    } catch (err) {
-      alert('Error al eliminar el turno');
     }
   };
 
@@ -253,14 +239,6 @@ function GestionTurnos() {
                           )}
                         </select>
                       </div>
-                      {isSuperAdmin() && (
-                        <button
-                          onClick={() => handleEliminar(turno.id)}
-                          className="btn-delete"
-                        >
-                          Eliminar
-                        </button>
-                      )}
                     </td>
                   </tr>
                 ))

@@ -11,7 +11,7 @@ function GestionClientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { isSuperAdmin } = useAuth();
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -36,18 +36,6 @@ function GestionClientes() {
   }
 };
 
-  const handleEliminar = async (id) => {
-  if (!window.confirm('¿Estás seguro de eliminar este cliente? Esto también eliminará sus turnos.')) {
-    return;
-  }
-
-  try {
-    await clienteService.delete(id);
-    fetchClientes(currentPage); // ← Usar página actual
-  } catch (err) {
-    alert('Error al eliminar el cliente');
-  }
-};
   const handlePageChange = (page) => {
   setLoading(true);
   fetchClientes(page);
@@ -110,16 +98,7 @@ function GestionClientes() {
                         {cliente.turnos_count || 0} turnos
                       </span>
                     </td>
-                    <td className="acciones">
-                      {isSuperAdmin() && (
-                        <button
-                          onClick={() => handleEliminar(cliente.id)}
-                          className="btn-delete"
-                        >
-                          Eliminar
-                        </button>
-                      )}
-                    </td>
+                    <td className="acciones"></td>
                   </tr>
                 ))
               )}

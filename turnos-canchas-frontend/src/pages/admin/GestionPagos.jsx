@@ -102,20 +102,6 @@ const fetchData = async (page = 1, search = searchTerm) => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-  if (!window.confirm('¿Estás seguro de eliminar este pago?')) {
-    return;
-  }
-
-  try {
-    await pagoService.delete(id);
-    fetchData(currentPage); // ← Usar página actual
-    triggerRefresh();
-  } catch (err) {
-    alert('Error al eliminar el pago');
-  }
-};
-
   const resetForm = () => {
     setFormData({
       turno_id: '',
@@ -313,14 +299,6 @@ const fetchData = async (page = 1, search = searchTerm) => {
                           className="btn-edit"
                         >
                           Editar
-                        </button>
-                      )}
-                      {isSuperAdmin() && (
-                        <button 
-                          onClick={() => handleDelete(pago.id)}
-                          className="btn-delete"
-                        >
-                          Eliminar
                         </button>
                       )}
                     </td>
