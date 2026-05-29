@@ -75,13 +75,12 @@ function GestionClientes() {
                 <th>Teléfono</th>
                 <th>DNI</th>
                 <th>Turnos</th>
-                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {clientes.length === 0 ? (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
                     No hay clientes registrados
                   </td>
                 </tr>
@@ -98,7 +97,6 @@ function GestionClientes() {
                         {cliente.turnos_count || 0} turnos
                       </span>
                     </td>
-                    <td className="acciones"></td>
                   </tr>
                 ))
               )}
