@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,11 +28,21 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
-                $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
-                return new JsonResponse([
+                $status = 500;
+                if ($e instanceof HttpException) {
+                    $status = $e->getStatusCode();
+                } elseif ($e instanceof UrlGenerationException) {
+                    $status = 404;
+                }
+                $data = [
                     'message' => $e->getMessage() ?: 'Server Error',
                     'exception' => get_class($e),
-                ], $status);
+                    'file' => $e->getFile() . ':' . $e->getLine(),
+                ];
+                if (config('app.debug')) {
+                    $data['trace'] = collect($e->getTrace())->take(5)->map(fn($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ' ' . ($t['class'] ?? '') . ($t['type'] ?? '') . ($t['function'] ?? ''))->toArray();
+                }
+                return new JsonResponse($data, $status);
             }
         });
     })->create();
