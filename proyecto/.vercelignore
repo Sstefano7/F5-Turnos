@@ -7,7 +7,6 @@ node_modules/
 .gitignore
 
 # Cache y storage local
-bootstrap/cache/
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
