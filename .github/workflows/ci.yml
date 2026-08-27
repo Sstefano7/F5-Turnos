@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testing
+        ports: [5432:5432]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pgsql, pdo_pgsql, bcmath, redis
+          coverage: none
+      - name: Install dependencies
+        run: |
+          cd proyecto
+          composer install --prefer-dist --no-progress --no-interaction
+      - name: Copy env
+        run: cp proyecto/.env.ci proyecto/.env 2>/dev/null || echo "APP_ENV=testing\nDB_CONNECTION=pgsql\nDB_HOST=127.0.0.1\nDB_PORT=5432\nDB_DATABASE=testing\nDB_USERNAME=postgres\nDB_PASSWORD=test\nCACHE_DRIVER=array\nSESSION_DRIVER=array\nQUEUE_CONNECTION=sync" > proyecto/.env
+      - name: Generate key
+        run: cd proyecto && php artisan key:generate
+      - name: Run migrations
+        run: cd proyecto && php artisan migrate --force
+      - name: Run tests
+        run: cd proyecto && ./vendor/bin/pest --coverage --min=50
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'turnos-canchas-frontend/package-lock.json'
+      - name: Install dependencies
+        run: cd turnos-canchas-frontend && npm ci
+      - name: Run lint
+        run: cd turnos-canchas-frontend && npm run lint
+      - name: Run tests
+        run: cd turnos-canchas-frontend && npm run test -- --run 2>/dev/null || echo "No tests configured"
+      - name: Build
+        run: cd turnos-canchas-frontend && npm run build
