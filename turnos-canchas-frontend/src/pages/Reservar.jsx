@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { canchaService } from '../services/canchaService';
 import { turnoService } from '../services/turnoService';
 import { clienteService } from '../services/clienteService';
 import { useAuth } from '../context/AuthContext';
 import { useDashboard } from '../context/DashboardContext';
-import api from '../config/api';
 import '../styles/Reservar.css';
 
 function Reservar() {
@@ -20,16 +19,12 @@ function Reservar() {
   const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingHorarios, setLoadingHorarios] = useState(false);
-  const [loadingPago, setLoadingPago] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   
   const [buscandoDni, setBuscandoDni] = useState(false);
   const [dniEncontrado, setDniEncontrado] = useState(false);
-
-  // Estado del flujo de pago
-  const [turnoCreado, setTurnoCreado] = useState(null);
-  const [infoPago, setInfoPago] = useState(null); // { monto_senia, monto_restante, checkout_url, sandbox_url, vence_en }
-  const [countdown, setCountdown] = useState(null);
 
   const [clienteData, setClienteData] = useState({
     nombre: '',
@@ -52,12 +47,10 @@ function Reservar() {
       const delay = setTimeout(async () => {
         setBuscandoDni(true);
         try {
-          // Buscamos usando el nuevo endpoint de búsqueda en el backend
           const response = await clienteService.getAll({ search: dni });
           const clientes = Array.isArray(response) ? response : response.data;
           
           if (clientes && clientes.length > 0) {
-            // Coincidencia exacta por DNI
             const clienteMatch = clientes.find(c => c.dni === dni);
             if (clienteMatch) {
               setClienteData(prev => ({
@@ -90,23 +83,6 @@ function Reservar() {
     if (fecha && cancha) fetchHorarios();
   }, [fecha, cancha]);
 
-  // Countdown para el tiempo de pago de seña
-  useEffect(() => {
-    if (!infoPago?.vence_en) return;
-    const interval = setInterval(() => {
-      const diff = new Date(infoPago.vence_en) - new Date();
-      if (diff <= 0) {
-        setCountdown('00:00');
-        clearInterval(interval);
-      } else {
-        const mins = Math.floor(diff / 60000);
-        const secs = Math.floor((diff % 60000) / 1000);
-        setCountdown(`${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [infoPago]);
-
   const fetchHorarios = async () => {
     setLoadingHorarios(true);
     setHorarioSeleccionado(null);
@@ -127,6 +103,7 @@ function Reservar() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
 
     if (!clienteData.nombre.trim()) return setError('El nombre es requerido');
     if (!clienteData.apellido.trim()) return setError('El apellido es requerido');
@@ -134,6 +111,7 @@ function Reservar() {
     if (!clienteData.telefono.trim()) return setError('El teléfono es requerido');
     if (!horarioSeleccionado) return setError('Debes seleccionar un horario');
 
+    setLoadingSubmit(true);
     try {
       // Buscar o crear cliente
       let clienteId;
@@ -148,8 +126,8 @@ function Reservar() {
         clienteId = cliente.id;
       }
 
-      // Crear el turno — ahora devuelve info de seña
-      const response = await api.post('/turnos', {
+      // Crear el turno en estado 'pendiente' (esperando confirmación del admin)
+      await turnoService.create({
         cancha_id:   parseInt(id),
         cliente_id:  clienteId,
         fecha,
@@ -158,30 +136,17 @@ function Reservar() {
         observaciones: '',
       });
 
-      const { turno, monto_senia, monto_restante, porcentaje_senia, senia_vence_en, minutos_para_pagar } = response.data;
-      setTurnoCreado(turno);
       triggerRefresh();
-
-      // Iniciar el proceso de pago de seña automáticamente
-      setLoadingPago(true);
-      const pagoResponse = await api.post(`/turnos/${turno.id}/iniciar-pago`);
-      const { sandbox_url, checkout_url, vence_en } = pagoResponse.data;
-
-      setInfoPago({
-        monto_senia,
-        monto_restante,
-        porcentaje_senia,
-        minutos_para_pagar,
-        vence_en: senia_vence_en,
-        // En modo test usamos sandbox_url, en producción checkout_url
-        checkout_url: sandbox_url || checkout_url,
-      });
+      setSuccess(true);
+      
+      // Redirigir a mis reservas después de 2 segundos
+      setTimeout(() => navigate('/mis-reservas'), 2000);
 
     } catch (err) {
       console.error('Error:', err.response?.data);
       setError(err.response?.data?.message || 'Error al crear la reserva');
     } finally {
-      setLoadingPago(false);
+      setLoadingSubmit(false);
     }
   };
 
@@ -190,10 +155,8 @@ function Reservar() {
   if (loading) return <div className="loading">Cargando...</div>;
   if (!cancha) return <div className="error">Cancha no encontrada</div>;
 
-  // ── PANTALLA DE PAGO DE SEÑA ─────────────────────────────────────────────
-  if (turnoCreado && infoPago) {
-    const countdownExpired = countdown === '00:00';
-
+  // ── PANTALLA DE ÉXITO ──────────────────────────────────────────────────────
+  if (success) {
     return (
       <div className="reservar-container">
         <div className="success-container" style={{ maxWidth: '520px', margin: '40px auto', padding: '0 16px' }}>
@@ -206,9 +169,9 @@ function Reservar() {
             {/* Header verde */}
             <div style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', padding: '28px 32px', color: 'white', textAlign: 'center' }}>
               <div style={{ fontSize: '48px', marginBottom: '8px' }}>✅</div>
-              <h2 style={{ margin: 0, fontSize: '1.4rem' }}>¡Turno reservado!</h2>
+              <h2 style={{ margin: 0, fontSize: '1.4rem' }}>¡Reserva solicitada!</h2>
               <p style={{ margin: '8px 0 0', opacity: 0.9, fontSize: '0.95rem' }}>
-                Completá el pago de la seña para confirmar tu turno
+                Tu reserva quedó pendiente de confirmación por el administrador
               </p>
             </div>
 
@@ -224,78 +187,23 @@ function Reservar() {
                 </p>
               </div>
 
-              {/* Desglose de pago */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>Precio total</span>
-                  <span style={{ fontWeight: '600' }}>
-                    ${(parseFloat(infoPago.monto_senia) + parseFloat(infoPago.monto_restante)).toFixed(2)}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b' }}>Seña ahora ({infoPago.porcentaje_senia}%)</span>
-                  <span style={{ fontWeight: '700', color: '#16a34a', fontSize: '1.1rem' }}>
-                    ${parseFloat(infoPago.monto_senia).toFixed(2)}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
-                  <span style={{ color: '#64748b' }}>Resto en el local</span>
-                  <span style={{ color: '#475569' }}>${parseFloat(infoPago.monto_restante).toFixed(2)}</span>
-                </div>
+              <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: '10px', padding: '16px', marginBottom: '20px' }}>
+                <p style={{ margin: '0 0 8px', fontWeight: '600', color: '#92400e' }}>⏳ Próximos pasos:</p>
+                <ul style={{ margin: 0, paddingLeft: '20px', color: '#92400e', fontSize: '0.9rem' }}>
+                  <li>El administrador revisará tu solicitud</li>
+                  <li>Recibirás confirmación cuando sea aprobada</li>
+                  <li>El pago se realiza directamente en el local el día del turno</li>
+                </ul>
               </div>
-
-              {/* Countdown */}
-              {countdown && (
-                <div style={{
-                  textAlign: 'center',
-                  background: countdownExpired ? '#fef2f2' : '#fffbeb',
-                  border: `1px solid ${countdownExpired ? '#fca5a5' : '#fde68a'}`,
-                  borderRadius: '10px',
-                  padding: '12px',
-                  marginBottom: '20px',
-                }}>
-                  <p style={{ margin: '0 0 4px', fontSize: '0.85rem', color: countdownExpired ? '#dc2626' : '#92400e' }}>
-                    {countdownExpired ? '⏰ Tiempo expirado — tu turno fue cancelado' : '⏳ Tiempo para pagar la seña'}
-                  </p>
-                  {!countdownExpired && (
-                    <span style={{ fontSize: '2rem', fontWeight: '800', color: '#d97706', fontFamily: 'monospace' }}>
-                      {countdown}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Botones */}
-              {!countdownExpired && (
-                <a
-                  href={infoPago.checkout_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'block',
-                    textAlign: 'center',
-                    background: 'linear-gradient(135deg, #009ee3, #00b8f1)',
-                    color: 'white',
-                    padding: '14px 24px',
-                    borderRadius: '10px',
-                    textDecoration: 'none',
-                    fontWeight: '700',
-                    fontSize: '1rem',
-                    marginBottom: '12px',
-                    boxShadow: '0 4px 12px rgba(0, 158, 227, 0.35)',
-                  }}
-                >
-                  💳 Pagar seña con MercadoPago
-                </a>
-              )}
 
               <button
                 onClick={() => navigate('/mis-reservas')}
                 style={{
                   display: 'block', width: '100%', textAlign: 'center',
-                  background: 'transparent', color: '#64748b',
-                  padding: '10px', border: '1px solid #e2e8f0',
-                  borderRadius: '10px', cursor: 'pointer', fontSize: '0.9rem',
+                  background: 'linear-gradient(135deg, #16a34a, #22c55e)', color: 'white',
+                  padding: '14px 24px', borderRadius: '10px', border: 'none',
+                  fontWeight: '700', fontSize: '1rem', cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.35)',
                 }}
               >
                 Ver mis reservas
@@ -307,7 +215,7 @@ function Reservar() {
     );
   }
 
-  // ── FORMULARIO DE RESERVA ────────────────────────────────────────────────
+  // ── FORMULARIO DE RESERVA ────────────────────────────────────────────────────
   return (
     <div className="reservar-container">
       <div className="reservar-header">
@@ -325,18 +233,17 @@ function Reservar() {
 
         {error && <div className="error-message">{error}</div>}
 
-        {/* Aviso de seña */}
+        {/* Información de reserva sin seña */}
         <div style={{
-          background: '#eff6ff', border: '1px solid #bfdbfe',
+          background: '#f0fdf4', border: '1px solid #bbf7d0',
           borderRadius: '10px', padding: '12px 16px', marginBottom: '20px',
-          fontSize: '0.9rem', color: '#1e40af',
+          fontSize: '0.9rem', color: '#166534',
           display: 'flex', alignItems: 'flex-start', gap: '10px',
         }}>
-          <span style={{ fontSize: '1.2rem' }}>💳</span>
+          <span style={{ fontSize: '1.2rem' }}>ℹ️</span>
           <div>
-            <strong>Sistema de seña:</strong> Al confirmar, se te pedirá una seña del{' '}
-            <strong>30% del total</strong> vía MercadoPago. El resto lo abonás en el local el día del turno.
-            Tenés <strong>15 minutos</strong> para completarla.
+            <strong>Reserva sin seña:</strong> Tu solicitud quedará <strong>pendiente de confirmación</strong> por el administrador.
+            El pago se realiza <strong>directamente en el local</strong> el día del turno.
           </div>
         </div>
 
@@ -416,20 +323,17 @@ function Reservar() {
               <p><strong>Fecha:</strong> {new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR')}</p>
               <p><strong>Horario:</strong> {horarioSeleccionado.hora_inicio.slice(0, 5)} - {horarioSeleccionado.hora_fin.slice(0, 5)}</p>
               <p><strong>Precio total:</strong> ${cancha.precio_hora}</p>
-              <p style={{ color: '#16a34a' }}>
-                <strong>Seña a pagar (30%):</strong> ${(cancha.precio_hora * 0.30).toFixed(2)}
-              </p>
               <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                Resto en el local: ${(cancha.precio_hora * 0.70).toFixed(2)}
+                <em>El pago se realiza en el local el día del turno</em>
               </p>
 
               <button
                 type="submit"
                 className="btn-confirmar"
-                disabled={loadingPago}
-                style={{ opacity: loadingPago ? 0.7 : 1 }}
+                disabled={loadingSubmit}
+                style={{ opacity: loadingSubmit ? 0.7 : 1 }}
               >
-                {loadingPago ? '⏳ Generando enlace de pago...' : '💳 Confirmar y pagar seña'}
+                {loadingSubmit ? '⏳ Enviando solicitud...' : '✅ Solicitar reserva'}
               </button>
             </div>
           )}
