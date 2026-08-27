@@ -40,7 +40,10 @@ return Application::configure(basePath: dirname(__DIR__))
                     'file' => $e->getFile() . ':' . $e->getLine(),
                 ];
                 if (config('app.debug')) {
-                    $data['trace'] = collect($e->getTrace())->take(5)->map(fn($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ' ' . ($t['class'] ?? '') . ($t['type'] ?? '') . ($t['function'] ?? ''))->toArray();
+                    $data['trace'] = collect($e->getTrace())->take(15)->map(fn($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ' ' . ($t['class'] ?? '') . ($t['type'] ?? '') . ($t['function'] ?? ''))->toArray();
+                    if ($e->getPrevious()) {
+                        $data['previous'] = get_class($e->getPrevious()) . ': ' . $e->getPrevious()->getMessage();
+                    }
                 }
                 return new JsonResponse($data, $status);
             }
