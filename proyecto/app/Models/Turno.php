@@ -20,22 +20,15 @@ class Turno extends Model implements Auditable
         'hora_inicio',
         'hora_fin',
         'precio',
-        'monto_senia',
-        'monto_restante',
-        'senia_vence_en',
-        'mp_preference_id',
         'estado',
         'observaciones'
     ];
 
     protected $casts = [
-        'fecha'          => 'date',
-        'hora_inicio'    => 'datetime:H:i',
-        'hora_fin'       => 'datetime:H:i',
-        'precio'         => 'decimal:2',
-        'monto_senia'    => 'decimal:2',
-        'monto_restante' => 'decimal:2',
-        'senia_vence_en' => 'datetime',
+        'fecha'       => 'date',
+        'hora_inicio' => 'datetime:H:i',
+        'hora_fin'    => 'datetime:H:i',
+        'precio'      => 'decimal:2',
     ];
 
     // Relaciones
@@ -47,11 +40,6 @@ class Turno extends Model implements Auditable
     public function cliente()
     {
         return $this->belongsTo(Cliente::class);
-    }
-
-    public function pago()
-    {
-        return $this->hasOne(Pago::class);
     }
 
     // Scopes
@@ -70,5 +58,10 @@ class Turno extends Model implements Auditable
         return $query->where('fecha', '>=', now()->toDateString())
                     ->orderBy('fecha')
                     ->orderBy('hora_inicio');
+    }
+
+    public function scopePendientes($query)
+    {
+        return $query->where('estado', 'pendiente');
     }
 }
