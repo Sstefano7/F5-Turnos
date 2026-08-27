@@ -13,7 +13,6 @@ import GestionClientes from './pages/admin/GestionClientes';
 import GestionHorarios from './pages/admin/GestionHorarios';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
-import GestionPagos from './pages/admin/GestionPagos';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import GestionBugReports from './pages/admin/GestionBugReports';
@@ -108,15 +107,6 @@ function App() {
           element={
             <AdminRoute>
               <GestionHorarios />
-            </AdminRoute>
-          } 
-        />
-        
-        <Route 
-          path="/admin/pagos" 
-          element={
-            <AdminRoute>
-              <GestionPagos />
             </AdminRoute>
           } 
         />
