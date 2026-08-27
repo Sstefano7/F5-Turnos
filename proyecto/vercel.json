@@ -1,0 +1,27 @@
+{
+  "buildCommand": "cd proyecto && composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache && php artisan view:cache",
+  "outputDirectory": "public",
+  "framework": "php",
+  "functions": {
+    "api/index.php": {
+      "runtime": "php@8.3",
+      "maxDuration": 10,
+      "memory": 1024
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "false",
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie",
+    "CACHE_DRIVER": "array",
+    "QUEUE_CONNECTION": "sync",
+    "FILESYSTEM_DISK": "supabase"
+  }
+}

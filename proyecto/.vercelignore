@@ -1,0 +1,45 @@
+# Dependencias
+vendor/
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# Cache y storage local
+bootstrap/cache/
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+storage/app/public/*
+
+# Entorno
+.env
+.env.*
+!.env.example
+
+# Tests
+phpunit.xml
+tests/
+.phpunit.result.cache
+
+# Docker
+docker/
+Dockerfile
+docker-compose*.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+README.md
+CHANGELOG.md
