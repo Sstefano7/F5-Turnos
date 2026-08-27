@@ -171,7 +171,7 @@ function Reservar() {
               <div style={{ fontSize: '48px', marginBottom: '8px' }}>✅</div>
               <h2 style={{ margin: 0, fontSize: '1.4rem' }}>¡Reserva solicitada!</h2>
               <p style={{ margin: '8px 0 0', opacity: 0.9, fontSize: '0.95rem' }}>
-                Tu reserva quedó pendiente de confirmación por el administrador
+                Tu reserva quedó pendiente de confirmación por el administrador. Pago 100% en el local.
               </p>
             </div>
 
@@ -240,10 +240,10 @@ function Reservar() {
           fontSize: '0.9rem', color: '#166534',
           display: 'flex', alignItems: 'flex-start', gap: '10px',
         }}>
-          <span style={{ fontSize: '1.2rem' }}>ℹ️</span>
+          <span style={{ fontSize: '1.2rem' }}>✅</span>
           <div>
-            <strong>Reserva sin seña:</strong> Tu solicitud quedará <strong>pendiente de confirmación</strong> por el administrador.
-            El pago se realiza <strong>directamente en el local</strong> el día del turno.
+            <strong>Reserva sin seña:</strong> Tu solicitud queda <strong>pendiente de confirmación</strong> por el administrador.
+            <br /><strong>Pago 100% en el local</strong> el día del turno. Sin pagos online.
           </div>
         </div>
 
@@ -322,9 +322,9 @@ function Reservar() {
               <p><strong>Cancha:</strong> {cancha.nombre}</p>
               <p><strong>Fecha:</strong> {new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR')}</p>
               <p><strong>Horario:</strong> {horarioSeleccionado.hora_inicio.slice(0, 5)} - {horarioSeleccionado.hora_fin.slice(0, 5)}</p>
-              <p><strong>Precio total:</strong> ${cancha.precio_hora}</p>
-              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                <em>El pago se realiza en el local el día del turno</em>
+              <p><strong>Pago total en el local:</strong> ${cancha.precio_hora}</p>
+              <p style={{ color: '#16a34a', fontSize: '0.9rem', fontWeight: '600' }}>
+                Sin seña ni pagos online. Se paga todo el día del turno.
               </p>
 
               <button
