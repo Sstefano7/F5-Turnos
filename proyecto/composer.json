@@ -59,17 +59,15 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
             "@php artisan config:clear --no-interaction",
-            "@php artisan config:cache --no-interaction",
-            "@php artisan route:cache --no-interaction",
-            "@php artisan view:cache --no-interaction",
-            "@php artisan event:cache --no-interaction"
+            "@php artisan route:clear --no-interaction",
+            "@php artisan view:clear --no-interaction",
+            "@php artisan event:clear --no-interaction"
         ],
         "post-install-cmd": [
             "@php artisan config:clear --no-interaction",
-            "@php artisan config:cache --no-interaction",
-            "@php artisan route:cache --no-interaction",
-            "@php artisan view:cache --no-interaction",
-            "@php artisan event:cache --no-interaction"
+            "@php artisan route:clear --no-interaction",
+            "@php artisan view:clear --no-interaction",
+            "@php artisan event:clear --no-interaction"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -86,10 +84,10 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
         "vercel-build": [
-            "@php artisan config:cache",
-            "@php artisan route:cache",
-            "@php artisan view:cache",
-            "@php artisan event:cache"
+            "@php artisan config:clear",
+            "@php artisan route:clear",
+            "@php artisan view:clear",
+            "@php artisan event:clear"
         ]
     },
     "extra": {
