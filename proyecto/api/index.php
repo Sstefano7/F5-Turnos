@@ -42,6 +42,12 @@ if (is_dir('/tmp/storage')) {
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
+// Vercel: api/index.php está en /api/index.php, pero queremos preservar /api prefix en la ruta
+// Sin esto, Request::capture() stripea "api" de /api/canchas => "canchas" y no matchea api/canchas
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
 $request = Illuminate\Http\Request::capture();
 $response = $kernel->handle($request);
 $response->send();
