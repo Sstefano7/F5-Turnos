@@ -37,7 +37,7 @@ class TurnoController extends Controller
 
     public function show($id)
     {
-        $turno = Turno::with(['cancha', 'cliente', 'pago'])->findOrFail($id);
+        $turno = Turno::with(['cancha', 'cliente'])->findOrFail($id);
         return response()->json($turno);
     }
 
@@ -57,8 +57,6 @@ class TurnoController extends Controller
             ->whereDate('fecha', $request->fecha)
             ->whereIn('estado', ['pendiente', 'confirmado'])
             ->where(function ($q) use ($request) {
-                // Hay solapamiento si: el turno existente empieza antes de que termine el nuevo
-                // Y termina después de que empiece el nuevo
                 $q->where('hora_inicio', '<', $request->hora_fin)
                   ->where('hora_fin', '>', $request->hora_inicio);
             })
@@ -77,12 +75,7 @@ class TurnoController extends Controller
         $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
         $precioTotal   = round($cancha->precio_hora * $duracionHoras, 2);
 
-        // Calcular seña y monto restante
-        $porcentajeSenia = config('turnos.senia.porcentaje');
-        $montoSenia      = round($precioTotal * $porcentajeSenia / 100, 2);
-        $montoRestante   = round($precioTotal - $montoSenia, 2);
-        $minutosExpiracion = config('turnos.senia.minutos_expiracion');
-
+        // Crear turno en estado 'pendiente' (esperando confirmación del admin)
         $turno = Turno::create([
             'cancha_id'       => $request->cancha_id,
             'cliente_id'      => $request->cliente_id,
@@ -91,21 +84,14 @@ class TurnoController extends Controller
             'hora_inicio'     => $request->hora_inicio,
             'hora_fin'        => $request->hora_fin,
             'precio'          => $precioTotal,
-            'monto_senia'     => $montoSenia,
-            'monto_restante'  => $montoRestante,
-            'senia_vence_en'  => now()->addMinutes($minutosExpiracion),
-            'estado'          => 'pendiente_senia',
+            'estado'          => 'pendiente',
             'observaciones'   => $request->observaciones,
         ]);
 
         return response()->json([
-            'turno'           => $turno->load(['cancha', 'cliente']),
-            'precio_total'    => $precioTotal,
-            'monto_senia'     => $montoSenia,
-            'monto_restante'  => $montoRestante,
-            'porcentaje_senia'=> $porcentajeSenia,
-            'senia_vence_en'  => $turno->senia_vence_en,
-            'minutos_para_pagar' => $minutosExpiracion,
+            'turno'        => $turno->load(['cancha', 'cliente']),
+            'precio_total' => $precioTotal,
+            'message'      => 'Reserva solicitada. Queda pendiente de confirmación por el administrador.'
         ], 201);
     }
 
@@ -147,14 +133,13 @@ class TurnoController extends Controller
             }
         }
 
-        // Recalcular precio si cambia la cancha o duración (CORREGIDO)
+        // Recalcular precio si cambia la cancha o duración
         if ($request->has('cancha_id') || $request->has('hora_inicio') || $request->has('hora_fin')) {
             $canchaId = $request->cancha_id ?? $turno->cancha_id;
             $cancha = Cancha::findOrFail($canchaId);
             $horaInicio = Carbon::parse($request->hora_inicio ?? $turno->hora_inicio);
             $horaFin = Carbon::parse($request->hora_fin ?? $turno->hora_fin);
             
-            // Misma lógica de minutos para evitar números negativos y cobrar fracciones justas
             $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
             
             $request->merge(['precio' => $cancha->precio_hora * $duracionHoras]);
