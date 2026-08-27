@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PagoController;
 use App\Http\Controllers\Api\CanchaController;
 use App\Http\Controllers\Api\TurnoController;
 use App\Http\Controllers\Api\ClienteController;
@@ -12,7 +11,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\Api\BugReportController;
 use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\MercadoPagoController;
 use App\Http\Controllers\Api\BackupScheduleController;
 
 // Rutas públicas (sin autenticación)
@@ -34,9 +32,6 @@ Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
 
-// Webhook de MercadoPago (público — MP lo llama desde sus servidores)
-Route::post('/mp/webhook', [MercadoPagoController::class, 'webhook']);
-
 // Rutas protegidas (requieren autenticación)
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -50,10 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/turnos/{id}', [TurnoController::class, 'show']);
     Route::get('/mis-turnos', [TurnoController::class, 'misTurnos']);
     Route::patch('/turnos/{id}/cancelar', [TurnoController::class, 'cancelar']);
-
-    // Sistema de seña con MercadoPago
-    Route::post('/turnos/{id}/iniciar-pago', [MercadoPagoController::class, 'crearPreferencia']);
-    Route::get('/turnos/{id}/estado-pago', [MercadoPagoController::class, 'estadoPago']);
     
     // --- RUTAS DE ADMINISTRADOR NORMAL ---
     Route::middleware('admin')->group(function () {
@@ -79,15 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Gestión de horarios
         Route::apiResource('horarios', HorarioController::class);
-
-        // Gestión de pagos
-        Route::get('/pagos/estadisticas', [PagoController::class, 'estadisticas']);
-        Route::get('/pagos/turno/{turnoId}', [PagoController::class, 'porTurno']);
-        Route::get('/pagos', [PagoController::class, 'index']);
-        Route::post('/pagos', [PagoController::class, 'store']);
-        Route::get('/pagos/{id}', [PagoController::class, 'show']);
-        Route::put('/pagos/{id}', [PagoController::class, 'update']);
-        Route::delete('/pagos/{id}', [PagoController::class, 'destroy']);
     });
 
     // --- RUTAS EXCLUSIVAS DE SUPER ADMIN ---
