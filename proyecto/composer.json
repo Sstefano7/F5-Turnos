@@ -7,6 +7,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-pdo_pgsql": "*",
+        "ext-pgsql": "*",
+        "ext-bcmath": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
@@ -55,6 +58,13 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
+        ],
+        "post-install-cmd": [
+            "@php artisan config:clear --no-interaction",
+            "@php artisan config:cache --no-interaction",
+            "@php artisan route:cache --no-interaction",
+            "@php artisan view:cache --no-interaction",
+            "@php artisan event:cache --no-interaction"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
