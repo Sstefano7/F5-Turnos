@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+$isServerless = (bool) env('VERCEL') || (bool) env('AWS_LAMBDA') || (bool) env('SERVERLESS');
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -23,4 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->withProviders(function ($providers) {
+        // En serverless (Vercel), no registrar ScheduleServiceProvider
+        // porque no hay proceso persistente para ejecutar el scheduler
+        if ($isServerless) {
+            $providers = $providers->except([
+                \Illuminate\Console\Scheduling\ScheduleServiceProvider::class,
+            ]);
+        }
+        return $providers;
+    })
+    ->create();
