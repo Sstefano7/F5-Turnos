@@ -1,0 +1,25 @@
+.modal__overlay {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-4);
+}
+.modal__content {
+  background: var(--white-pure); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl); width: 100%; max-width: 560px;
+  max-height: 90vh; overflow: auto; border: 1px solid var(--gray-200);
+}
+.modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--gray-100);
+  position: sticky; top: 0; background: var(--white-pure); z-index: 1;
+}
+.modal__title { font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--gray-800); }
+.modal__close {
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  border: 1px solid var(--gray-200); background: var(--white-pure);
+  display: grid; place-items: center; font-size: 20px; line-height: 1; color: var(--gray-500);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.modal__close:hover { background: var(--gray-100); color: var(--gray-700); }
+.modal__body { padding: var(--space-6); }

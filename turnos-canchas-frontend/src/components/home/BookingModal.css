@@ -1,0 +1,65 @@
+.booking-steps {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: 11px; font-weight: var(--weight-bold); letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: var(--space-5);
+}
+.booking-step.is-active { color: var(--green-grass); }
+.booking-step__sep { color: var(--gray-300); }
+.booking-step-content { display: flex; flex-direction: column; gap: var(--space-4); }
+.booking-label { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--gray-700); }
+.booking-input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); font-size: var(--text-sm); background: var(--white-pure);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.booking-input:focus { outline: none; border-color: var(--green-grass); box-shadow: 0 0 0 3px var(--green-light); }
+.booking-hint { font-size: var(--text-sm); color: var(--gray-500); }
+.booking-error {
+  background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-size: var(--text-sm);
+}
+.booking-canchas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.booking-cancha-card {
+  text-align: left; padding: var(--space-3); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); background: var(--white-pure);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.booking-cancha-card.is-selected { border-color: var(--green-grass); background: var(--green-soft); box-shadow: var(--shadow-green); }
+.booking-cancha-card strong { display: block; font-size: var(--text-sm); color: var(--gray-800); }
+.booking-cancha-card span { font-size: 11px; color: var(--gray-500); }
+.booking-canchas-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.booking-cancha-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-4); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); background: var(--white-pure); text-align: left;
+}
+.booking-cancha-option:hover { border-color: var(--green-grass); background: var(--green-soft); }
+.booking-horarios { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.booking-horario {
+  padding: 8px 12px; border-radius: var(--radius-full);
+  border: 1px solid var(--gray-200); background: var(--white-pure);
+  font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--gray-700);
+}
+.booking-horario.is-selected { background: var(--green-grass); color: var(--white-pure); border-color: var(--green-grass); box-shadow: var(--shadow-green); }
+.booking-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
+.booking-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.booking-field { display: flex; flex-direction: column; gap: 6px; }
+.booking-field span { font-size: 11px; font-weight: var(--weight-semibold); color: var(--gray-600); letter-spacing: 0.02em; }
+.booking-field:first-child { grid-column: 1 / -1; }
+.booking-summary {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm); color: var(--gray-600);
+}
+.booking-confirm-box {
+  background: var(--gray-50); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); padding: var(--space-5);
+}
+.booking-confirm-box h4 { font-size: var(--text-lg); color: var(--gray-800); margin-bottom: var(--space-2); }
+.booking-confirm-box p { font-size: var(--text-sm); color: var(--gray-600); margin: 4px 0; }
+.booking-confirm-box hr { border: 0; border-top: 1px solid var(--gray-200); margin: var(--space-3) 0; }
+.booking-confirm-hint { color: var(--green-hover) !important; font-weight: var(--weight-semibold); }
+.booking-success { text-align: center; padding: var(--space-2) 0; }
+.booking-success__icon { font-size: 48px; margin-bottom: var(--space-3); }
+.booking-success h3 { font-size: var(--text-xl); color: var(--gray-800); margin-bottom: var(--space-2); }
+.booking-success p { color: var(--gray-500); font-size: var(--text-sm); line-height: 1.6; }
