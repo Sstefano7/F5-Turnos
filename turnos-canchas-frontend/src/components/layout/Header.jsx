@@ -147,14 +147,15 @@ function Header() {
                     Administración
                   </Button>
                 )}
-              <Button variant="secondary" className="header__mobile-btn" onClick={() => { navigate("/mis-reservas"); closeMobileMenu(); }} block>
-                <CalendarDays size={18} aria-hidden="true" />
-                Mis reservas
-              </Button>
-              <Button variant="ghost" className="header__mobile-btn header__mobile-btn--danger" onClick={handleLogout} block>
-                <LogOut size={18} aria-hidden="true" />
-                Cerrar sesión
-              </Button>
+                <Button variant="secondary" className="header__mobile-btn" onClick={() => { navigate("/mis-reservas"); closeMobileMenu(); }} block>
+                  <CalendarDays size={18} aria-hidden="true" />
+                  Mis reservas
+                </Button>
+                <Button variant="ghost" className="header__mobile-btn header__mobile-btn--danger" onClick={handleLogout} block>
+                  <LogOut size={18} aria-hidden="true" />
+                  Cerrar sesión
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="header__mobile-auth">
@@ -167,9 +168,10 @@ function Header() {
             </div>
           )}
         </aside>
-      </header>
-    )
-  }
+      </div>
+    </div>
+    </header>
+  )
 }
 
 export default Header

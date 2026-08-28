@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { canchaService } from "../services/canchaService"
-import { Header } from "../components/layout/Header"
+import Header from "../components/layout/Header"
 import { Hero } from "../components/home/Hero"
 import { CourtCard } from "../components/home/CourtCard"
 import { WeeklyCalendar } from "../components/home/WeeklyCalendar"
