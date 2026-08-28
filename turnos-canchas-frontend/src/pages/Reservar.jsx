@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useDashboard } from '../context/DashboardContext';
 import '../styles/Reservar.css';
 
+const fmtARS = (v) => new Intl.NumberFormat("es-AR").format(Number(v || 0))
+
 function Reservar() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -228,7 +230,7 @@ function Reservar() {
           <h2>{cancha.nombre}</h2>
           <p className="tipo">{cancha.tipo === 'futbol5' ? 'Fútbol 5' : 'Pádel'}</p>
           <p className="descripcion">{cancha.descripcion}</p>
-          <p className="precio">Precio: ${cancha.precio_hora} / hora</p>
+          <p className="precio">Precio: ${fmtARS(cancha.precio_hora)} /hora</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -322,7 +324,7 @@ function Reservar() {
               <p><strong>Cancha:</strong> {cancha.nombre}</p>
               <p><strong>Fecha:</strong> {new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR')}</p>
               <p><strong>Horario:</strong> {horarioSeleccionado.hora_inicio.slice(0, 5)} - {horarioSeleccionado.hora_fin.slice(0, 5)}</p>
-              <p><strong>Pago total en el local:</strong> ${cancha.precio_hora}</p>
+              <p><strong>Pago total en el local:</strong> ${fmtARS(cancha.precio_hora)}</p>
               <p style={{ color: '#16a34a', fontSize: '0.9rem', fontWeight: '600' }}>
                 Sin seña ni pagos online. Se paga todo el día del turno.
               </p>

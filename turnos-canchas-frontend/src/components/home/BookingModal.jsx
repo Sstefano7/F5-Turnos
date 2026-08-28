@@ -8,6 +8,8 @@ import { turnoService } from "../../services/turnoService"
 import { clienteService } from "../../services/clienteService"
 import "./BookingModal.css"
 
+const fmtARS = (v) => new Intl.NumberFormat("es-AR").format(Number(v || 0))
+
 export function BookingModal({ open, onClose, initialCourt = null, initialDate = null, initialHour = null, canchas = [] }) {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -147,7 +149,7 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
                   <div className="booking-canchas-list">
                     {availableCanchasForSlot.map(c => (
                       <button key={c.id} className="booking-cancha-option" onClick={() => setSelectedCourt(c)}>
-                        <strong>{c.nombre}</strong> <span>{c.tipo === "futbol5" ? "Fútbol 5" : "Pádel"} · ${c.precio_hora}/hr</span>
+                        <strong>{c.nombre}</strong> <span>{c.tipo === "futbol5" ? "Fútbol 5" : "Pádel"} · ${fmtARS(c.precio_hora)}/hora</span>
                       </button>
                     ))}
                   </div>
@@ -163,7 +165,7 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
                         onClick={() => setSelectedCourt(c)}
                       >
                         <strong>{c.nombre}</strong>
-                        <span>{c.tipo === "futbol5" ? "Fútbol 5" : "Pádel"} · ${c.precio_hora}</span>
+                        <span>{c.tipo === "futbol5" ? "Fútbol 5" : "Pádel"} · ${fmtARS(c.precio_hora)}</span>
                       </button>
                     ))}
                   </div>
@@ -206,7 +208,7 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
           {step === 2 && (
             <div className="booking-step-content">
               <div className="booking-summary">
-                <strong>{selectedCourt?.nombre}</strong> · {selectedDate} · {selectedHorario?.hora_inicio.slice(0, 5)}-{selectedHorario?.hora_fin.slice(0, 5)} · ${selectedCourt?.precio_hora}
+                <strong>{selectedCourt?.nombre}</strong> · {selectedDate} · {selectedHorario?.hora_inicio.slice(0, 5)}-{selectedHorario?.hora_fin.slice(0, 5)} · ${fmtARS(selectedCourt?.precio_hora)}
               </div>
               <div className="booking-form-grid">
                 {[
@@ -240,7 +242,7 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
               <div className="booking-confirm-box">
                 <h4>{selectedCourt?.nombre}</h4>
                 <p>📅 {selectedDate} · 🕐 {selectedHorario?.hora_inicio.slice(0, 5)}-{selectedHorario?.hora_fin.slice(0, 5)}</p>
-                <p><strong>Pago total en el local:</strong> ${selectedCourt?.precio_hora}</p>
+                <p><strong>Pago total en el local:</strong> ${fmtARS(selectedCourt?.precio_hora)}</p>
                 <p className="booking-confirm-hint">Sin seña · Se paga todo el día del turno</p>
                 <hr />
                 <p><strong>{clienteData.nombre} {clienteData.apellido}</strong></p>

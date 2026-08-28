@@ -28,9 +28,37 @@ export default function Home() {
     setBooking({ open: true, court: null, date, hour })
   }
 
-  // Mostrar 3 destacadas como en el mock Figma, pero con datos reales
-  const featured = canchas.slice(0, 3)
-  // Para el calendario, pasar todas las canchas
+  // Mock data for the 3 featured courts as per design spec
+  const featuredCourts = [
+    {
+      id: "featured-1",
+      nombre: "Court A - Football 5",
+      tipo: "futbol5",
+      descripcion: "Cancha de fútbol 5 con césped sintético de última generación y arco blanco profesional.",
+      precio_hora: 8000,
+      activa: true,
+      imagen: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=800&q=80&auto=format&fit=crop"
+    },
+    {
+      id: "featured-2",
+      nombre: "Court B - Padel",
+      tipo: "padel",
+      descripcion: "Cancha de pádel panorámica con superficie azul y paredes de vidrio templado.",
+      precio_hora: 8000,
+      activa: true,
+      imagen: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80&auto=format&fit=crop"
+    },
+    {
+      id: "featured-3",
+      nombre: "Court C - Padel",
+      tipo: "padel",
+      descripcion: "Cancha de pádel profesional con superficie azul y paredes de vidrio.",
+      precio_hora: 6500,
+      activa: true,
+      imagen: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80&auto=format&fit=crop"
+    }
+  ]
+
   return (
     <div className="home">
       <Header />
@@ -55,7 +83,7 @@ export default function Home() {
             ) : (
               <>
                 <div className="home__grid">
-                  {featured.map(court => (
+                  {featuredCourts.map(court => (
                     <CourtCard key={court.id} court={court} onReserve={handleReserve} />
                   ))}
                 </div>

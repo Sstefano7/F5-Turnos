@@ -21,11 +21,13 @@ const thumbByType = {
   padel: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80&auto=format&fit=crop",
 }
 
+const fmtARS = (v) => new Intl.NumberFormat("es-AR").format(Number(v))
+
 export function CourtCard({ court, onReserve }) {
   const isFutbol = court.tipo === "futbol5"
   const amenities = amenitiesByType[court.tipo] || amenitiesByType.padel
   const thumb = court.imagen || thumbByType[court.tipo]
-  const price = Number(court.precio_hora).toFixed(0)
+  const price = fmtARS(court.precio_hora)
 
   return (
     <article className="court-card">
@@ -53,8 +55,8 @@ export function CourtCard({ court, onReserve }) {
 
       <div className="court-card__footer">
         <div className="court-card__price">
-          <span className="court-card__price-value">¥{price}</span>
-          <span className="court-card__price-suffix">/hr</span>
+          <span className="court-card__price-value">${price}</span>
+          <span className="court-card__price-suffix">/hora</span>
         </div>
         <Button
           variant={isFutbol ? "primary" : "blue"}
