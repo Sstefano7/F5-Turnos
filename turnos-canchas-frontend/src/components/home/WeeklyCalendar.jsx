@@ -39,21 +39,26 @@ export function WeeklyCalendar({ canchas = [], onSelectSlot }) {
     setLoading(true)
     const fetchWeek = async () => {
       const result = {}
+      const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
       for (const day of days) {
         const iso = toISO(day)
         const perHour = {}
-        // Para cada cancha, traer horarios disponibles de ese día y contar por hora
-        await Promise.all(
-          canchas.map(async (cancha) => {
-            try {
-              const horarios = await canchaService.getHorariosDisponibles(cancha.id, iso)
-              for (const h of horarios) {
-                const key = h.hora_inicio.slice(0, 5)
-                perHour[key] = (perHour[key] || 0) + 1
-              }
-            } catch {}
-          })
-        )
+        // No consultar horarios de días pasados
+        const isPastDay = day < startOfToday
+        if (!isPastDay) {
+          // Para cada cancha, traer horarios disponibles de ese día y contar por hora
+          await Promise.all(
+            canchas.map(async (cancha) => {
+              try {
+                const horarios = await canchaService.getHorariosDisponibles(cancha.id, iso)
+                for (const h of horarios) {
+                  const key = h.hora_inicio.slice(0, 5)
+                  perHour[key] = (perHour[key] || 0) + 1
+                }
+              } catch {}
+            })
+          )
+        }
         result[iso] = perHour
       }
       if (!cancelled) {
