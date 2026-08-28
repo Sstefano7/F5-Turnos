@@ -525,7 +525,7 @@ const handleExportarPDF = async () => {
                 <h4>Información Adicional</h4>
                 <ul>
                   <li><strong>Usuario:</strong> {selectedReport.user ? selectedReport.user.name : 'Anónimo'}</li>
-                  <li><strong>Contacto:</strong> {selectedReport.metadata?.contacto || 'No brindado'}</li>
+                  <li><strong>Contacto:</strong> {selectedReport.metadata?.contacto || 'No brindado'} ({selectedReport.metadata?.contacto_metodo || 'sin método'})</li>
                   <li><strong>Página:</strong> {selectedReport.pagina || 'No especificada'}</li>
                   <li><strong>Navegador:</strong> {selectedReport.navegador || 'No especificado'}</li>
                   <li><strong>Fecha:</strong> {new Date(selectedReport.created_at).toLocaleString('es-AR')}</li>

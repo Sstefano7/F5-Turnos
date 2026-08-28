@@ -136,6 +136,47 @@
   line-height: 1.5;
 }
 
+/* Método de contacto: Email o WhatsApp */
+.ideas-modal__metodo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ideas-modal__metodo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ideas-modal__metodo:hover {
+  border-color: #cbd5e1;
+}
+
+.ideas-modal__metodo.is-active {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.ideas-modal__metodo-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.ideas-modal__metodo strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .ideas-modal__success {
   display: flex;
   flex-direction: column;

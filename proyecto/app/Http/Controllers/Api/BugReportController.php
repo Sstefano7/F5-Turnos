@@ -47,7 +47,8 @@ class BugReportController extends Controller
             'pagina' => 'nullable|string',
             'navegador' => 'nullable|string',
             'pasos_reproducir' => 'nullable|string',
-            'contacto' => 'nullable|string|max:255'
+            'contacto' => 'nullable|string|max:255',
+            'contacto_metodo' => 'nullable|in:email,whatsapp'
         ]);
 
         $bugReport = BugReport::create([
@@ -64,6 +65,7 @@ class BugReportController extends Controller
                 'user_agent' => $request->header('User-Agent'),
                 'ip' => $request->ip(),
                 'contacto' => $request->contacto,
+                'contacto_metodo' => $request->contacto_metodo,
             ]
         ]);
 
@@ -116,7 +118,8 @@ class BugReportController extends Controller
                 "Nuevo mensaje de Ideas y Comentarios:\n\n" .
                 "Mensaje: {$bugReport->descripcion}\n\n" .
                 "Tipo: {$bugReport->tipo}\n" .
-                "Contacto: " . ($bugReport->metadata['contacto'] ?? 'No brindado') . "\n\n" .
+                "Contacto: " . ($bugReport->metadata['contacto'] ?? 'No brindado') .
+                " (" . ($bugReport->metadata['contacto_metodo'] ?? 'sin método') . ")\n\n" .
                 "Usuario: " . ($bugReport->user ? $bugReport->user->name : 'Anónimo') . "\n" .
                 "Página: {$bugReport->pagina}\n" .
                 "Navegador: {$bugReport->navegador}\n\n" .

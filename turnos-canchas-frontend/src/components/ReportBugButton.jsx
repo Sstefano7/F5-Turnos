@@ -7,6 +7,7 @@ function ReportBugButton() {
   const [tipo, setTipo] = useState('idea');
   const [mensaje, setMensaje] = useState('');
   const [contacto, setContacto] = useState('');
+  const [contactoMetodo, setContactoMetodo] = useState('email');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -35,6 +36,7 @@ function ReportBugButton() {
         tipo: tipoMap[tipo],
         prioridad: tipo === 'bug' ? 'media' : 'baja',
         contacto,
+        contacto_metodo: contactoMetodo,
         pagina: window.location.href,
         navegador: navigator.userAgent
       });
@@ -45,6 +47,7 @@ function ReportBugButton() {
         setSuccess(false);
         setMensaje('');
         setContacto('');
+        setContactoMetodo('email');
         setTipo('idea');
       }, 2000);
     } catch (err) {
@@ -121,15 +124,43 @@ function ReportBugButton() {
 
                 <div className="form-group">
                   <label htmlFor="contacto">¿Cómo te contactamos?</label>
-                  <input
-                    id="contacto"
-                    type="text"
-                    value={contacto}
-                    onChange={(e) => setContacto(e.target.value)}
-                    placeholder="Email, link de X/Twitter, Discord, etc."
-                  />
+                  <div className="ideas-modal__metodo-grid">
+                    <button
+                      type="button"
+                      className={`ideas-modal__metodo ${contactoMetodo === 'email' ? 'is-active' : ''}`}
+                      onClick={() => setContactoMetodo('email')}
+                    >
+                      <span className="ideas-modal__metodo-icon">✉️</span>
+                      <strong>Email</strong>
+                    </button>
+                    <button
+                      type="button"
+                      className={`ideas-modal__metodo ${contactoMetodo === 'whatsapp' ? 'is-active' : ''}`}
+                      onClick={() => setContactoMetodo('whatsapp')}
+                    >
+                      <span className="ideas-modal__metodo-icon">💬</span>
+                      <strong>WhatsApp</strong>
+                    </button>
+                  </div>
+                  {contactoMetodo === 'email' ? (
+                    <input
+                      id="contacto"
+                      type="email"
+                      value={contacto}
+                      onChange={(e) => setContacto(e.target.value)}
+                      placeholder="tucorreo@ejemplo.com"
+                    />
+                  ) : (
+                    <input
+                      id="contacto"
+                      type="tel"
+                      value={contacto}
+                      onChange={(e) => setContacto(e.target.value)}
+                      placeholder="+54 9 11 1234 5678"
+                    />
+                  )}
                   <small className="ideas-modal__hint">
-                    Si dejás X o Discord, asegurate de poder recibir DMs en X y solicitudes de amistad o DMs en Discord para que podamos responderte.
+                    Te vamos a responder por {contactoMetodo === 'email' ? 'email' : 'WhatsApp'}.
                   </small>
                 </div>
 
