@@ -86,10 +86,16 @@ class HorarioController extends Controller
     public function disponibles($canchaId, Request $request)
     {
         $request->validate([
-            'fecha' => 'required|date|after_or_equal:today'
+            'fecha' => 'required|date'
         ]);
 
         $fecha = Carbon::parse($request->fecha);
+
+        // Fechas pasadas: devolver arreglo vacío (la UI deshabilita esos días)
+        if ($fecha->isBefore(Carbon::today())) {
+            return response()->json([]);
+        }
+
         $diaSemana = $this->getDiaSemanaEspanol($fecha->dayOfWeek);
 
         // Obtener horarios de la cancha para ese día
