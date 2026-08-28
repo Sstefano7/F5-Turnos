@@ -17,8 +17,8 @@ const amenitiesByType = {
 }
 
 const thumbByType = {
-  futbol5: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=800&q=80&auto=format&fit=crop",
-  padel: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80&auto=format&fit=crop",
+  futbol5: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80&auto=format&fit=crop",
+  padel: "https://images.unsplash.com/photo-1611105979754-02a9e8b5e1b0?w=800&q=80&auto=format&fit=crop",
 }
 
 const fmtARS = (v) => new Intl.NumberFormat("es-AR").format(Number(v))

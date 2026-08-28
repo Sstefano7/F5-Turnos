@@ -32,25 +32,25 @@ export default function Home() {
   const featuredCourts = [
     {
       id: "featured-1",
-      nombre: "Court A - Football 5",
+      nombre: "Cancha A - Fútbol 5",
       tipo: "futbol5",
       descripcion: "Cancha de fútbol 5 con césped sintético de última generación y arco blanco profesional.",
       precio_hora: 8000,
       activa: true,
-      imagen: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=800&q=80&auto=format&fit=crop"
+      imagen: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80&auto=format&fit=crop"
     },
     {
       id: "featured-2",
-      nombre: "Court B - Padel",
+      nombre: "Cancha B - Pádel",
       tipo: "padel",
       descripcion: "Cancha de pádel panorámica con superficie azul y paredes de vidrio templado.",
       precio_hora: 8000,
       activa: true,
-      imagen: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80&auto=format&fit=crop"
+      imagen: "https://images.unsplash.com/photo-1611105979754-02a9e8b5e1b0?w=800&q=80&auto=format&fit=crop"
     },
     {
       id: "featured-3",
-      nombre: "Court C - Padel",
+      nombre: "Cancha C - Pádel",
       tipo: "padel",
       descripcion: "Cancha de pádel profesional con superficie azul y paredes de vidrio.",
       precio_hora: 6500,
