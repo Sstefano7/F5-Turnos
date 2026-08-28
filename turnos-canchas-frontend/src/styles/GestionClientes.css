@@ -1,14 +1,15 @@
 .clientes-table {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow-x: auto;
+  border: 1px solid #f1f5f9;
 }
 
 .turnos-count {
   padding: 5px 12px;
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #dbeafe;
+  color: #2563eb;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
@@ -20,39 +21,23 @@ table {
 }
 
 thead {
-  background: #f8f9fa;
+  background: #f8fafc;
 }
 
 th {
   padding: 15px;
   text-align: left;
   font-weight: 600;
-  color: #555;
-  border-bottom: 2px solid #e9ecef;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 td {
   padding: 15px;
-  border-bottom: 1px solid #e9ecef;
-  color: #333; 
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
 }
 
 tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.clientes-table {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
-}
-
-.turnos-count {
-  padding: 5px 12px;
-  background: #e3f2fd;
-  color: #1976d2;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  background: #f8fafc;
 }

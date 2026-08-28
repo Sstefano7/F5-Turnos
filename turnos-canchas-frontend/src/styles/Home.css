@@ -1,25 +1,27 @@
 .home-container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #f8fafc;
   width: 100vw;
   overflow-x: hidden;
 }
 
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: white;
+  color: #0f172a;
   padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   flex-wrap: wrap;
   gap: 15px;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .header h1 {
   margin: 0;
   font-size: 20px;
+  font-weight: 700;
 }
 
 .user-info {
@@ -32,23 +34,25 @@
 .user-info span {
   font-weight: 500;
   font-size: 13px;
+  color: #475569;
 }
 
 .btn-logout,
 .btn-login {
   padding: 8px 15px;
-  background: white;
-  color: #667eea;
+  background: #f1f5f9;
+  color: #475569;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
   font-size: 13px;
 }
 
 .btn-logout:hover,
 .btn-login:hover {
+  background: #e2e8f0;
   transform: translateY(-2px);
 }
 
@@ -59,9 +63,10 @@
 }
 
 .main-content h2 {
-  color: #333;
+  color: #0f172a;
   margin-bottom: 20px;
   font-size: 20px;
+  font-weight: 700;
 }
 
 .canchas-grid {
@@ -73,15 +78,16 @@
 
 .cancha-card {
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+  border: 1px solid #f1f5f9;
 }
 
 .cancha-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .cancha-header {
@@ -95,8 +101,9 @@
 
 .cancha-header h3 {
   margin: 0;
-  color: #333;
+  color: #0f172a;
   font-size: 18px;
+  font-weight: 700;
 }
 
 .tipo-badge {
@@ -108,17 +115,17 @@
 }
 
 .tipo-badge.futbol5 {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #dbeafe;
+  color: #2563eb;
 }
 
 .tipo-badge.padel {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: #f3e8ff;
+  color: #a855f7;
 }
 
 .cancha-descripcion {
-  color: #666;
+  color: #64748b;
   margin: 12px 0;
   line-height: 1.5;
   font-size: 14px;
@@ -130,7 +137,7 @@
   align-items: center;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f1f5f9;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -138,24 +145,27 @@
 .precio {
   font-size: 18px;
   font-weight: 700;
-  color: #27ae60;
+  color: #22c55e;
   margin: 0;
 }
 
 .btn-reservar {
   padding: 8px 18px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #22c55e;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
   font-size: 13px;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
 .btn-reservar:hover {
+  background: #16a34a;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .loading,
@@ -163,293 +173,110 @@
   text-align: center;
   padding: 30px 20px;
   font-size: 16px;
+  color: #64748b;
 }
 
 .error {
-  color: #c33;
+  color: #dc2626;
 }
 
 .btn-reservas {
   padding: 8px 15px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: #f1f5f9;
+  color: #475569;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.2s;
   font-size: 13px;
 }
 
 .btn-reservas:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #e2e8f0;
 }
 
 .btn-admin {
   padding: 8px 15px;
-  background: #ff9800;
-  color: white;
+  background: #ffedd5;
+  color: #ea580c;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.2s;
   font-size: 13px;
 }
 
 .btn-admin:hover {
-  background: #f57c00;
+  background: #fed7aa;
+  transform: translateY(-1px);
 }
 
 /* MEDIA QUERIES */
-
-/* Tablets (640px y arriba) */
 @media (min-width: 640px) {
-  .header {
-    padding: 18px 25px;
-  }
-
-  .header h1 {
-    font-size: 22px;
-  }
-
-  .user-info span {
-    font-size: 14px;
-  }
-
-  .btn-logout,
-  .btn-login,
-  .btn-reservas,
-  .btn-admin {
-    padding: 10px 18px;
-    font-size: 14px;
-  }
-
-  .main-content {
-    padding: 25px 20px;
-  }
-
-  .main-content h2 {
-    font-size: 24px;
-    margin-bottom: 25px;
-  }
-
-  .canchas-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .cancha-card {
-    padding: 22px;
-  }
-
-  .cancha-header h3 {
-    font-size: 19px;
-  }
-
-  .tipo-badge {
-    font-size: 12px;
-  }
-
-  .cancha-descripcion {
-    font-size: 15px;
-  }
-
-  .precio {
-    font-size: 20px;
-  }
-
-  .btn-reservar {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
+  .header { padding: 18px 25px; }
+  .header h1 { font-size: 22px; }
+  .user-info span { font-size: 14px; }
+  .btn-logout, .btn-login, .btn-reservas, .btn-admin { padding: 10px 18px; font-size: 14px; }
+  .main-content { padding: 25px 20px; }
+  .main-content h2 { font-size: 24px; margin-bottom: 25px; }
+  .canchas-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .cancha-card { padding: 22px; }
+  .cancha-header h3 { font-size: 19px; }
+  .tipo-badge { font-size: 12px; }
+  .cancha-descripcion { font-size: 15px; }
+  .precio { font-size: 20px; }
+  .btn-reservar { padding: 10px 20px; font-size: 14px; }
 }
 
-/* Tablets grandes (768px y arriba) */
 @media (min-width: 768px) {
-  .header {
-    padding: 20px 30px;
-  }
-
-  .header h1 {
-    font-size: 24px;
-  }
-
-  .main-content {
-    padding: 30px 25px;
-  }
-
-  .main-content h2 {
-    font-size: 26px;
-    margin-bottom: 30px;
-  }
-
-  .canchas-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-
-  .cancha-card {
-    padding: 25px;
-  }
-
-  .cancha-header h3 {
-    font-size: 20px;
-  }
-
-  .precio {
-    font-size: 22px;
-  }
-
-  .btn-reservar {
-    padding: 10px 22px;
-  }
+  .header { padding: 20px 30px; }
+  .header h1 { font-size: 24px; }
+  .main-content { padding: 30px 25px; }
+  .main-content h2 { font-size: 26px; margin-bottom: 30px; }
+  .canchas-grid { grid-template-columns: repeat(2, 1fr); gap: 25px; }
+  .cancha-card { padding: 25px; }
+  .cancha-header h3 { font-size: 20px; }
+  .precio { font-size: 22px; }
+  .btn-reservar { padding: 10px 22px; }
 }
 
-/* Desktops (1024px y arriba) */
 @media (min-width: 1024px) {
-  .header {
-    padding: 25px 40px;
-    flex-wrap: nowrap;
-  }
-
-  .header h1 {
-    font-size: 26px;
-  }
-
-  .user-info {
-    gap: 15px;
-  }
-
-  .user-info span {
-    font-size: 15px;
-  }
-
-  .btn-logout,
-  .btn-login,
-  .btn-reservas,
-  .btn-admin {
-    padding: 10px 20px;
-    font-size: 15px;
-  }
-
-  .main-content {
-    padding: 40px;
-  }
-
-  .main-content h2 {
-    font-size: 28px;
-    margin-bottom: 35px;
-  }
-
-  .canchas-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-
-  .cancha-card {
-    padding: 30px;
-  }
-
-  .cancha-header h3 {
-    font-size: 22px;
-  }
-
-  .cancha-descripcion {
-    font-size: 16px;
-  }
-
-  .precio {
-    font-size: 24px;
-  }
-
-  .btn-reservar {
-    padding: 12px 25px;
-    font-size: 16px;
-  }
-
-  .loading,
-  .error {
-    padding: 60px 20px;
-    font-size: 18px;
-  }
+  .header { padding: 25px 40px; flex-wrap: nowrap; }
+  .header h1 { font-size: 26px; }
+  .user-info { gap: 15px; }
+  .user-info span { font-size: 15px; }
+  .btn-logout, .btn-login, .btn-reservas, .btn-admin { padding: 10px 20px; font-size: 15px; }
+  .main-content { padding: 40px; }
+  .main-content h2 { font-size: 28px; margin-bottom: 35px; }
+  .canchas-grid { grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .cancha-card { padding: 30px; }
+  .cancha-header h3 { font-size: 22px; }
+  .cancha-descripcion { font-size: 16px; }
+  .precio { font-size: 24px; }
+  .btn-reservar { padding: 12px 25px; font-size: 16px; }
+  .loading, .error { padding: 60px 20px; font-size: 18px; }
 }
 
-/* Desktops muy grandes (1280px y arriba) */
 @media (min-width: 1280px) {
-  .header {
-    padding: 30px 50px;
-  }
-
-  .main-content {
-    padding: 50px;
-  }
-
-  .canchas-grid {
-    gap: 35px;
-  }
+  .header { padding: 30px 50px; }
+  .main-content { padding: 50px; }
+  .canchas-grid { gap: 35px; }
 }
 
-/* Ultra desktops (1920px y arriba) */
 @media (min-width: 1920px) {
-  .header {
-    padding: 35px 60px;
-  }
-
-  .header h1 {
-    font-size: 30px;
-  }
-
-  .user-info {
-    gap: 20px;
-  }
-
-  .user-info span {
-    font-size: 16px;
-  }
-
-  .btn-logout,
-  .btn-login,
-  .btn-reservas,
-  .btn-admin {
-    padding: 12px 25px;
-    font-size: 16px;
-  }
-
-  .main-content {
-    padding: 60px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .main-content h2 {
-    font-size: 32px;
-    margin-bottom: 40px;
-  }
-
-  .canchas-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
-  }
-
-  .cancha-card {
-    padding: 35px;
-  }
-
-  .cancha-header h3 {
-    font-size: 24px;
-  }
-
-  .cancha-descripcion {
-    font-size: 17px;
-  }
-
-  .precio {
-    font-size: 26px;
-  }
-
-  .btn-reservar {
-    padding: 14px 28px;
-    font-size: 17px;
-  }
+  .header { padding: 35px 60px; }
+  .header h1 { font-size: 30px; }
+  .user-info { gap: 20px; }
+  .user-info span { font-size: 16px; }
+  .btn-logout, .btn-login, .btn-reservas, .btn-admin { padding: 12px 25px; font-size: 16px; }
+  .main-content { padding: 60px; width: 100%; box-sizing: border-box; }
+  .main-content h2 { font-size: 32px; margin-bottom: 40px; }
+  .canchas-grid { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+  .cancha-card { padding: 35px; }
+  .cancha-header h3 { font-size: 24px; }
+  .cancha-descripcion { font-size: 17px; }
+  .precio { font-size: 26px; }
+  .btn-reservar { padding: 14px 28px; font-size: 17px; }
 }

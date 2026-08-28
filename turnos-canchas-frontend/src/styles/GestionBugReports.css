@@ -1,8 +1,9 @@
 .reports-table {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow-x: auto;
+  border: 1px solid #f1f5f9;
 }
 
 .tipo-icon {
@@ -13,7 +14,7 @@
 .estado-select {
   padding: 6px 10px;
   border: 2px solid;
-  border-radius: 5px;
+  border-radius: 8px;
   background: white;
   cursor: pointer;
   font-size: 13px;
@@ -32,73 +33,83 @@
 /* Prioridades */
 .prioridad-baja,
 .prioridad-select[value="baja"] {
-  border-color: #28a745;
-  color: #28a745;
+  border-color: #22c55e;
+  color: #22c55e;
+  background: #f0fdf4;
 }
 
 .prioridad-media,
 .prioridad-select[value="media"] {
-  border-color: #ffc107;
-  color: #ff8c00;
+  border-color: #eab308;
+  color: #ca8a04;
+  background: #fefce8;
 }
 
 .prioridad-alta,
 .prioridad-select[value="alta"] {
-  border-color: #fd7e14;
-  color: #fd7e14;
+  border-color: #f97316;
+  color: #f97316;
+  background: #fff7ed;
 }
 
 .prioridad-critica,
 .prioridad-select[value="critica"] {
-  border-color: #dc3545;
-  color: #dc3545;
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
 }
 
 /* Estados */
 .estado-nuevo,
 .estado-select[value="nuevo"] {
-  border-color: #17a2b8;
-  color: #17a2b8;
+  border-color: #06b6d4;
+  color: #06b6d4;
+  background: #ecfeff;
 }
 
 .estado-revision,
 .estado-select[value="en_revision"] {
-  border-color: #6f42c1;
-  color: #6f42c1;
+  border-color: #a855f7;
+  color: #a855f7;
+  background: #faf5ff;
 }
 
 .estado-progreso,
 .estado-select[value="en_progreso"] {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
 }
 
 .estado-resuelto,
 .estado-select[value="resuelto"] {
-  border-color: #28a745;
-  color: #28a745;
+  border-color: #22c55e;
+  color: #22c55e;
+  background: #f0fdf4;
 }
 
 .estado-cerrado,
 .estado-select[value="cerrado"] {
-  border-color: #6c757d;
-  color: #6c757d;
+  border-color: #64748b;
+  color: #64748b;
+  background: #f8fafc;
 }
 
 .btn-ver {
   padding: 6px 15px;
-  background: #17a2b8;
+  background: #06b6d4;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.3s;
+  font-weight: 600;
+  transition: all 0.2s;
   margin-right: 5px;
 }
 
 .btn-ver:hover {
-  background: #138496;
+  background: #0891b2;
+  transform: translateY(-1px);
 }
 
 /* Modal de detalles */
@@ -106,6 +117,7 @@
   max-width: 700px;
   max-height: 85vh;
   overflow-y: auto;
+  border-radius: 16px;
 }
 
 .detail-content {
@@ -115,7 +127,7 @@
 .detail-section {
   margin-bottom: 25px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .detail-section:last-child {
@@ -124,31 +136,34 @@
 
 .detail-section h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: #0f172a;
   font-size: 22px;
+  font-weight: 700;
 }
 
 .detail-section h4 {
   margin: 0 0 10px 0;
-  color: #555;
+  color: #334155;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .detail-section p {
-  color: #666;
+  color: #475569;
   line-height: 1.6;
   margin: 0;
 }
 
 .detail-section pre {
-  background: #f8f9fa;
+  background: #f8fafc;
   padding: 15px;
-  border-radius: 5px;
-  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  border-left: 4px solid #22c55e;
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
   margin: 0;
+  color: #334155;
 }
 
 .detail-section ul {
@@ -159,7 +174,7 @@
 
 .detail-section ul li {
   padding: 8px 0;
-  color: #666;
+  color: #475569;
 }
 
 .detail-badges {
