@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import { useTheme } from "../../hooks/useTheme"
 import { Button } from "../ui/Button"
-import { LogOut, LayoutDashboard, CalendarDays, Menu, X, ChevronDown } from "lucide-react"
+import { LogOut, LayoutDashboard, CalendarDays, Menu, X, ChevronDown, Sun, Moon } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import "./Header.css"
 
 function Header() {
   const { user, logout, isAdmin } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -124,6 +126,15 @@ function Header() {
                 </Button>
               </div>
             )}
+
+            <button
+              className="header__theme-toggle"
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+              title={theme === "dark" ? "Modo claro" : "Modo oscuro"}
+            >
+              {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+            </button>
           </div>
 
           <button 
@@ -200,6 +211,11 @@ function Header() {
                 </Button>
               </div>
             )}
+
+            <button className="header__mobile-theme" onClick={toggleTheme}>
+              {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+              {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+            </button>
           </aside>
         </div>
       </div>

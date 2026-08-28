@@ -37,7 +37,7 @@ export default function Home() {
       descripcion: "Cancha de fútbol 5 con césped sintético de última generación y arco blanco profesional.",
       precio_hora: 8000,
       activa: true,
-      imagen: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80&auto=format&fit=crop"
+      imagen: "https://images.unsplash.com/photo-1510526292299-20af3f62d453?w=800&q=80&auto=format&fit=crop"
     },
     {
       id: "featured-2",
@@ -46,7 +46,7 @@ export default function Home() {
       descripcion: "Cancha de pádel panorámica con superficie azul y paredes de vidrio templado.",
       precio_hora: 8000,
       activa: true,
-      imagen: "https://images.unsplash.com/photo-1611105979754-02a9e8b5e1b0?w=800&q=80&auto=format&fit=crop"
+      imagen: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80&auto=format&fit=crop"
     },
     {
       id: "featured-3",

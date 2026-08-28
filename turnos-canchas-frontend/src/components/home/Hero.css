@@ -29,13 +29,13 @@
 .hero__pane--football {
   background-image:
     linear-gradient(180deg, rgba(15,23,42,0) 20%, rgba(15,23,42,0.55) 100%),
-    url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=80&auto=format&fit=crop");
+    url("https://images.unsplash.com/photo-1510526292299-20af3f62d453?w=1600&q=80&auto=format&fit=crop");
   clip-path: polygon(0 0, 68% 0, 58% 100%, 0 100%);
 }
 .hero__pane--padel {
   background-image:
     linear-gradient(180deg, rgba(15,23,42,0) 20%, rgba(15,23,42,0.55) 100%),
-    url("https://images.unsplash.com/photo-1611105979754-02a9e8b5e1b0?w=1600&q=80&auto=format&fit=crop");
+    url("https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1600&q=80&auto=format&fit=crop");
   clip-path: polygon(68% 0, 100% 0, 100% 100%, 58% 100%);
 }
 

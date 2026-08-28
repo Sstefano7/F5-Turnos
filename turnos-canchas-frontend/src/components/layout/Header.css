@@ -1,6 +1,8 @@
 .header {
   position: sticky; top: 0; z-index: var(--z-header);
-  background: rgba(255,255,255,0.95); backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--white-pure) 92%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--gray-200);
   transition: box-shadow var(--duration-normal) var(--ease-out);
 }
@@ -158,3 +160,22 @@
 .header__mobile-btn--danger:hover { background: #fee2e2; border-color: #fca5a5; }
 
 .header__mobile-auth { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); border-top: 1px solid var(--gray-200); background: var(--gray-50); }
+
+/* Theme toggle */
+.header__theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: var(--radius-full);
+  border: 1px solid var(--gray-200); background: var(--white-pure);
+  color: var(--gray-600); cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.header__theme-toggle:hover { background: var(--gray-100); color: var(--gray-800); border-color: var(--gray-300); }
+
+.header__mobile-theme {
+  margin: 0 var(--space-4) var(--space-4);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  background: var(--white-pure); color: var(--gray-700); font-weight: var(--weight-semibold);
+  cursor: pointer; transition: all var(--duration-fast) var(--ease-out);
+}
+.header__mobile-theme:hover { background: var(--gray-100); color: var(--gray-800); }

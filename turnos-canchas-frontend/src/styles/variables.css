@@ -97,3 +97,31 @@ Light minimalista | Figma clean UI
   --bp-desktop: 1024px;
   --bp-wide: 1280px;
 }
+
+/* ============================================
+Dark theme - invert neutral ramp + soft tints
+============================================ */
+:root[data-theme="dark"] {
+  --white-pure: #0f172a;   /* base de página */
+  --gray-50: #1e293b;      /* fondo de tarjetas */
+  --gray-100: #334155;     /* fondos sutiles */
+  --gray-200: #475569;     /* bordes */
+  --gray-300: #64748b;     /* bordes hover */
+  --gray-400: #94a3b8;     /* iconos */
+  --gray-500: #cbd5e1;     /* texto secundario */
+  --gray-600: #e2e8f0;     /* texto */
+  --gray-700: #f1f5f9;     /* texto fuerte */
+  --gray-800: #f8fafc;     /* títulos */
+  --gray-900: #ffffff;     /* texto más fuerte */
+
+  --green-light: #14532d;
+  --green-soft: #052e16;
+  --blue-light: #1e3a8a;
+  --blue-soft: #172554;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.36);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.4), 0 4px 6px rgba(0,0,0,0.32);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.4), 0 10px 10px rgba(0,0,0,0.3);
+}
