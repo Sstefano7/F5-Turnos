@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Errores</title>
+    <title>Ideas y Comentarios</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 11px; color: #333; line-height: 1.4; }
         h1 { text-align: center; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
@@ -14,16 +14,16 @@
     </style>
 </head>
 <body>
-    <h1>Reporte de Incidencias</h1>
+    <h1>Ideas y Comentarios</h1>
     
     <table>
         <thead>
             <tr>
                 <th style="width: 30px;">ID</th>
-                <th>Título / Tipo</th>
-                <th>Descripción</th>
-                <th>Estado / Prioridad</th>
-                <th>Pasos</th>
+                <th>Mensaje / Tipo</th>
+                <th>Tipo</th>
+                <th>Contacto</th>
+                <th>Estado</th>
                 <th>Fecha</th>
             </tr>
         </thead>
@@ -33,14 +33,14 @@
                 <td>{{ $bug->id }}</td>
                 <td>
                     <strong>{{ $bug->titulo ?? 'Sin título' }}</strong><br>
-                    <small>Tipo: {{ $bug->tipo ?? 'N/A' }}</small>
+                    <small>{{ $bug->descripcion ?? 'Sin descripción' }}</small>
                 </td>
-                <td>{{ $bug->descripcion ?? 'Sin descripción' }}</td>
+                <td>{{ $bug->tipo ?? 'N/A' }}</td>
+                <td>{{ $bug->metadata['contacto'] ?? 'No brindado' }}</td>
                 <td>
                     <span>{{ str_replace('_', ' ', $bug->estado) ?? 'N/A' }}</span><br>
                     <small class="prioridad-{{ $bug->prioridad }}">P: {{ $bug->prioridad ?? 'N/A' }}</small>
                 </td>
-                <td>{{ $bug->pasos_reproducir ?? 'No especificados' }}</td>
                 <td>{{ optional($bug->created_at)->format('d/m/Y H:i') ?? 'N/A' }}</td>
             </tr>
             @empty

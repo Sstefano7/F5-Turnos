@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../ui/Button"
-import { ArrowRight, MapPin, Clock3, ShieldCheck } from "lucide-react"
+import { ArrowRight, MapPin, Clock3, ShieldCheck, Goal, Volleyball } from "lucide-react"
 import "./Hero.css"
 
 export function Hero({ onExplore }) {
@@ -12,14 +12,24 @@ export function Hero({ onExplore }) {
         <div className="hero__diagonal">
           <div className="hero__pane hero__pane--football">
             <div className="hero__pane-label">
-              <span className="hero__pane-icon">⚽</span>
-              <div><strong>FÚTBOL 5</strong><span>Césped sintético · Arco blanco</span></div>
+              <span className="hero__pane-icon">
+                <Goal size={18} />
+              </span>
+              <div>
+                <strong>FÚTBOL 5</strong>
+                <span>Césped sintético · Arco blanco</span>
+              </div>
             </div>
           </div>
           <div className="hero__pane hero__pane--padel">
             <div className="hero__pane-label hero__pane-label--right">
-              <div><strong>PÁDEL</strong><span>Superficie azul · Vidrio panorámico</span></div>
-              <span className="hero__pane-icon">🎾</span>
+              <div>
+                <strong>PÁDEL</strong>
+                <span>Superficie azul · Vidrio panorámico</span>
+              </div>
+              <span className="hero__pane-icon">
+                <Volleyball size={18} />
+              </span>
             </div>
           </div>
           <div className="hero__diagonal-line" />

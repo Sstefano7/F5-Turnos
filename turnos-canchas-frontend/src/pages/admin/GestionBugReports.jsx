@@ -54,9 +54,9 @@ function AdminDashboard() {
           {isSuperAdmin() && (
             <>
               <button className="menu-card super-admin-card" onClick={() => navigate('/admin/bug-reports')}>
-                <div className="menu-icon">🐛</div>
-                <h3>Reportes de Bugs</h3>
-                <p>Ver y gestionar reportes</p>
+                <div className="menu-icon">💡</div>
+                <h3>Ideas y Comentarios</h3>
+                <p>Ver y gestionar mensajes</p>
                 <span className="superadmin-badge">Super Admin</span>
               </button>
 
@@ -283,8 +283,17 @@ const handleExportarPDF = async () => {
     switch (tipo) {
       case 'bug': return '🐛';
       case 'mejora': return '💡';
-      case 'pregunta': return '❓';
+      case 'pregunta': return '✨';
       default: return '📋';
+    }
+  };
+
+  const getTipoTexto = (tipo) => {
+    switch (tipo) {
+      case 'bug': return 'Bug';
+      case 'mejora': return 'Sugerencia';
+      case 'pregunta': return 'Idea';
+      default: return tipo;
     }
   };
 
@@ -328,7 +337,7 @@ const handleExportarPDF = async () => {
         <button onClick={() => navigate('/admin')} className="btn-back">
           ← Volver al Panel
         </button>
-        <h1>Gestión de Reportes de Errores</h1>
+        <h1>Gestión de Ideas y Comentarios</h1>
       </header>
 
       <div className="gestion-content">
@@ -340,9 +349,9 @@ const handleExportarPDF = async () => {
               <label>Tipo</label>
               <select name="tipo" value={filtros.tipo} onChange={handleFiltroChange}>
                 <option value="">Todos</option>
-                <option value="bug">Error</option>
-                <option value="mejora">Mejora</option>
-                <option value="pregunta">Pregunta</option>
+                <option value="bug">Bug</option>
+                <option value="mejora">Sugerencia</option>
+                <option value="pregunta">Idea</option>
               </select>
             </div>
 
@@ -401,7 +410,7 @@ const handleExportarPDF = async () => {
               {reports.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
-                    No hay reportes para mostrar
+                    No hay mensajes para mostrar
                   </td>
                 </tr>
               ) : (
@@ -410,6 +419,7 @@ const handleExportarPDF = async () => {
                     <td>{report.id}</td>
                     <td>
                       <span className="tipo-icon">{getTipoIcon(report.tipo)}</span>
+                      <span style={{ marginLeft: '6px' }}>{getTipoTexto(report.tipo)}</span>
                     </td>
                     <td>
                       <strong>{report.titulo}</strong>
@@ -480,7 +490,7 @@ const handleExportarPDF = async () => {
         <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
           <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Detalles del Reporte #{selectedReport.id}</h2>
+              <h2>Detalles del Mensaje #{selectedReport.id}</h2>
               <button onClick={() => setShowDetailModal(false)} className="btn-close">
                 ×
               </button>
@@ -515,6 +525,7 @@ const handleExportarPDF = async () => {
                 <h4>Información Adicional</h4>
                 <ul>
                   <li><strong>Usuario:</strong> {selectedReport.user ? selectedReport.user.name : 'Anónimo'}</li>
+                  <li><strong>Contacto:</strong> {selectedReport.metadata?.contacto || 'No brindado'}</li>
                   <li><strong>Página:</strong> {selectedReport.pagina || 'No especificada'}</li>
                   <li><strong>Navegador:</strong> {selectedReport.navegador || 'No especificado'}</li>
                   <li><strong>Fecha:</strong> {new Date(selectedReport.created_at).toLocaleString('es-AR')}</li>
@@ -532,7 +543,7 @@ const handleExportarPDF = async () => {
                 onClick={handleExportarPDF} 
                 style={{ backgroundColor: '#222', color: '#fff', padding: '10px 18px', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500', transition: '0.3s' }}
             >
-                <span>⚠️</span> Exportar Errores a PDF
+                <span>💡</span> Exportar Ideas a PDF
             </button>
 
             {/* Botón de Logs */}

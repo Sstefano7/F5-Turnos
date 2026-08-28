@@ -46,7 +46,8 @@ class BugReportController extends Controller
             'prioridad' => 'in:baja,media,alta,critica',
             'pagina' => 'nullable|string',
             'navegador' => 'nullable|string',
-            'pasos_reproducir' => 'nullable|string'
+            'pasos_reproducir' => 'nullable|string',
+            'contacto' => 'nullable|string|max:255'
         ]);
 
         $bugReport = BugReport::create([
@@ -62,6 +63,7 @@ class BugReportController extends Controller
             'metadata' => [
                 'user_agent' => $request->header('User-Agent'),
                 'ip' => $request->ip(),
+                'contacto' => $request->contacto,
             ]
         ]);
 
@@ -111,18 +113,17 @@ class BugReportController extends Controller
             $adminEmail = config('turnos.admin_email');
 
             Mail::raw(
-                "Nuevo reporte de bug:\n\n" .
-                "Título: {$bugReport->titulo}\n" .
+                "Nuevo mensaje de Ideas y Comentarios:\n\n" .
+                "Mensaje: {$bugReport->descripcion}\n\n" .
                 "Tipo: {$bugReport->tipo}\n" .
-                "Prioridad: {$bugReport->prioridad}\n" .
-                "Descripción: {$bugReport->descripcion}\n\n" .
+                "Contacto: " . ($bugReport->metadata['contacto'] ?? 'No brindado') . "\n\n" .
                 "Usuario: " . ($bugReport->user ? $bugReport->user->name : 'Anónimo') . "\n" .
                 "Página: {$bugReport->pagina}\n" .
                 "Navegador: {$bugReport->navegador}\n\n" .
                 "Ver más detalles en: " . config('app.url') . "/admin/bug-reports/{$bugReport->id}",
                 function ($message) use ($adminEmail, $bugReport) {
                     $message->to($adminEmail)
-                        ->subject("Nuevo Bug Report: {$bugReport->titulo}");
+                        ->subject("Ideas y Comentarios: {$bugReport->tipo}");
                 }
             );
         } catch (\Exception $e) {

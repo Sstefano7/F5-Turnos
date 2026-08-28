@@ -1,26 +1,27 @@
 import { useState } from 'react';
 import { bugReportService } from '../services/bugReportService';
-import '../styles/ReportBug.css';
+import '../styles/IdeasComentarios.css';
 
 function ReportBugButton() {
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    tipo: 'bug',
-    prioridad: 'media',
-    pasos_reproducir: ''
-  });
+  const [tipo, setTipo] = useState('idea');
+  const [mensaje, setMensaje] = useState('');
+  const [contacto, setContacto] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const tipoMap = {
+    bug: 'bug',
+    sugerencia: 'mejora',
+    idea: 'pregunta',
   };
+
+  const opciones = [
+    { value: 'bug', label: 'Bug', icon: '🐛', desc: 'Algo no funciona como debería' },
+    { value: 'sugerencia', label: 'Sugerencia', icon: '💡', desc: 'Una mejora para lo que ya existe' },
+    { value: 'idea', label: 'Idea', icon: '✨', desc: 'Algo nuevo que te gustaría ver' },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +30,11 @@ function ReportBugButton() {
 
     try {
       await bugReportService.create({
-        ...formData,
+        titulo: mensaje.length > 100 ? mensaje.slice(0, 97) + '...' : mensaje,
+        descripcion: mensaje,
+        tipo: tipoMap[tipo],
+        prioridad: tipo === 'bug' ? 'media' : 'baja',
+        contacto,
         pagina: window.location.href,
         navegador: navigator.userAgent
       });
@@ -38,16 +43,12 @@ function ReportBugButton() {
       setTimeout(() => {
         setShowModal(false);
         setSuccess(false);
-        setFormData({
-          titulo: '',
-          descripcion: '',
-          tipo: 'bug',
-          prioridad: 'media',
-          pasos_reproducir: ''
-        });
+        setMensaje('');
+        setContacto('');
+        setTipo('idea');
       }, 2000);
     } catch (err) {
-      setError('Error al enviar el reporte. Por favor intenta nuevamente.');
+      setError('Error al enviar el mensaje. Por favor intenta nuevamente.');
     } finally {
       setLoading(false);
     }
@@ -58,91 +59,78 @@ function ReportBugButton() {
       <button 
         className="report-bug-btn" 
         onClick={() => setShowModal(true)}
-        title="Reportar un problema"
+        title="Ideas y comentarios"
       >
-        ⚠️ Reportar Error
+        <span className="report-bug-btn__icon">💡</span>
+        Ideas y Comentarios
       </button>
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content bug-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Reportar un Problema</h2>
-              <button onClick={() => setShowModal(false)} className="btn-close">
+          <div className="modal-content ideas-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ideas-modal__header">
+              <h2>Ideas y Comentarios</h2>
+              <button onClick={() => setShowModal(false)} className="btn-close" aria-label="Cerrar">
                 ×
               </button>
             </div>
 
             {success ? (
-              <div className="success-message">
-                ✓ ¡Reporte enviado exitosamente! Gracias por tu feedback.
+              <div className="ideas-modal__success">
+                <span className="ideas-modal__success-icon">✓</span>
+                <p>¡Mensaje enviado! Gracias por tu aporte.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
                 {error && <div className="error-message">{error}</div>}
 
+                <p className="ideas-modal__intro">
+                  Contanos qué te gustaría ver en la página, reportá un bug o dejanos cualquier sugerencia.
+                </p>
+
                 <div className="form-group">
-                  <label>Tipo de Reporte *</label>
-                  <select
-                    name="tipo"
-                    value={formData.tipo}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="bug">⚠️ Error del Sistema</option>
-                    <option value="mejora">💡 Sugerencia de Mejora</option>
-                    <option value="pregunta">❓ Pregunta</option>
-                  </select>
+                  <label>¿Qué tipo de mensaje es?</label>
+                  <div className="ideas-modal__tipo-grid">
+                    {opciones.map((op) => (
+                      <button
+                        key={op.value}
+                        type="button"
+                        className={`ideas-modal__tipo ${tipo === op.value ? 'is-active' : ''}`}
+                        onClick={() => setTipo(op.value)}
+                      >
+                        <span className="ideas-modal__tipo-icon">{op.icon}</span>
+                        <strong>{op.label}</strong>
+                        <small>{op.desc}</small>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label>Prioridad *</label>
-                  <select
-                    name="prioridad"
-                    value={formData.prioridad}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="baja">Baja</option>
-                    <option value="media">Media</option>
-                    <option value="alta">Alta</option>
-                    <option value="critica">Crítica</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label>Título *</label>
-                  <input
-                    type="text"
-                    name="titulo"
-                    value={formData.titulo}
-                    onChange={handleChange}
-                    placeholder="Resumen breve del problema"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Descripción *</label>
+                  <label htmlFor="mensaje">¿Qué mejorarías de la página?</label>
                   <textarea
-                    name="descripcion"
-                    value={formData.descripcion}
-                    onChange={handleChange}
-                    placeholder="Describe el problema con el mayor detalle posible"
+                    id="mensaje"
+                    name="mensaje"
+                    value={mensaje}
+                    onChange={(e) => setMensaje(e.target.value)}
+                    placeholder="Escribí tu mensaje acá..."
                     rows="4"
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Pasos para Reproducir (opcional)</label>
-                  <textarea
-                    name="pasos_reproducir"
-                    value={formData.pasos_reproducir}
-                    onChange={handleChange}
-                    placeholder="1. Ir a...&#10;2. Hacer clic en...&#10;3. Ver error..."
-                    rows="3"
+                  <label htmlFor="contacto">¿Cómo te contactamos?</label>
+                  <input
+                    id="contacto"
+                    type="text"
+                    value={contacto}
+                    onChange={(e) => setContacto(e.target.value)}
+                    placeholder="Email, link de X/Twitter, Discord, etc."
                   />
+                  <small className="ideas-modal__hint">
+                    Si dejás X o Discord, asegurate de poder recibir DMs en X y solicitudes de amistad o DMs en Discord para que podamos responderte.
+                  </small>
                 </div>
 
                 <div className="modal-actions">
@@ -159,7 +147,7 @@ function ReportBugButton() {
                     className="btn-save"
                     disabled={loading}
                   >
-                    {loading ? 'Enviando...' : 'Enviar Reporte'}
+                    {loading ? 'Enviando...' : 'Enviar'}
                   </button>
                 </div>
               </form>

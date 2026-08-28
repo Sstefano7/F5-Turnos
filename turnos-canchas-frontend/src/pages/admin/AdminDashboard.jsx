@@ -88,9 +88,9 @@ function AdminDashboard() {
               className="menu-card super-admin-card"
               onClick={() => navigate('/admin/bug-reports')}
             >
-              <div className="menu-icon">⚠️</div>
-              <h3>Reportes de Errores</h3>
-              <p>Ver y gestionar reportes</p>
+              <div className="menu-icon">💡</div>
+              <h3>Ideas y Comentarios</h3>
+              <p>Ver y gestionar mensajes</p>
               <span className="superadmin-badge">Super Admin</span>
             </button>
           )}
