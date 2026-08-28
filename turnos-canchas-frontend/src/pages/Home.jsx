@@ -55,7 +55,7 @@ export default function Home() {
       descripcion: "Cancha de pádel profesional con superficie azul y paredes de vidrio.",
       precio_hora: 6500,
       activa: true,
-      imagen: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80&auto=format&fit=crop"
+      imagen: "https://acdn-us.mitiendanube.com/stores/001/408/700/products/full-360-5-b1a2ca90efa7b1d7c917368620610522-1024-1024.webp"
     }
   ]
 
