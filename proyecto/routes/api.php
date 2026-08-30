@@ -12,22 +12,33 @@ use App\Http\Controllers\Api\BugReportController;
 use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\BackupScheduleController;
+use App\Http\Controllers\Api\ProfileController;
 
 // Rutas públicas (sin autenticación)
 
-// Registro: máximo 3 intentos por minuto (evitar creación masiva de cuentas)
-Route::middleware('throttle:3,1')->post('/register', [AuthController::class, 'register']);
+// Registro: máximo 8 registros por hora por IP (evitar creación masiva de cuentas).
+// Prefijo 'register': cada ruta throttle usa su propio key (Laravel los comparte por IP si no se distinguen).
+Route::middleware('throttle:8,60,register')->post('/register', [AuthController::class, 'register']);
+
+// Verificación de email desde el link del correo
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
+
+// Captcha invisible auto-contenido (reto aritmético tras 3 intentos fallidos)
+Route::middleware('throttle:20,1,challenge')->post('/register/challenge', [AuthController::class, 'solveChallenge']);
+
+// Validación de código promocional (botón "Aplicar")
+Route::middleware('throttle:10,1,promo')->post('/promo/validate', [AuthController::class, 'validatePromo']);
 
 // Login y recuperación: máximo 5 intentos por minuto (protección brute-force y spam)
-Route::middleware('throttle:5,1')->group(function () {
+Route::middleware('throttle:5,1,login')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 });
 
 // Reset password: máximo 10 intentos por minuto
-Route::middleware('throttle:10,1')->post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::middleware('throttle:10,1,reset')->post('/reset-password', [AuthController::class, 'resetPassword']);
 
-Route::middleware('throttle:5,1')->post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs (máx 5/min)
+Route::middleware('throttle:5,1,bug')->post('/bug-reports', [BugReportController::class, 'store']); // Cualquiera puede reportar bugs (máx 5/min)
 Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
@@ -38,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
+    Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto']);
     
     // Gestión de turnos (usuarios normales)
     Route::get('/turnos', [TurnoController::class, 'index']);

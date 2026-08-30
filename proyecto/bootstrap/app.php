@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,6 +30,21 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
+                // Validación de formularios: HTTP 422 con errores por campo
+                if ($e instanceof ValidationException) {
+                    return new JsonResponse([
+                        'message' => $e->getMessage(),
+                        'errors' => $e->errors(),
+                    ], 422);
+                }
+
+                // Requiere autenticación: HTTP 401
+                if ($e instanceof AuthenticationException) {
+                    return new JsonResponse([
+                        'message' => 'No autenticado.',
+                    ], 401);
+                }
+
                 $status = 500;
                 if ($e instanceof HttpException) {
                     $status = $e->getStatusCode();

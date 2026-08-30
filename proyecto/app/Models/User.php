@@ -21,6 +21,21 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone',
+        'country_code',
+        'birth_date',
+        'dni',
+        'gender',
+        'preferred_sport',
+        'skill_level',
+        'preferred_days',
+        'preferred_times',
+        'team_name',
+        'profile_photo',
+        'newsletter',
+        'sms_notifications',
+        'email_verification_token',
+        'email_verified_at',
     ];
 
     /**
@@ -31,6 +46,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verification_token',
     ];
 
     /**
@@ -42,7 +58,27 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'birth_date' => 'date',
+            'preferred_days' => 'array',
+            'preferred_times' => 'array',
+            'newsletter' => 'boolean',
+            'sms_notifications' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class, 'email', 'email');
+    }
+
+    public function promocodes()
+    {
+        return $this->hasMany(Promocode::class);
+    }
+
+    public function generateVerificationToken(): string
+    {
+        return \Illuminate\Support\Str::random(64);
     }
 }
