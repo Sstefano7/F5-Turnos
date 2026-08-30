@@ -121,8 +121,8 @@ function Header() {
                 <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
                   Iniciar sesión
                 </Button>
-                <Button variant="primary" size="sm" onClick={() => navigate("/login")}>
-                  <span>Reservar</span>
+                <Button variant="primary" size="sm" onClick={() => navigate("/register")}>
+                  <span>Crear cuenta</span>
                 </Button>
               </div>
             )}
@@ -203,11 +203,11 @@ function Header() {
               </div>
             ) : (
               <div className="header__mobile-auth">
-                <Button variant="primary" block onClick={() => { closeMenus(); navigate("/login") }}>
-                  Iniciar sesión
+                <Button variant="primary" block onClick={() => { closeMenus(); navigate("/register") }}>
+                  Crear cuenta
                 </Button>
                 <Button variant="secondary" block onClick={() => { closeMenus(); navigate("/login") }}>
-                  Reservar
+                  Iniciar sesión
                 </Button>
               </div>
             )}

@@ -2,6 +2,9 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
+import Register from './pages/Register';
+import RegisterSuccess from './pages/RegisterSuccess';
+import VerifyEmail from './pages/VerifyEmail';
 
 import Reservar from './pages/Reservar';
 import MisReservas from './pages/MisReservas';
@@ -36,6 +39,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/register/success" element={<RegisterSuccess />} />
+        <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
          {/* Rutas protegidas para usuarios autenticados */}
         <Route 

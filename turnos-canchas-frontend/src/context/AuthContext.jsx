@@ -29,15 +29,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, passwordConfirmation) => {
+  const register = async (data) => {
     try {
-      const data = await authService.register(name, email, password, passwordConfirmation);
-      setUser(data.user);
-      return { success: true };
+      const response = await authService.register(data);
+      setUser(response.user);
+      return { success: true, data: response };
     } catch (error) {
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Error al registrarse' 
+        error: error.response?.data?.message || 'Error al registrarse',
+        errors: error.response?.data?.errors || null,
+        status: error.response?.status || null,
       };
     }
   };
