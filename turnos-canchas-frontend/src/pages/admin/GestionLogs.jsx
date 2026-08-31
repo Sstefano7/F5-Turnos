@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { logsService } from '../../services/logsService';
+import '../../styles/GestionLogs.css';
+import Swal from 'sweetalert2';
+import { ChevronLeft, FileText, Trash2 } from 'lucide-react';
+
+const NIVELES = {
+  emergency: { label: 'EMERGENCY', class: 'nivel-emergency' },
+  alert: { label: 'ALERT', class: 'nivel-alert' },
+  critical: { label: 'CRITICAL', class: 'nivel-critical' },
+  error: { label: 'ERROR', class: 'nivel-error' },
+  warning: { label: 'WARNING', class: 'nivel-warning' },
+  notice: { label: 'NOTICE', class: 'nivel-notice' },
+  info: { label: 'INFO', class: 'nivel-info' },
+  debug: { label: 'DEBUG', class: 'nivel-debug' },
+};
 
 function GestionLogs() {
   const [logs, setLogs] = useState([]);
@@ -14,11 +28,8 @@ function GestionLogs() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8000/api/logs', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setLogs(response.data);
+      const response = await logsService.getAll({ per_page: 200 });
+      setLogs(response.data || response);
     } catch (err) {
       setError('Error al cargar los logs del sistema.');
       console.error('Error al cargar logs:', err);
@@ -34,158 +45,129 @@ function GestionLogs() {
   const exportarPDF = async () => {
     setExportLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8000/api/logs/export-pdf', {
-        responseType: 'blob',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blobData = await logsService.exportPdf();
+      const url = window.URL.createObjectURL(new Blob([blobData]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `Logs_${new Date().toISOString().split('T')[0]}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
+      Swal.fire('¡Éxito!', 'PDF generado correctamente.', 'success');
     } catch (err) {
       console.error('Error al exportar PDF:', err);
-      alert('Hubo un error al intentar descargar el PDF.');
+      Swal.fire('Error', 'Hubo un error al intentar descargar el PDF.', 'error');
     } finally {
       setExportLoading(false);
     }
   };
 
   const limpiarTodosLogs = async () => {
-    if (!confirm('⚠️ ATENCIÓN: Esta acción eliminará TODOS los logs del sistema permanentemente.\n\n¿Estás seguro de que querés continuar?')) return;
+    const result = await Swal.fire({
+      title: '⚠️ ATENCIÓN',
+      text: 'Esta acción eliminará TODOS los logs del sistema permanentemente.\n\n¿Estás seguro de que querés continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar todo',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
     setDeleteLoading('all');
     try {
-      const token = localStorage.getItem('token');
-      // Llamamos con id=1 (el backend limpia todo el archivo sin importar el id)
-      await axios.delete('http://localhost:8000/api/logs/1', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await logsService.delete('all');
       setLogs([]);
-      alert('✅ Logs limpiados correctamente.');
+      Swal.fire('¡Éxito!', 'Logs limpiados correctamente.', 'success');
     } catch (err) {
-      alert('Error al limpiar los logs.');
+      Swal.fire('Error', 'Error al limpiar los logs.', 'error');
       console.error(err);
     } finally {
       setDeleteLoading(null);
     }
   };
 
-  const getNivelColor = (nivel) => {
-    const colores = {
-      emergency: '#7f1d1d',
-      alert: '#991b1b',
-      critical: '#dc2626',
-      error: '#ef4444',
-      warning: '#f59e0b',
-      notice: '#3b82f6',
-      info: '#22c55e',
-      debug: '#94a3b8',
-    };
-    return colores[nivel?.toLowerCase()] || '#94a3b8';
+  const getNivelInfo = (nivel) => {
+    return NIVELES[nivel?.toLowerCase()] || { label: nivel?.toUpperCase() || 'INFO', class: 'nivel-info' };
   };
 
   if (loading) return <div className="loading">Cargando logs del sistema...</div>;
 
   return (
-    <div className="admin-dashboard">
-      <header className="admin-header">
-        <h1>Logs del Sistema</h1>
-        <button onClick={() => navigate('/admin')} className="btn-secondary">
-          Volver al Panel
+    <div className="gestion-container">
+      <header className="gestion-header">
+        <button onClick={() => navigate('/admin')} className="btn-back">
+          <ChevronLeft size={18} aria-hidden="true" /> Volver al Panel
         </button>
+        <h1>Logs del Sistema</h1>
       </header>
 
-      <div className="admin-content" style={{ padding: '20px' }}>
-
+      <div className="gestion-content">
         {error && (
-          <div style={{
-            background: '#fef2f2', border: '1px solid #fca5a5',
-            borderRadius: '8px', padding: '12px 20px',
-            color: '#dc2626', marginBottom: '20px'
-          }}>
+          <div className="error-message">
             ⚠️ {error}
           </div>
         )}
 
-        {/* Controles superiores */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <p>
+        <div className="logs-header">
+          <p className="logs-total">
             Total de entradas: <strong>{logs.length}</strong>
-            <span style={{ fontSize: '0.85em', color: '#888', marginLeft: '10px' }}>
-              (mostrando los últimos 200 registros)
-            </span>
+            <span className="logs-note">(mostrando los últimos 200 registros)</span>
           </p>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div className="logs-actions">
             <button
               onClick={exportarPDF}
               className="btn-primary"
               disabled={exportLoading}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <span>📄</span>
+              <FileText size={18} aria-hidden="true" />
               {exportLoading ? 'Generando...' : 'Exportar a PDF'}
             </button>
             <button
               onClick={limpiarTodosLogs}
               disabled={deleteLoading === 'all' || logs.length === 0}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '8px 16px',
-                background: '#ef4444', color: 'white',
-                border: 'none', borderRadius: '6px',
-                cursor: 'pointer', fontWeight: '600',
-                opacity: (deleteLoading === 'all' || logs.length === 0) ? 0.6 : 1,
-              }}
+              className="btn-danger"
             >
-              <span>🗑️</span>
+              <Trash2 size={18} aria-hidden="true" />
               {deleteLoading === 'all' ? 'Limpiando...' : 'Limpiar todos los logs'}
             </button>
           </div>
         </div>
 
         {logs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px', color: '#888' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📋</div>
+          <div className="logs-empty">
+            <div className="logs-empty-icon">📋</div>
             <p>No hay logs registrados en el sistema.</p>
           </div>
         ) : (
-          <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="admin-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <div className="logs-table-wrapper">
+            <table className="logs-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid #ddd' }}>
-                  <th style={{ padding: '10px 12px' }}>Fecha y Hora</th>
-                  <th style={{ padding: '10px 12px' }}>Nivel</th>
-                  <th style={{ padding: '10px 12px' }}>Mensaje</th>
+                <tr>
+                  <th>Fecha y Hora</th>
+                  <th>Nivel</th>
+                  <th>Mensaje</th>
                 </tr>
               </thead>
               <tbody>
-                {logs.map((log) => (
-                  <tr key={log.id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '10px 12px', whiteSpace: 'nowrap', color: '#555', fontSize: '0.9em' }}>
-                      {new Date(log.logged_at).toLocaleString('es-AR')}
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <span style={{
-                        background: getNivelColor(log.level),
-                        color: 'white',
-                        padding: '2px 10px',
-                        borderRadius: '12px',
-                        fontSize: '0.8em',
-                        fontWeight: '600',
-                        textTransform: 'uppercase',
-                      }}>
-                        {log.level || 'info'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '10px 12px', maxWidth: '500px', wordBreak: 'break-word', fontSize: '0.9em' }}>
-                      {log.message}
-                    </td>
-                  </tr>
-                ))}
+                {logs.map((log) => {
+                  const nivelInfo = getNivelInfo(log.level);
+                  return (
+                    <tr key={log.id}>
+                      <td className="log-date">
+                        {new Date(log.logged_at).toLocaleString('es-AR')}
+                      </td>
+                      <td>
+                        <span className={`nivel-badge ${nivelInfo.class}`}>
+                          {nivelInfo.label}
+                        </span>
+                      </td>
+                      <td className="log-message">{log.message}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
