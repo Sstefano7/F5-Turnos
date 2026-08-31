@@ -6,8 +6,11 @@ export const auditService = {
         return response.data;
     },
 
-    getById: async (id) => {
-        const response = await api.get(`/audits/${id}`);
+    exportPdf: async (params = {}) => {
+        const response = await api.get('/audits/export-pdf', { 
+            params,
+            responseType: 'blob'
+        });
         return response.data;
     }
 };
