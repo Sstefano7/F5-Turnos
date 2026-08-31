@@ -1,91 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bugReportService } from '../../services/bugReportService';
+import { logsService } from '../../services/logsService';
+import { auditService } from '../../services/auditService';
 import Pagination from '../../components/Pagination';
 import '../../styles/GestionBugReports.css';
-import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import Swal from 'sweetalert2';
 
-
-function AdminDashboard() {
-  // ... código existente ...
-  const { user, logout, isSuperAdmin } = useAuth(); // ← AGREGAR isSuperAdmin
-  
-  // ... resto del código ...
-
-  return (
-    <div className="admin-dashboard">
-      {/* ... header y stats ... */}
-
-      <div className="admin-menu">
-        <h2>Gestión</h2>
-        <div className="menu-grid">
-          <button className="menu-card" onClick={() => navigate('/admin/canchas')}>
-            <div className="menu-icon">🏟️</div>
-            <h3>Gestionar Canchas</h3>
-            <p>Crear, editar y eliminar canchas</p>
-          </button>
-
-          <button className="menu-card" onClick={() => navigate('/admin/turnos')}>
-            <div className="menu-icon">📅</div>
-            <h3>Gestionar Turnos</h3>
-            <p>Ver y administrar todas las reservas</p>
-          </button>
-
-          <button className="menu-card" onClick={() => navigate('/admin/clientes')}>
-            <div className="menu-icon">👥</div>
-            <h3>Gestionar Clientes</h3>
-            <p>Ver y administrar clientes</p>
-          </button>
-
-          <button className="menu-card" onClick={() => navigate('/admin/horarios')}>
-            <div className="menu-icon">🕐</div>
-            <h3>Gestionar Horarios</h3>
-            <p>Configurar horarios disponibles</p>
-          </button>
-
-          <button className="menu-card" onClick={() => navigate('/admin/pagos')}>
-            <div className="menu-icon">💰</div>
-            <h3>Gestionar Pagos</h3>
-            <p>Ver y administrar pagos</p>
-          </button>
-
-          {/* Botones SOLO para Super Admin */}
-          {isSuperAdmin() && (
-            <>
-              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/bug-reports')}>
-                <div className="menu-icon">💡</div>
-                <h3>Ideas y Comentarios</h3>
-                <p>Ver y gestionar mensajes</p>
-                <span className="superadmin-badge">Super Admin</span>
-              </button>
-
-              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/audits')}>
-                <div className="menu-icon">📋</div>
-                <h3>Auditoría</h3>
-                <p>Ver registro de acciones</p>
-                <span className="superadmin-badge">Super Admin</span>
-              </button>
-
-              <button className="menu-card super-admin-card" onClick={() => navigate('/admin/logs')}>
-                <div className="menu-icon">📝</div>
-                <h3>Logs del Sistema</h3>
-                <p>Ver y exportar logs</p>
-                <span className="superadmin-badge">Super Admin</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="quick-actions">
-        <button className="btn-primary" onClick={() => navigate('/')}>
-          Ver Sitio Público
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function GestionBugReports() {
   const [reports, setReports] = useState([]);
@@ -142,74 +64,53 @@ function GestionBugReports() {
 
 const handleExportarPDF = async () => {
     try {
-      // 1. Llamamos a tu servicio (que ya nos devuelve los datos del blob)
       const blobData = await bugReportService.exportPdf();
-
-      // 2. Magia de JavaScript para descargar el archivo
       const url = window.URL.createObjectURL(new Blob([blobData]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `reporte_bugs_${new Date().toISOString().split('T')[0]}.pdf`);
       document.body.appendChild(link);
       link.click();
-      
-      // 3. Limpiamos la memoria
       link.remove();
       window.URL.revokeObjectURL(url);
-      
     } catch (error) {
       console.error('Error al exportar el PDF:', error);
-      alert('Hubo un problema al generar el PDF.');
+      Swal.fire('Error', 'Hubo un problema al generar el PDF.', 'error');
     }
   };
 
   const exportarLogs = async () => {
     try {
-        // Obtenemos el token del localStorage (ajusta según cómo lo guardes)
-        const token = localStorage.getItem('token'); 
-        
-        const response = await axios.get('http://localhost:8000/api/logs/export-pdf', {
-            responseType: 'blob', // Importante para manejar archivos binarios
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        // Creamos un link temporal para la descarga
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'reporte_logs_sistema.pdf');
-        document.body.appendChild(link);
-        link.click();
-        
-        // Limpieza
-        link.parentNode.removeChild(link);
+      const blobData = await logsService.exportPdf();
+      const url = window.URL.createObjectURL(new Blob([blobData]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte_logs_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-        console.error("Error al exportar los logs:", error);
-        alert("No se pudo generar el reporte de logs. Verifica los permisos de administrador.");
+      console.error("Error al exportar los logs:", error);
+      Swal.fire('Error', 'No se pudo generar el reporte de logs.', 'error');
     }
-};
+  };
 
-// Función para exportar las Auditorías a PDF
+  // Función para exportar las Auditorías a PDF
   const exportarAuditoriasPDF = async () => {
     try {
-      const token = localStorage.getItem('token'); // Asegúrate de obtener el token
-      const response = await axios.get('http://localhost:8000/api/audits/export-pdf', {
-        responseType: 'blob',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blobData = await auditService.exportPdf();
+      const url = window.URL.createObjectURL(new Blob([blobData]));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `Auditorias_${new Date().toISOString().split('T')[0]}.pdf`);
       document.body.appendChild(link);
       link.click();
-      link.parentNode.removeChild(link);
+      link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error al exportar las auditorías:", error);
-      alert("Hubo un error al intentar descargar el PDF de Auditorías.");
+      Swal.fire('Error', 'Hubo un error al intentar descargar el PDF de Auditorías.', 'error');
     }
   };
 
