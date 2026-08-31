@@ -1,9 +1,14 @@
+/* ============================================
+GESTIÓN DE BUG REPORTS - Admin
+Usa tokens del design system + dark mode
+============================================ */
+
 .reports-table {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
   overflow-x: auto;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border);
 }
 
 .tipo-icon {
@@ -12,30 +17,40 @@
 
 .prioridad-select,
 .estado-select {
-  padding: 6px 10px;
-  border: 2px solid;
-  border-radius: 8px;
-  background: white;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--gray-700);
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: capitalize;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: var(--shadow-xs);
+}
+
+.prioridad-select:focus,
+.estado-select:focus {
+  outline: none;
+  border-color: var(--green-grass);
+  box-shadow: var(--ring);
 }
 
 .prioridad-select {
-  width: 120px;
+  width: 130px;
 }
 
 .estado-select {
-  width: 140px;
+  width: 160px;
 }
 
-/* Prioridades */
+/* Prioridades - usando variables CSS para consistencia */
 .prioridad-baja,
 .prioridad-select[value="baja"] {
-  border-color: #22c55e;
-  color: #22c55e;
-  background: #f0fdf4;
+  border-color: var(--green-grass);
+  color: var(--green-hover);
+  background: var(--green-soft);
 }
 
 .prioridad-media,
@@ -54,9 +69,9 @@
 
 .prioridad-critica,
 .prioridad-select[value="critica"] {
-  border-color: #ef4444;
-  color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--red-error);
+  color: var(--red-error);
+  background: var(--red-soft);
 }
 
 /* Estados */
@@ -76,40 +91,48 @@
 
 .estado-progreso,
 .estado-select[value="en_progreso"] {
-  border-color: #3b82f6;
-  color: #3b82f6;
-  background: #eff6ff;
+  border-color: var(--blue-sport);
+  color: var(--blue-hover);
+  background: var(--blue-soft);
 }
 
 .estado-resuelto,
 .estado-select[value="resuelto"] {
-  border-color: #22c55e;
-  color: #22c55e;
-  background: #f0fdf4;
+  border-color: var(--green-grass);
+  color: var(--green-hover);
+  background: var(--green-soft);
 }
 
 .estado-cerrado,
 .estado-select[value="cerrado"] {
-  border-color: #64748b;
-  color: #64748b;
-  background: #f8fafc;
+  border-color: var(--gray-400);
+  color: var(--gray-500);
+  background: var(--gray-100);
 }
 
 .btn-ver {
-  padding: 6px 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   background: #06b6d4;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  margin-right: 5px;
+  transition: all var(--duration-fast) var(--ease-out);
+  margin-right: 8px;
 }
 
 .btn-ver:hover {
   background: #0891b2;
   transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-ver:focus-visible {
+  box-shadow: 0 0 0 3px rgba(6,182,212,0.3);
 }
 
 /* Modal de detalles */
@@ -117,17 +140,17 @@
   max-width: 700px;
   max-height: 85vh;
   overflow-y: auto;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
 }
 
 .detail-content {
-  padding: 20px 30px;
+  padding: 24px 30px;
 }
 
 .detail-section {
-  margin-bottom: 25px;
+  margin-bottom: 24px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .detail-section:last-child {
@@ -135,58 +158,235 @@
 }
 
 .detail-section h3 {
-  margin: 0 0 15px 0;
-  color: #0f172a;
-  font-size: 22px;
-  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: var(--gray-900);
+  font-size: 20px;
+  font-weight: 800;
+  font-family: var(--font-display);
 }
 
 .detail-section h4 {
-  margin: 0 0 10px 0;
-  color: #334155;
-  font-size: 16px;
-  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--gray-700);
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .detail-section p {
-  color: #475569;
-  line-height: 1.6;
+  color: var(--text-muted);
+  line-height: 1.7;
   margin: 0;
 }
 
 .detail-section pre {
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #22c55e;
+  background: var(--gray-50);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--green-grass);
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
   margin: 0;
-  color: #334155;
+  color: var(--gray-700);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .detail-section ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  gap: 8px;
 }
 
 .detail-section ul li {
-  padding: 8px 0;
-  color: #475569;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.detail-section ul li strong {
+  color: var(--gray-700);
+  font-weight: 700;
 }
 
 .detail-badges {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .detail-badges .badge {
+  display: inline-flex;
+  align-items: center;
   padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+}
+
+/* Badge variants para detail modal */
+.detail-badges .badge-prioridad-baja { background: var(--green-soft); color: var(--green-hover); border-color: #bbf7d0; }
+.detail-badges .badge-prioridad-media { background: #fefce8; color: #ca8a04; border-color: #fef08a; }
+.detail-badges .badge-prioridad-alta { background: #fff7ed; color: #f97316; border-color: #ffedd5; }
+.detail-badges .badge-prioridad-critica { background: var(--red-soft); color: var(--red-error); border-color: #fecaca; }
+
+.detail-badges .badge-estado-nuevo { background: #ecfeff; color: #06b6d4; border-color: #cffafe; }
+.detail-badges .badge-estado-revision { background: #faf5ff; color: #a855f7; border-color: #e9d5ff; }
+.detail-badges .badge-estado-progreso { background: var(--blue-soft); color: var(--blue-hover); border-color: #bfdbfe; }
+.detail-badges .badge-estado-resuelto { background: var(--green-soft); color: var(--green-hover); border-color: #bbf7d0; }
+.detail-badges .badge-estado-cerrado { background: var(--gray-100); color: var(--gray-500); border-color: var(--border); }
+
+/* Dark mode */
+:root[data-theme="dark"] .reports-table {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .prioridad-select,
+:root[data-theme="dark"] .estado-select {
+  background: var(--gray-700);
+  border-color: var(--gray-600);
+  color: var(--gray-100);
+}
+
+:root[data-theme="dark"] .prioridad-select:focus,
+:root[data-theme="dark"] .estado-select:focus {
+  box-shadow: 0 0 0 3px var(--green-soft), var(--shadow-xs);
+}
+
+:root[data-theme="dark"] .prioridad-baja,
+:root[data-theme="dark"] .prioridad-select[value="baja"] {
+  background: var(--green-soft);
+  color: var(--green-grass);
+  border-color: var(--green-grass);
+}
+
+:root[data-theme="dark"] .prioridad-media,
+:root[data-theme="dark"] .prioridad-select[value="media"] {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border-color: #eab308;
+}
+
+:root[data-theme="dark"] .prioridad-alta,
+:root[data-theme="dark"] .prioridad-select[value="alta"] {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border-color: #f97316;
+}
+
+:root[data-theme="dark"] .prioridad-critica,
+:root[data-theme="dark"] .prioridad-select[value="critica"] {
+  background: var(--red-soft);
+  color: var(--red-error);
+  border-color: var(--red-error);
+}
+
+:root[data-theme="dark"] .estado-nuevo,
+:root[data-theme="dark"] .estado-select[value="nuevo"] {
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  border-color: #06b6d4;
+}
+
+:root[data-theme="dark"] .estado-revision,
+:root[data-theme="dark"] .estado-select[value="en_revision"] {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border-color: #a855f7;
+}
+
+:root[data-theme="dark"] .estado-progreso,
+:root[data-theme="dark"] .estado-select[value="en_progreso"] {
+  background: var(--blue-soft);
+  color: var(--blue-sport);
+  border-color: var(--blue-sport);
+}
+
+:root[data-theme="dark"] .estado-resuelto,
+:root[data-theme="dark"] .estado-select[value="resuelto"] {
+  background: var(--green-soft);
+  color: var(--green-grass);
+  border-color: var(--green-grass);
+}
+
+:root[data-theme="dark"] .estado-cerrado,
+:root[data-theme="dark"] .estado-select[value="cerrado"] {
+  background: var(--gray-700);
+  color: var(--gray-400);
+  border-color: var(--gray-600);
+}
+
+:root[data-theme="dark"] .detail-section {
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .detail-section h3 {
+  color: var(--gray-100);
+}
+
+:root[data-theme="dark"] .detail-section h4 {
+  color: var(--gray-300);
+}
+
+:root[data-theme="dark"] .detail-section p {
+  color: var(--gray-400);
+}
+
+:root[data-theme="dark"] .detail-section pre {
+  background: var(--gray-100);
+  color: var(--gray-300);
+  border-left-color: var(--green-grass);
+}
+
+:root[data-theme="dark"] .detail-section ul li {
+  color: var(--gray-400);
+}
+
+:root[data-theme="dark"] .detail-section ul li strong {
+  color: var(--gray-200);
+}
+
+:root[data-theme="dark"] .detail-badges .badge-prioridad-media {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border-color: #eab308;
+}
+
+:root[data-theme="dark"] .detail-badges .badge-prioridad-alta {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border-color: #f97316;
+}
+
+:root[data-theme="dark"] .detail-badges .badge-estado-nuevo {
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  border-color: #06b6d4;
+}
+
+:root[data-theme="dark"] .detail-badges .badge-estado-revision {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border-color: #a855f7;
+}
+
+:root[data-theme="dark"] .detail-badges .badge-estado-progreso {
+  background: var(--blue-soft);
+  color: var(--blue-sport);
+  border-color: var(--blue-sport);
+}
+
+:root[data-theme="dark"] .detail-badges .badge-estado-cerrado {
+  background: var(--gray-700);
+  color: var(--gray-400);
+  border-color: var(--gray-600);
 }

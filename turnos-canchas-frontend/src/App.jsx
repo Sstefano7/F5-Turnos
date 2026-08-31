@@ -23,7 +23,7 @@ import SuperAdminRoute from './components/SuperAdminRoute';
 
 import GestionAudits from './pages/admin/GestionAudits'; 
 import GestionLogs from './pages/admin/GestionLogs';
-
+import GestionPagos from './pages/admin/GestionPagos';
 import GestionBackups from './pages/admin/GestionBackups';
 
 
@@ -108,7 +108,7 @@ function App() {
           } 
         />
         
-        <Route 
+<Route 
           path="/admin/horarios" 
           element={
             <AdminRoute>
@@ -117,6 +117,15 @@ function App() {
           } 
         />
 
+        <Route 
+          path="/admin/pagos" 
+          element={
+            <AdminRoute>
+              <GestionPagos />
+            </AdminRoute>
+          } 
+        />
+ 
         {/* Rutas de Super Admin */}
         <Route 
           path="/admin/bug-reports" 

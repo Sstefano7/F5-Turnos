@@ -1,62 +1,125 @@
+/* ============================================
+GESTIÓN DE HORARIOS - Admin
+Usa tokens del design system + dark mode
+============================================ */
+
 .info-box {
-  background: #f0fdf4;
-  border-left: 4px solid #22c55e;
+  background: var(--green-soft);
+  border-left: 4px solid var(--green-grass);
   padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 30px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  border: 1px solid var(--green-light);
 }
 
 .info-box h3 {
   margin: 0 0 10px 0;
-  color: #166534;
+  color: var(--green-hover);
   font-weight: 700;
+  font-size: 14px;
+  font-family: var(--font-display);
 }
 
 .info-box p {
-  margin: 5px 0;
-  color: #475569;
+  margin: 8px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .canchas-horarios {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f1f5f9;
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
 }
 
 .canchas-horarios h2 {
-  margin: 0 0 25px 0;
-  color: #0f172a;
+  margin: 0 0 20px 0;
+  color: var(--gray-900);
   font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
 }
 
 .cancha-horario-card {
-  background: #f8fafc;
+  background: var(--gray-50);
   padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  border-left: 4px solid #22c55e;
-  transition: all 0.2s;
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  border-left: 4px solid var(--green-grass);
+  transition: all var(--duration-normal) var(--ease-out);
+  border: 1px solid var(--border);
 }
 
 .cancha-horario-card:hover {
-  background: #f1f5f9;
+  background: var(--gray-100);
   transform: translateX(2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .cancha-horario-card h3 {
-  margin: 0 0 15px 0;
-  color: #0f172a;
-  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--gray-900);
+  font-weight: 700;
+  font-family: var(--font-display);
 }
 
 .horario-info {
   margin: 8px 0;
-  color: #475569;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .horario-info strong {
-  color: #0f172a;
-  font-weight: 600;
+  color: var(--gray-700);
+  font-weight: 700;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .info-box {
+  background: var(--green-soft);
+  border-left-color: var(--green-grass);
+  border-color: var(--green-soft);
+}
+
+:root[data-theme="dark"] .info-box h3 {
+  color: var(--green-grass);
+}
+
+:root[data-theme="dark"] .info-box p {
+  color: var(--gray-400);
+}
+
+:root[data-theme="dark"] .canchas-horarios {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .canchas-horarios h2 {
+  color: var(--gray-100);
+}
+
+:root[data-theme="dark"] .cancha-horario-card {
+  background: var(--gray-100);
+  border-color: var(--border);
+  border-left-color: var(--green-grass);
+}
+
+:root[data-theme="dark"] .cancha-horario-card:hover {
+  background: var(--gray-200);
+}
+
+:root[data-theme="dark"] .cancha-horario-card h3 {
+  color: var(--gray-100);
+}
+
+:root[data-theme="dark"] .horario-info {
+  color: var(--gray-400);
+}
+
+:root[data-theme="dark"] .horario-info strong {
+  color: var(--gray-300);
 }
