@@ -83,20 +83,10 @@ export default function Home() {
             ) : (
               <>
                 <div className="home__grid">
-                  {featuredCourts.map(court => (
+                  {(canchas.length > 0 ? canchas : featuredCourts).map(court => (
                     <CourtCard key={court.id} court={court} onReserve={handleReserve} />
                   ))}
                 </div>
-                {canchas.length > 3 && (
-                  <div className="home__grid home__grid--secondary">
-                    {canchas.slice(3).map(court => (
-                      <CourtCard key={court.id} court={court} onReserve={handleReserve} />
-                    ))}
-                  </div>
-                )}
-                {canchas.length === 0 && (
-                  <p className="home__empty">No hay canchas disponibles en este momento.</p>
-                )}
               </>
             )}
           </div>

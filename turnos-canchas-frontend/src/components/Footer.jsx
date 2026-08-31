@@ -4,7 +4,7 @@ import '../styles/Footer.css';
 
 function Footer() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" role="contentinfo">
       <div className="footer-content">
         <div className="footer-section">
           <h3>Sobre Nosotros</h3>

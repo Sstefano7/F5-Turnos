@@ -221,19 +221,19 @@ function Reservar() {
   return (
     <div className="reservar-container">
       <div className="reservar-header">
-        <button onClick={() => navigate('/')} className="btn-back">← Volver</button>
+        <button onClick={() => navigate('/')} className="reservar-btn-back">← Volver</button>
         <h1>Reservar Turno</h1>
       </div>
 
       <div className="reservar-content">
-        <div className="cancha-info">
+        <div className="reservar-cancha-info">
           <h2>{cancha.nombre}</h2>
-          <p className="tipo">{cancha.tipo === 'futbol5' ? 'Fútbol 5' : 'Pádel'}</p>
-          <p className="descripcion">{cancha.descripcion}</p>
-          <p className="precio">Precio: ${fmtARS(cancha.precio_hora)} /hora</p>
+          <p className="reservar-tipo">{cancha.tipo === 'futbol5' ? 'Fútbol 5' : 'Pádel'}</p>
+          <p className="reservar-descripcion">{cancha.descripcion}</p>
+          <p className="reservar-precio">Precio: ${fmtARS(cancha.precio_hora)} /hora</p>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="reservar-error-message">{error}</div>}
 
         {/* Información de reserva sin seña */}
         <div style={{
@@ -249,8 +249,8 @@ function Reservar() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="reserva-form">
-          <div className="form-section">
+        <form onSubmit={handleSubmit} className="reservar-form">
+          <div className="reservar-form-section">
             <h3>1. Seleccioná la fecha</h3>
             <input
               type="date"
@@ -258,7 +258,7 @@ function Reservar() {
               onChange={(e) => setFecha(e.target.value)}
               min={getMinDate()}
               required
-              className="date-input"
+              className="reservar-date-input"
             />
           </div>
 
@@ -268,12 +268,12 @@ function Reservar() {
               {loadingHorarios ? (
                 <p>Cargando horarios...</p>
               ) : horariosDisponibles.length > 0 ? (
-                <div className="horarios-grid">
+                <div className="reservar-horarios-grid">
                   {horariosDisponibles.map((horario) => (
                     <button
                       key={horario.id}
                       type="button"
-                      className={`horario-btn ${horarioSeleccionado?.id === horario.id ? 'selected' : ''}`}
+                      className={`reservar-horario-btn ${horarioSeleccionado?.id === horario.id ? 'selected' : ''}`}
                       onClick={() => setHorarioSeleccionado(horario)}
                     >
                       {horario.hora_inicio.slice(0, 5)} - {horario.hora_fin.slice(0, 5)}
@@ -281,7 +281,7 @@ function Reservar() {
                   ))}
                 </div>
               ) : (
-                <p className="no-horarios">No hay horarios disponibles para esta fecha</p>
+                <p className="reservar-no-horarios">No hay horarios disponibles para esta fecha</p>
               )}
             </div>
           )}
@@ -293,7 +293,7 @@ function Reservar() {
                 {buscandoDni && <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>Buscando... ⏳</span>}
                 {dniEncontrado && <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 'normal', background: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>Datos autocompletados ✅</span>}
               </h3>
-              <div className="form-grid">
+              <div className="reservar-form-grid">
                 {[
                   { label: 'DNI', name: 'dni', type: 'text' },
                   { label: 'Nombre *', name: 'nombre', type: 'text' },
@@ -301,7 +301,7 @@ function Reservar() {
                   { label: 'Email *', name: 'email', type: 'email' },
                   { label: 'Teléfono *', name: 'telefono', type: 'tel' },
                 ].map(({ label, name, type }) => (
-                  <div className="form-group" key={name}>
+                  <div className="reservar-form-group" key={name}>
                     <label>{label}</label>
                     <input
                       type={type}
@@ -319,7 +319,7 @@ function Reservar() {
           )}
 
           {horarioSeleccionado && (
-            <div className="resumen-reserva">
+            <div className="reservar-resumen">
               <h3>Resumen</h3>
               <p><strong>Cancha:</strong> {cancha.nombre}</p>
               <p><strong>Fecha:</strong> {new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR')}</p>
@@ -331,7 +331,7 @@ function Reservar() {
 
               <button
                 type="submit"
-                className="btn-confirmar"
+                className="reservar-btn-confirmar"
                 disabled={loadingSubmit}
                 style={{ opacity: loadingSubmit ? 0.7 : 1 }}
               >

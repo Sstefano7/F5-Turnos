@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { turnoService } from '../services/turnoService';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
+import Header from '../components/layout/Header';
 import '../styles/MisReservas.css';
 
 function MisReservas() {
@@ -96,60 +97,47 @@ function MisReservas() {
   };
 
   const getEstadoConfig = (estado) => ({
-    pendiente_senia: { clase: 'estado-pendiente-senia', texto: '⏳ Pendiente de seña' },
-    pendiente:       { clase: 'estado-pendiente',       texto: 'Pendiente' },
-    confirmado:      { clase: 'estado-confirmado',      texto: '✅ Confirmado' },
-    cancelado:       { clase: 'estado-cancelado',       texto: 'Cancelado' },
-    completado:      { clase: 'estado-completado',      texto: 'Completado' },
+    pendiente_senia: { clase: 'mr-estado-pendiente-senia', texto: '⏳ Pendiente de seña' },
+    pendiente:       { clase: 'mr-estado-pendiente',       texto: 'Pendiente' },
+    confirmado:      { clase: 'mr-estado-confirmado',      texto: '✅ Confirmado' },
+    cancelado:       { clase: 'mr-estado-cancelado',       texto: 'Cancelado' },
+    completado:      { clase: 'mr-estado-completado',      texto: 'Completado' },
   }[estado] || { clase: '', texto: estado });
-
-  const handleLogout = async () => { await logout(); navigate('/login'); };
 
   if (loading) return <div className="loading">Cargando reservas...</div>;
 
   return (
     <div className="mis-reservas-container">
-      <header className="header">
-        <h1>Mis Reservas</h1>
-        <div className="header-actions">
-          <button onClick={() => navigate('/')} className="btn-home">Inicio</button>
-          <span className="user-name">{user?.name}</span>
-          <button onClick={handleLogout} className="btn-logout">Cerrar Sesión</button>
-        </div>
-      </header>
+      <Header />
 
-      <main className="main-content">
+      <main className="mr-main-content">
 
         {/* Notificación de retorno de MP */}
         {pagoNotif && (
-          <div style={{
-            padding: '14px 20px',
-            borderRadius: '10px',
-            marginBottom: '20px',
-            fontWeight: '600',
-            background: pagoNotif.tipo === 'success' ? '#dcfce7' : pagoNotif.tipo === 'error' ? '#fef2f2' : '#fffbeb',
-            color: pagoNotif.tipo === 'success' ? '#16a34a' : pagoNotif.tipo === 'error' ? '#dc2626' : '#92400e',
-            border: `1px solid ${pagoNotif.tipo === 'success' ? '#86efac' : pagoNotif.tipo === 'error' ? '#fca5a5' : '#fde68a'}`,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          }}>
+          <div className={`mr-notification mr-notification--${pagoNotif.tipo}`}>
             <span>{pagoNotif.texto}</span>
             <button
               onClick={() => { setPagoNotif(null); fetchTurnos(); }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', opacity: 0.6 }}
+              className="mr-notification__close"
+              aria-label="Cerrar notificación"
             >✕</button>
           </div>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="mr-error-message">{error}</div>}
+
+        <div className="home__section-head" style={{ textAlign: 'left', marginBottom: 'var(--space-6)' }}>
+          <h2 className="home__section-title" style={{ textAlign: 'left' }}>Mis Reservas</h2>
+        </div>
 
         {turnos.length === 0 ? (
-          <div className="empty-state">
+          <div className="mr-empty-state">
             <h2>No tenés reservas</h2>
             <p>Aún no realizaste ninguna reserva</p>
-            <button onClick={() => navigate('/')} className="btn-reservar-ahora">Reservar Ahora</button>
+            <button onClick={() => navigate('/')} className="mr-btn-reservar-ahora">Reservar Ahora</button>
           </div>
         ) : (
-          <div className="turnos-list">
+          <div className="mr-turnos-list">
             {turnos.map((turno) => {
               const estadoConfig = getEstadoConfig(turno.estado);
               const cd = countdowns[turno.id];
@@ -159,54 +147,53 @@ function MisReservas() {
               return (
                 <div
                   key={turno.id}
-                  className="turno-card"
-                  style={pendienteSenia && !expirado ? { borderLeft: '4px solid #f59e0b' } : {}}
+                  className={`mr-turno-card ${pendienteSenia && !expirado ? 'mr-turno-card--senia' : ''}`}
                 >
-                  <div className="turno-header">
+                  <div className="mr-turno-header">
                     <h3>{turno.cancha?.nombre}</h3>
-                    <span className={`estado-badge ${estadoConfig.clase}`}>
+                    <span className={`mr-estado-badge ${estadoConfig.clase}`}>
                       {estadoConfig.texto}
                     </span>
                   </div>
 
-                  <div className="turno-info">
-                    <div className="info-item">
-                      <span className="label">Fecha:</span>
-                      <span className="value">
+                  <div className="mr-turno-info">
+                    <div className="mr-info-item">
+                      <span className="mr-label">Fecha:</span>
+                      <span className="mr-value">
                         {new Date(turno.fecha).toLocaleDateString('es-AR', {
                           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                         })}
                       </span>
                     </div>
-                    <div className="info-item">
-                      <span className="label">Horario:</span>
-                      <span className="value">
+                    <div className="mr-info-item">
+                      <span className="mr-label">Horario:</span>
+                      <span className="mr-value">
                         {turno.hora_inicio?.slice(0, 5)} - {turno.hora_fin?.slice(0, 5)}
                       </span>
                     </div>
-                    <div className="info-item">
-                      <span className="label">Cliente:</span>
-                      <span className="value">{turno.cliente?.nombre} {turno.cliente?.apellido}</span>
+                    <div className="mr-info-item">
+                      <span className="mr-label">Cliente:</span>
+                      <span className="mr-value">{turno.cliente?.nombre} {turno.cliente?.apellido}</span>
                     </div>
-                    <div className="info-item">
-                      <span className="label">Precio total:</span>
-                      <span className="value precio">${turno.precio}</span>
+                    <div className="mr-info-item">
+                      <span className="mr-label">Precio total:</span>
+                      <span className="mr-value mr-precio">${turno.precio}</span>
                     </div>
 
                     {/* Desglose de seña si aplica */}
                     {turno.monto_senia && (
                       <>
-                        <div className="info-item">
-                          <span className="label" style={{ color: '#16a34a' }}>Seña pagada:</span>
-                          <span className="value" style={{ color: turno.estado === 'confirmado' ? '#16a34a' : '#f59e0b', fontWeight: '600' }}>
+                        <div className="mr-info-item">
+                          <span className="mr-label">Seña pagada:</span>
+                          <span className={`mr-value ${turno.estado === 'confirmado' ? 'mr-senia-success' : 'mr-senia-pending'}`}>
                             ${turno.monto_senia}
                             {turno.estado === 'confirmado' && ' ✅'}
                             {pendienteSenia && ' ⏳ pendiente'}
                           </span>
                         </div>
-                        <div className="info-item">
-                          <span className="label">Resto en local:</span>
-                          <span className="value">${turno.monto_restante}</span>
+                        <div className="mr-info-item">
+                          <span className="mr-label">Resto en local:</span>
+                          <span className="mr-value">${turno.monto_restante}</span>
                         </div>
                       </>
                     )}
@@ -214,36 +201,23 @@ function MisReservas() {
 
                   {/* BLOQUE ESPECIAL para pendiente_senia */}
                   {pendienteSenia && (
-                    <div style={{
-                      marginTop: '12px',
-                      background: expirado ? '#fef2f2' : '#fffbeb',
-                      border: `1px solid ${expirado ? '#fca5a5' : '#fde68a'}`,
-                      borderRadius: '10px',
-                      padding: '14px 16px',
-                    }}>
+                    <div className={`mr-senia-box ${expirado ? 'mr-senia-box--expired' : 'mr-senia-box--active'}`}>
                       {expirado ? (
-                        <p style={{ margin: 0, color: '#dc2626', fontWeight: '600' }}>
+                        <p className="mr-senia-box__expired-text">
                           ⏰ El tiempo expiró. Este turno fue cancelado automáticamente.
                         </p>
                       ) : (
                         <>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                            <span style={{ color: '#92400e', fontSize: '0.9rem' }}>⏳ Tiempo para pagar:</span>
-                            <span style={{ fontFamily: 'monospace', fontWeight: '800', fontSize: '1.4rem', color: '#d97706' }}>
+                          <div className="mr-senia-box__timer">
+                            <span className="mr-senia-box__timer-label">⏳ Tiempo para pagar:</span>
+                            <span className="mr-senia-box__timer-value">
                               {cd || '--:--'}
                             </span>
                           </div>
                           <button
                             onClick={() => handlePagarSenia(turno)}
                             disabled={loadingPago === turno.id}
-                            style={{
-                              width: '100%',
-                              background: 'linear-gradient(135deg, #009ee3, #00b8f1)',
-                              color: 'white', border: 'none', borderRadius: '8px',
-                              padding: '12px', fontWeight: '700', fontSize: '0.95rem',
-                              cursor: 'pointer',
-                              opacity: loadingPago === turno.id ? 0.7 : 1,
-                            }}
+                            className="mr-btn-pagar"
                           >
                             {loadingPago === turno.id ? '⏳ Generando enlace...' : '💳 Pagar seña con MercadoPago'}
                           </button>
@@ -254,8 +228,8 @@ function MisReservas() {
 
                   {/* Botón cancelar */}
                   {(turno.estado === 'pendiente_senia' || turno.estado === 'pendiente' || turno.estado === 'confirmado') && !expirado && (
-                    <div className="turno-actions">
-                      <button onClick={() => handleCancelar(turno.id)} className="btn-cancelar">
+                    <div className="mr-turno-actions">
+                      <button onClick={() => handleCancelar(turno.id)} className="mr-btn-cancelar">
                         Cancelar Reserva
                       </button>
                     </div>

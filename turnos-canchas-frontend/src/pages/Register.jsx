@@ -516,6 +516,8 @@ export default function Register() {
               </legend>
               <p className="reg-step-desc">Contanos quién sos para que tus reservas se gestionen rápido.</p>
 
+              <SocialButtons />
+
               <div className="form-row">
                 <div className={fieldClass('name')}>
                   <label htmlFor="name">Nombre completo <span className="req">*</span></label>
@@ -625,7 +627,7 @@ export default function Register() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  <ErrorMsg id={fieldErrorId('password')} message={errors.password} />
+                  <ErrorMsg id={fieldErrorId('password')} message={touched.password ? errors.password : ''} />
                   {data.password && (
                     <div className="pw-strength" aria-live="polite">
                       <div className={`pw-meter pw-meter--${strength.cssClass}`}>
@@ -709,7 +711,7 @@ export default function Register() {
                     </button>
                   ))}
                 </div>
-                <ErrorMsg id={fieldErrorId('preferredSport')} message={errors.preferredSport} />
+                <ErrorMsg id={fieldErrorId('preferredSport')} message={touched.preferredSport ? errors.preferredSport : ''} />
               </div>
 
               <div className="form-row">
@@ -955,8 +957,6 @@ export default function Register() {
               )}
             </fieldset>
           )}
-
-          <SocialButtons />
 
           <div className="reg-nav">
             <Button variant="secondary" size="md" onClick={goBack} disabled={step === 1 || submitting} className="reg-nav-btn">
