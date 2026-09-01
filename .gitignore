@@ -1,0 +1,14 @@
+# Archivos internos de Antigravity IDE / herramientas de desarrollo
+.gstack/
+
+# Archivos multimedia no versionados
+diagonal.jpg
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# OS
+.DS_Store
+Thumbs.db

@@ -21,12 +21,18 @@ jobs:
       - name: Liberar turnos expirados
         run: cd proyecto && php artisan turnos:liberar-expirados
         env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_ENV: production
+          APP_DEBUG: false
+          APP_NAME: "Gestión de Turnos"
+          APP_URL: ${{ secrets.APP_URL }}
           DB_CONNECTION: pgsql
           DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: 5432
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_PORT: 5432
           DB_SSLMODE: require
-          APP_ENV: production
-          APP_DEBUG: false
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
