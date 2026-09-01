@@ -1,156 +1,170 @@
 /* ============================================
- F5 TURNOS — Design System v2
- Premium sport / editorial minimal
+ F5 TURNOS — Design System v3
+ Identidad: campo nocturno · cal · marcador LED
  ============================================ */
 :root {
-  /* === COLORES BRAND === */
-  --green-grass: #0ea45a;
-  --green-hover: #0b8c4c;
-  --green-light: #dcfce7;
-  --green-soft: #f0fdf4;
-  --green-glow: rgba(14, 164, 90, 0.22);
+  /* === PALETA IDENTIDAD ===
+     Nace del material real: césped de noche,
+     líneas de cal, tablero de marcador LED    */
+  --pitch:    #0D1F0F;              /* Verde oscuro noche — fondo hero y calendario */
+  --chalk:    #F0EDE4;              /* Blanco cal — secciones claras, texto sobre oscuro */
+  --electric: #C8FA5F;              /* Verde LED marcador — único acento */
+  --clay:     #8B6B4A;              /* Tierra vestuario — elemento terciario */
+  --pitch-mid:#162A18;              /* Pitch más claro para superficies sobre fondo oscuro */
+  --pitch-border: rgba(240,237,228,0.10); /* Borde sobre oscuro */
 
-  --blue-sport: #0ea5e9;
-  --blue-hover: #0284c7;
-  --blue-light: #e0f2fe;
-  --blue-soft: #f0f9ff;
-
-  --lime-accent: #84cc16;
-  --amber-accent: #f59e0b;
-
+  /* === NEUTROS (escala cálida, no azul-gris) === */
   --white-pure: #ffffff;
-  --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1e293b;
-  --gray-900: #0f172a;
+  --gray-50:  #F9F7F4;
+  --gray-100: #F0EDE4;   /* mismo que --chalk */
+  --gray-200: #DDD9CF;
+  --gray-300: #B8B2A6;
+  --gray-400: #8C8579;
+  --gray-500: #64605A;
+  --gray-600: #4A4740;
+  --gray-700: #312F2B;
+  --gray-800: #1E1D1A;
+  --gray-900: #0F0E0C;
 
-  --red-error: #ef4444;
-  --red-soft: #fef2f2;
-  --yellow-warning: #f59e0b;
+  --red-error:   #e05252;
+  --red-soft:    #2d1010;
+  --yellow-warning: #d4a017;
 
-  /* superficies semánticas */
-  --bg: var(--white-pure);
-  --surface: var(--white-pure);
-  --surface-raised: var(--white-pure);
-  --border: var(--gray-200);
-  --text: var(--gray-800);
-  --text-muted: var(--gray-500);
-  --text-faint: var(--gray-400);
+  /* === SUPERFICIES SEMÁNTICAS === */
+  --bg:             var(--white-pure);
+  --surface:        var(--white-pure);
+  --surface-raised: #FDFCFA;
+  --border:         var(--gray-200);
+  --text:           var(--gray-800);
+  --text-muted:     var(--gray-500);
+  --text-faint:     var(--gray-400);
 
-  /* === TIPOGRAFÍA === */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Outfit', 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Aliases legacy — evitan romper otros componentes */
+  --green-grass:  var(--electric);
+  --green-hover:  #aee84a;
+  --green-light:  rgba(200,250,95,0.12);
+  --green-soft:   rgba(200,250,95,0.06);
+  --green-glow:   rgba(200,250,95,0.22);
+  --blue-sport:   #4A9EDB;
+  --blue-hover:   #3a8ecb;
+  --blue-light:   rgba(74,158,219,0.12);
+  --blue-soft:    rgba(74,158,219,0.06);
+  --lime-accent:  var(--electric);
+  --amber-accent: var(--clay);
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 3rem;
-  --text-display: clamp(2.4rem, 6vw, 3.6rem);
+  /* === TIPOGRAFÍA ===
+     DM Mono para display: carácter de marcador digital,
+     inhabitual en apps de deporte → lo hace distinto.
+     Inter para cuerpo: funcional, invisible.           */
+  --font-display: 'DM Mono', 'JetBrains Mono', monospace;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:    'DM Mono', 'JetBrains Mono', monospace;
 
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
+  --text-xs:      0.75rem;
+  --text-sm:      0.875rem;
+  --text-base:    1rem;
+  --text-lg:      1.125rem;
+  --text-xl:      1.25rem;
+  --text-2xl:     1.5rem;
+  --text-3xl:     1.875rem;
+  --text-4xl:     2.25rem;
+  --text-5xl:     3rem;
+  --text-display: clamp(2.8rem, 7vw, 4.4rem);
+
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
   --weight-extrabold: 800;
 
-  --leading-tight: 1.05;
+  --leading-tight:  1.0;
   --leading-normal: 1.6;
 
   /* === ESPACIADO (8px base) === */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-7: 1.75rem;
-  --space-8: 2rem;
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-7:  1.75rem;
+  --space-8:  2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
   --space-20: 5rem;
 
-  /* === RADIOS === */
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
+  /* === RADIOS — menos redondeado, más angular/campo === */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
   --radius-full: 9999px;
 
-  /* === SOMBRAS (soft layered) === */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.07), 0 4px 12px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.05);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.05);
-  --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.10), 0 12px 24px rgba(15, 23, 42, 0.06);
-  --shadow-green: 0 8px 24px rgba(14, 164, 90, 0.28);
-  --shadow-blue: 0 8px 24px rgba(14, 165, 233, 0.22);
+  /* === SOMBRAS — cálidas (no azul-gris) === */
+  --shadow-xs: 0 1px 2px rgba(15,14,12,0.08);
+  --shadow-sm: 0 2px 8px rgba(15,14,12,0.08);
+  --shadow-md: 0 4px 16px rgba(15,14,12,0.10);
+  --shadow-lg: 0 12px 32px rgba(15,14,12,0.12);
+  --shadow-xl: 0 24px 48px rgba(15,14,12,0.14);
+  --shadow-green: 0 4px 16px rgba(200,250,95,0.30);
+  --shadow-blue:  0 4px 16px rgba(74,158,219,0.20);
 
-  /* === BORDES sutiles === */
-  --border-soft: 1px solid color-mix(in srgb, var(--gray-200) 85%, transparent);
-  --ring: 0 0 0 4px color-mix(in srgb, var(--green-grass) 14%, transparent);
+  /* === BORDES === */
+  --border-soft: 1px solid var(--gray-200);
+  --ring: 0 0 0 3px rgba(200,250,95,0.30);
 
   /* === TRANSICIONES === */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --duration-fast: 160ms;
-  --duration-normal: 260ms;
-  --duration-slow: 420ms;
+  --duration-fast:   120ms;
+  --duration-normal: 200ms;
+  --duration-slow:   360ms;
 
   /* === GRADIENTES === */
-  --gradient-brand: linear-gradient(135deg, var(--green-grass) 0%, var(--blue-sport) 100%);
-  --gradient-green: linear-gradient(135deg, #0ea45a 0%, #16a34a 45%, #84cc16 100%);
-  --gradient-dark: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  --gradient-brand: linear-gradient(135deg, var(--electric) 0%, #a8e840 100%);
+  --gradient-dark:  linear-gradient(180deg, var(--pitch) 0%, var(--pitch-mid) 100%);
+  --gradient-chalk: linear-gradient(180deg, var(--chalk) 0%, #fff 100%);
 
   /* === Z-INDEX === */
   --z-header: 50;
-  --z-modal: 100;
-  --z-toast: 200;
+  --z-modal:  100;
+  --z-toast:  200;
 }
 
 /* ============================================
- Dark theme
+ Dark theme — campo nocturno profundo
  ============================================ */
 :root[data-theme="dark"] {
-  --white-pure: #0b1220;
-  --gray-50: #111d33;
-  --gray-100: #1a2a4a;
-  --gray-200: #24365f;
-  --gray-300: #2f4a7a;
-  --gray-400: #7a8db0;
-  --gray-500: #a8b9d6;
-  --gray-600: #c9d6eb;
-  --gray-700: #dbe7fb;
-  --gray-800: #eaf2ff;
+  --bg:             var(--pitch);
+  --surface:        var(--pitch-mid);
+  --surface-raised: #1e3520;
+  --border:         var(--pitch-border);
+  --text:           var(--chalk);
+  --text-muted:     rgba(240,237,228,0.55);
+  --text-faint:     rgba(240,237,228,0.30);
+
+  --gray-50:  #111f12;
+  --gray-100: #162A18;
+  --gray-200: #1e3520;
+  --gray-300: #2a4a2d;
+  --gray-400: #4a7a4e;
+  --gray-500: #7aaa7e;
+  --gray-600: #aad4ae;
+  --gray-700: #d0ecd2;
+  --gray-800: var(--chalk);
   --gray-900: #ffffff;
 
-  --bg: #0b1220;
-  --surface: #111d33;
-  --surface-raised: #162447;
-  --border: #24365f;
+  --green-light: rgba(200,250,95,0.08);
+  --green-soft:  rgba(200,250,95,0.04);
+  --blue-light:  rgba(74,158,219,0.08);
+  --blue-soft:   rgba(74,158,219,0.04);
 
-  --green-light: #0f2e1e;
-  --green-soft: #0a2214;
-  --blue-light: #0f2340;
-  --blue-soft: #0c1a30;
-
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.5);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.45);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
-  --shadow-lg: 0 16px 40px rgba(0,0,0,0.55);
-  --shadow-xl: 0 24px 60px rgba(0,0,0,0.6);
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.6);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.55);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.60);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.65);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,0.70);
 }

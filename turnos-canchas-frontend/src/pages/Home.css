@@ -1,25 +1,80 @@
-.home { background: var(--bg); min-height: 100vh; }
-.home__main { display: flex; flex-direction: column; gap: var(--space-12); padding-bottom: var(--space-16); }
-.home__section { padding: var(--space-8) 0 0; }
-.home__section--calendar { padding-top: var(--space-8); background: linear-gradient(180deg, var(--gray-50) 0%, var(--bg) 100%); border-top: 1px solid var(--border); margin-top: var(--space-4); padding-bottom: var(--space-8); }
-.home__section-head { text-align: center; max-width: 640px; margin: 0 auto var(--space-8); }
+/* ============================================
+   Home — layout de secciones pitch/chalk
+   ============================================ */
+
+/* Base */
+.home {
+  background: var(--pitch);
+  min-height: 100vh;
+}
+
+.home__main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Sección canchas — fondo chalk (cal) ─────── */
+.home__section {
+  background: var(--chalk);
+  padding: var(--space-12) 0 var(--space-14);
+}
+
+/* ── Sección calendario — vuelve a pitch ─────── */
+.home__section--calendar {
+  background: var(--pitch);
+  padding: var(--space-12) 0 var(--space-14);
+}
+
+/* ── Encabezados de sección ─────────────────── */
+.home__section-head {
+  max-width: 560px;
+  margin: 0 0 var(--space-10);
+  /* Alineado a la izquierda — no centrado genérico */
+}
+
 .home__section-title {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3.2vw, 2rem); font-weight: 800;
-  color: var(--gray-900); letter-spacing: -0.03em; line-height: 1.15;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  /* Color según contexto del padre */
+  color: var(--gray-900);
 }
+
+/* Título sobre pitch */
+.home__section--calendar .home__section-title {
+  color: var(--chalk);
+}
+
 .home__section-desc {
-  margin-top: var(--space-3); color: var(--text-muted); font-size: var(--text-sm); line-height: 1.7; max-width: 52ch; margin-inline: auto;
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  max-width: 52ch;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
 }
+.home__section--calendar .home__section-desc {
+  color: rgba(240,237,228,0.50);
+}
+
+/* ── Grid de canchas ────────────────────────── */
 .home__grid {
-  display: grid; gap: var(--space-6);
+  display: grid;
+  gap: var(--space-5);
   grid-template-columns: 1fr;
 }
-@media (min-width: 768px) { .home__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px)  { .home__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .home__grid { grid-template-columns: repeat(3, 1fr); } }
-.home__grid--secondary { margin-top: var(--space-6); }
+
+/* ── Estado de error ────────────────────────── */
 .home__error {
-  background: var(--red-soft); border: 1px solid #fecaca; color: #b91c1c;
-  padding: var(--space-4); border-radius: var(--radius-lg); text-align: center; font-weight: 600;
+  background: var(--red-soft);
+  border: 1px solid rgba(224,82,82,0.30);
+  color: #e05252;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-sans);
 }
-.home__empty { text-align: center; color: var(--text-muted); padding: var(--space-10) 0; font-weight: 500; }
