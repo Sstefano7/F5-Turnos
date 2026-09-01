@@ -1,22 +1,21 @@
 /* ============================================
-   CourtCard — sobre fondo chalk (#F0EDE4)
-   Sin sombras idénticas en todas, sin hover
-   translateY repetido. El precio en DM Mono.
+   CourtCard — tarjeta amigable sobre fondo blanco
    ============================================ */
 
 .court-card {
   background: var(--white-pure);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Sin box-shadow genérico — el contraste con --chalk ya los separa */
-  transition: border-color var(--duration-fast) var(--ease-out);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--duration-normal) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
 }
 .court-card:hover {
+  box-shadow: var(--shadow-md);
   border-color: var(--gray-300);
-  /* Sin translateY — el borde más oscuro es suficiente señal */
 }
 
 /* ── Media ──────────────────────────────────── */
@@ -30,13 +29,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 600ms var(--ease-out);
-  filter: saturate(0.85); /* Fotos levemente desaturadas — chalk las contiene */
+  transition: transform 500ms var(--ease-out);
 }
-.court-card:hover .court-card__media img {
-  transform: scale(1.04);
-  filter: saturate(1);
-}
+.court-card:hover .court-card__media img { transform: scale(1.04); }
+
 .court-card__media-top {
   position: absolute;
   top: var(--space-3);
@@ -47,8 +43,8 @@
 .court-card__media-gradient {
   position: absolute;
   inset: auto 0 0 0;
-  height: 40%;
-  background: linear-gradient(to top, rgba(15,14,12,0.30), transparent 100%);
+  height: 35%;
+  background: linear-gradient(to top, rgba(15,14,12,0.22), transparent);
 }
 
 /* ── Body ───────────────────────────────────── */
@@ -56,16 +52,16 @@
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   flex: 1;
 }
 .court-card__title {
   font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--gray-900);
   line-height: 1.3;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 .court-card__desc {
   font-size: var(--text-sm);
@@ -75,7 +71,6 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-family: var(--font-sans);
 }
 .court-card__amenities {
   display: flex;
@@ -83,18 +78,15 @@
   gap: var(--space-2);
   margin-top: auto;
   padding-top: var(--space-3);
-  border-top: 1px solid var(--gray-100);
 }
 .court-card__amenity {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
-  font-weight: var(--weight-regular);
-  color: var(--gray-500);
-  /* Sin border, sin background — solo texto con ícono */
+  font-size: 12px;
+  color: var(--text-muted);
 }
-.court-card__amenity svg { color: var(--gray-400); width: 12px; height: 12px; }
+.court-card__amenity svg { color: var(--gray-400); width: 13px; height: 13px; }
 
 /* ── Footer ─────────────────────────────────── */
 .court-card__footer {
@@ -104,28 +96,27 @@
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
   border-top: 1px solid var(--gray-100);
+  background: var(--gray-50);
 }
 .court-card__price { display: flex; align-items: baseline; gap: 2px; }
-
-/* Precio en DM Mono — el marcador de valor */
 .court-card__price-value {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
   font-weight: var(--weight-medium);
   color: var(--gray-900);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 .court-card__price-suffix {
   font-size: var(--text-xs);
   color: var(--text-muted);
-  font-family: var(--font-sans);
 }
 
 /* ── Skeleton ───────────────────────────────── */
 .court-card--skeleton {
-  min-height: 340px;
+  min-height: 320px;
   border-radius: var(--radius-xl);
   overflow: hidden;
+  box-shadow: var(--shadow-xs);
 }
 .court-card--skeleton .skeleton {
   height: 100%;

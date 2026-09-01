@@ -1,10 +1,9 @@
 /* ============================================
-   Home — layout de secciones pitch/chalk
+   Home — layout limpio sobre fondo cálido
    ============================================ */
 
-/* Base */
 .home {
-  background: var(--pitch);
+  background: var(--chalk);
   min-height: 100vh;
 }
 
@@ -13,50 +12,41 @@
   flex-direction: column;
 }
 
-/* ── Sección canchas — fondo chalk (cal) ─────── */
+/* ── Sección canchas — fondo blanco ──────────── */
 .home__section {
-  background: var(--chalk);
-  padding: var(--space-12) 0 var(--space-14);
+  background: var(--white-pure);
+  padding: var(--space-14) 0;
+  border-top: 1px solid var(--border);
 }
 
-/* ── Sección calendario — vuelve a pitch ─────── */
+/* ── Sección calendario — fondo chalk ───────── */
 .home__section--calendar {
-  background: var(--pitch);
-  padding: var(--space-12) 0 var(--space-14);
+  background: var(--chalk);
+  padding: var(--space-14) 0;
+  border-top: 1px solid var(--border);
 }
 
-/* ── Encabezados de sección ─────────────────── */
+/* ── Encabezados ─────────────────────────────── */
 .home__section-head {
-  max-width: 560px;
+  max-width: 520px;
   margin: 0 0 var(--space-10);
-  /* Alineado a la izquierda — no centrado genérico */
 }
 
 .home__section-title {
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  /* Color según contexto del padre */
+  font-size: clamp(1.35rem, 2.8vw, 1.8rem);
+  font-weight: var(--weight-bold);
   color: var(--gray-900);
-}
-
-/* Título sobre pitch */
-.home__section--calendar .home__section-title {
-  color: var(--chalk);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 .home__section-desc {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   font-size: var(--text-sm);
   line-height: 1.7;
-  max-width: 52ch;
   color: var(--text-muted);
-  font-family: var(--font-sans);
-}
-.home__section--calendar .home__section-desc {
-  color: rgba(240,237,228,0.50);
+  max-width: 50ch;
 }
 
 /* ── Grid de canchas ────────────────────────── */
@@ -68,13 +58,12 @@
 @media (min-width: 768px)  { .home__grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .home__grid { grid-template-columns: repeat(3, 1fr); } }
 
-/* ── Estado de error ────────────────────────── */
+/* ── Error ──────────────────────────────────── */
 .home__error {
   background: var(--red-soft);
-  border: 1px solid rgba(224,82,82,0.30);
-  color: #e05252;
+  border: 1px solid #fecaca;
+  color: var(--red-error);
   padding: var(--space-4);
   border-radius: var(--radius-lg);
   font-weight: var(--weight-medium);
-  font-family: var(--font-sans);
 }

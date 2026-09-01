@@ -1,62 +1,62 @@
 /* ============================================
- F5 TURNOS — Design System v3
- Identidad: campo nocturno · cal · marcador LED
+ F5 TURNOS — Design System v4
+ Minimalista · Amigable · Campo sin abrumar
  ============================================ */
 :root {
-  /* === PALETA IDENTIDAD ===
-     Nace del material real: césped de noche,
-     líneas de cal, tablero de marcador LED    */
-  --pitch:    #0D1F0F;              /* Verde oscuro noche — fondo hero y calendario */
-  --chalk:    #F0EDE4;              /* Blanco cal — secciones claras, texto sobre oscuro */
-  --electric: #C8FA5F;              /* Verde LED marcador — único acento */
-  --clay:     #8B6B4A;              /* Tierra vestuario — elemento terciario */
-  --pitch-mid:#162A18;              /* Pitch más claro para superficies sobre fondo oscuro */
-  --pitch-border: rgba(240,237,228,0.10); /* Borde sobre oscuro */
+  /* === PALETA ===
+     Base clara y cálida. El pitch (#0D1F0F)
+     ahora es acento puntual, no masa de fondo. */
+  --pitch:       #0D1F0F;
+  --pitch-soft:  #EEF5EE;   /* pitch muy diluido — fondo de secciones alternadas */
+  --chalk:       #F5F3EE;   /* fondo cálido principal, no blanco puro */
+  --electric:    #22C55E;   /* verde campo — reemplaza el ácido por un verde amigable */
+  --electric-soft: #DCFCE7; /* electric muy diluido */
+  --clay:        #92705A;   /* tierra — acento terciario */
 
-  /* === NEUTROS (escala cálida, no azul-gris) === */
+  /* === NEUTROS CÁLIDOS === */
   --white-pure: #ffffff;
-  --gray-50:  #F9F7F4;
-  --gray-100: #F0EDE4;   /* mismo que --chalk */
-  --gray-200: #DDD9CF;
-  --gray-300: #B8B2A6;
-  --gray-400: #8C8579;
-  --gray-500: #64605A;
-  --gray-600: #4A4740;
-  --gray-700: #312F2B;
-  --gray-800: #1E1D1A;
-  --gray-900: #0F0E0C;
+  --gray-50:    #F9F8F5;
+  --gray-100:   #F0EDE6;
+  --gray-200:   #E0DBCF;
+  --gray-300:   #C4BDB1;
+  --gray-400:   #9A9188;
+  --gray-500:   #726B63;
+  --gray-600:   #524D47;
+  --gray-700:   #38342F;
+  --gray-800:   #231F1B;
+  --gray-900:   #110F0C;
 
-  --red-error:   #e05252;
-  --red-soft:    #2d1010;
-  --yellow-warning: #d4a017;
+  --red-error:      #DC2626;
+  --red-soft:       #FEF2F2;
+  --yellow-warning: #D97706;
 
   /* === SUPERFICIES SEMÁNTICAS === */
-  --bg:             var(--white-pure);
+  --bg:             var(--chalk);
   --surface:        var(--white-pure);
-  --surface-raised: #FDFCFA;
+  --surface-raised: var(--white-pure);
   --border:         var(--gray-200);
   --text:           var(--gray-800);
   --text-muted:     var(--gray-500);
   --text-faint:     var(--gray-400);
 
-  /* Aliases legacy — evitan romper otros componentes */
+  /* Aliases legacy */
   --green-grass:  var(--electric);
-  --green-hover:  #aee84a;
-  --green-light:  rgba(200,250,95,0.12);
-  --green-soft:   rgba(200,250,95,0.06);
-  --green-glow:   rgba(200,250,95,0.22);
-  --blue-sport:   #4A9EDB;
-  --blue-hover:   #3a8ecb;
-  --blue-light:   rgba(74,158,219,0.12);
-  --blue-soft:    rgba(74,158,219,0.06);
+  --green-hover:  #16A34A;
+  --green-light:  var(--electric-soft);
+  --green-soft:   #F0FDF4;
+  --green-glow:   rgba(34,197,94,0.18);
+  --blue-sport:   #3B82F6;
+  --blue-hover:   #2563EB;
+  --blue-light:   #DBEAFE;
+  --blue-soft:    #EFF6FF;
   --lime-accent:  var(--electric);
   --amber-accent: var(--clay);
 
   /* === TIPOGRAFÍA ===
-     DM Mono para display: carácter de marcador digital,
-     inhabitual en apps de deporte → lo hace distinto.
-     Inter para cuerpo: funcional, invisible.           */
-  --font-display: 'DM Mono', 'JetBrains Mono', monospace;
+     Inter para todo — limpia y amigable.
+     DM Mono solo para números y precios
+     (horarios, precios, stats).             */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:    'DM Mono', 'JetBrains Mono', monospace;
 
@@ -69,7 +69,7 @@
   --text-3xl:     1.875rem;
   --text-4xl:     2.25rem;
   --text-5xl:     3rem;
-  --text-display: clamp(2.8rem, 7vw, 4.4rem);
+  --text-display: clamp(2.2rem, 5.5vw, 3.6rem);
 
   --weight-regular:   400;
   --weight-medium:    500;
@@ -77,10 +77,10 @@
   --weight-bold:      700;
   --weight-extrabold: 800;
 
-  --leading-tight:  1.0;
-  --leading-normal: 1.6;
+  --leading-tight:  1.1;
+  --leading-normal: 1.65;
 
-  /* === ESPACIADO (8px base) === */
+  /* === ESPACIADO === */
   --space-1:  0.25rem;
   --space-2:  0.5rem;
   --space-3:  0.75rem;
@@ -94,39 +94,39 @@
   --space-16: 4rem;
   --space-20: 5rem;
 
-  /* === RADIOS — menos redondeado, más angular/campo === */
-  --radius-sm:   4px;
-  --radius-md:   6px;
-  --radius-lg:   8px;
-  --radius-xl:   12px;
-  --radius-2xl:  16px;
+  /* === RADIOS — redondeados y amigables === */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-2xl:  24px;
   --radius-full: 9999px;
 
-  /* === SOMBRAS — cálidas (no azul-gris) === */
-  --shadow-xs: 0 1px 2px rgba(15,14,12,0.08);
-  --shadow-sm: 0 2px 8px rgba(15,14,12,0.08);
-  --shadow-md: 0 4px 16px rgba(15,14,12,0.10);
-  --shadow-lg: 0 12px 32px rgba(15,14,12,0.12);
-  --shadow-xl: 0 24px 48px rgba(15,14,12,0.14);
-  --shadow-green: 0 4px 16px rgba(200,250,95,0.30);
-  --shadow-blue:  0 4px 16px rgba(74,158,219,0.20);
+  /* === SOMBRAS — suaves y cálidas === */
+  --shadow-xs: 0 1px 3px rgba(35,31,27,0.06);
+  --shadow-sm: 0 2px 8px rgba(35,31,27,0.07);
+  --shadow-md: 0 4px 16px rgba(35,31,27,0.08);
+  --shadow-lg: 0 12px 32px rgba(35,31,27,0.10);
+  --shadow-xl: 0 24px 48px rgba(35,31,27,0.12);
+  --shadow-green: 0 4px 14px rgba(34,197,94,0.22);
+  --shadow-blue:  0 4px 14px rgba(59,130,246,0.18);
 
   /* === BORDES === */
   --border-soft: 1px solid var(--gray-200);
-  --ring: 0 0 0 3px rgba(200,250,95,0.30);
+  --ring: 0 0 0 3px rgba(34,197,94,0.20);
 
   /* === TRANSICIONES === */
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --duration-fast:   120ms;
-  --duration-normal: 200ms;
-  --duration-slow:   360ms;
+  --duration-fast:   140ms;
+  --duration-normal: 220ms;
+  --duration-slow:   380ms;
 
   /* === GRADIENTES === */
-  --gradient-brand: linear-gradient(135deg, var(--electric) 0%, #a8e840 100%);
-  --gradient-dark:  linear-gradient(180deg, var(--pitch) 0%, var(--pitch-mid) 100%);
-  --gradient-chalk: linear-gradient(180deg, var(--chalk) 0%, #fff 100%);
+  --gradient-brand: linear-gradient(135deg, var(--electric) 0%, #16A34A 100%);
+  --gradient-dark:  linear-gradient(180deg, var(--pitch) 0%, #162A18 100%);
+  --gradient-surface: linear-gradient(180deg, var(--white-pure) 0%, var(--gray-50) 100%);
 
   /* === Z-INDEX === */
   --z-header: 50;
@@ -135,36 +135,36 @@
 }
 
 /* ============================================
- Dark theme — campo nocturno profundo
+ Dark theme
  ============================================ */
 :root[data-theme="dark"] {
-  --bg:             var(--pitch);
-  --surface:        var(--pitch-mid);
-  --surface-raised: #1e3520;
-  --border:         var(--pitch-border);
-  --text:           var(--chalk);
-  --text-muted:     rgba(240,237,228,0.55);
-  --text-faint:     rgba(240,237,228,0.30);
+  --bg:             #1A1C18;
+  --surface:        #22251E;
+  --surface-raised: #2A2E26;
+  --border:         rgba(255,255,255,0.09);
+  --text:           #E8E6E0;
+  --text-muted:     rgba(232,230,224,0.55);
+  --text-faint:     rgba(232,230,224,0.30);
 
-  --gray-50:  #111f12;
-  --gray-100: #162A18;
-  --gray-200: #1e3520;
-  --gray-300: #2a4a2d;
-  --gray-400: #4a7a4e;
-  --gray-500: #7aaa7e;
-  --gray-600: #aad4ae;
-  --gray-700: #d0ecd2;
-  --gray-800: var(--chalk);
-  --gray-900: #ffffff;
+  --gray-50:  #1A1C18;
+  --gray-100: #22251E;
+  --gray-200: #2E322A;
+  --gray-300: #3E4438;
+  --gray-400: #5E6857;
+  --gray-500: #8A9880;
+  --gray-600: #B4C4A8;
+  --gray-700: #D4E0CC;
+  --gray-800: #E8E6E0;
+  --gray-900: #F5F4F0;
 
-  --green-light: rgba(200,250,95,0.08);
-  --green-soft:  rgba(200,250,95,0.04);
-  --blue-light:  rgba(74,158,219,0.08);
-  --blue-soft:   rgba(74,158,219,0.04);
+  --chalk: #1A1C18;
+  --pitch-soft: #1E2A1E;
+  --electric-soft: rgba(34,197,94,0.10);
+  --green-soft: rgba(34,197,94,0.06);
 
-  --shadow-xs: 0 1px 3px rgba(0,0,0,0.6);
-  --shadow-sm: 0 2px 10px rgba(0,0,0,0.55);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.60);
-  --shadow-lg: 0 16px 40px rgba(0,0,0,0.65);
-  --shadow-xl: 0 24px 60px rgba(0,0,0,0.70);
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.40);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.36);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.42);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.48);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,0.55);
 }

@@ -7,14 +7,12 @@ export function Hero({ onExplore }) {
   const navigate = useNavigate()
   return (
     <section className="hero">
-      {/* Visual section — split diagonal */}
+      {/* Franja visual — solo esta parte es oscura */}
       <div className="hero__visual" aria-hidden="true">
         <div className="hero__diagonal">
           <div className="hero__pane hero__pane--football">
             <div className="hero__pane-label">
-              <span className="hero__pane-icon">
-                <Goal size={16} />
-              </span>
+              <span className="hero__pane-icon"><Goal size={15} /></span>
               <div>
                 <strong>Fútbol 5</strong>
                 <span>Césped sintético</span>
@@ -27,36 +25,27 @@ export function Hero({ onExplore }) {
                 <strong>Pádel</strong>
                 <span>Vidrio panorámico</span>
               </div>
-              <span className="hero__pane-icon">
-                <Volleyball size={16} />
-              </span>
+              <span className="hero__pane-icon"><Volleyball size={15} /></span>
             </div>
           </div>
           <div className="hero__diagonal-line" />
         </div>
-
-        <div className="hero__stats">
-          <div className="hero__stat"><strong>420</strong><span>horarios por semana</span></div>
-          <div className="hero__stat"><strong>15</strong><span>slots por día</span></div>
-          <div className="hero__stat"><strong>24h</strong><span>confirmación</span></div>
-        </div>
       </div>
 
-      {/* Copy */}
+      {/* Copy + Stats sobre fondo claro */}
       <div className="container hero__content">
         <div className="hero__copy">
-          {/* Live indicator — reemplaza el eyebrow genérico */}
           <div className="hero__live">
             <span className="hero__live-dot" />
             Reservas en tiempo real
           </div>
 
           <h1 className="hero__title">
-            Reservá tu<br />cancha en segundos
+            Reservá tu cancha<br />en segundos
           </h1>
 
           <p className="hero__desc">
-            Elegí fecha, horario y cancha. Confirmación directa y pago en el local. Sin seña, sin complicaciones.
+            Elegí fecha, horario y cancha. Confirmación directa y pago en el local.
           </p>
 
           <div className="hero__ctas">
@@ -65,7 +54,7 @@ export function Hero({ onExplore }) {
               size="lg"
               onClick={() => (onExplore ? onExplore() : document.getElementById("canchas")?.scrollIntoView({ behavior: "smooth" }))}
             >
-              Explorar canchas
+              Ver canchas disponibles
             </Button>
             <Button variant="secondary" size="lg" onClick={() => navigate("/mis-reservas")}>
               Mis reservas
@@ -73,9 +62,25 @@ export function Hero({ onExplore }) {
           </div>
 
           <div className="hero__trust">
-            <span><MapPin size={13} /> 4 canchas disponibles</span>
-            <span><Clock3 size={13} /> 08:00 a 23:00</span>
+            <span><MapPin size={13} /> 4 canchas</span>
+            <span><Clock3 size={13} /> 08:00 – 23:00</span>
             <span><ShieldCheck size={13} /> Confirmación por admin</span>
+          </div>
+        </div>
+
+        {/* Stats — columna derecha en desktop, row en móvil */}
+        <div className="hero__stats">
+          <div className="hero__stat">
+            <strong>420</strong>
+            <span>horarios por semana</span>
+          </div>
+          <div className="hero__stat">
+            <strong>15</strong>
+            <span>slots diarios</span>
+          </div>
+          <div className="hero__stat">
+            <strong>24h</strong>
+            <span>confirmación</span>
           </div>
         </div>
       </div>

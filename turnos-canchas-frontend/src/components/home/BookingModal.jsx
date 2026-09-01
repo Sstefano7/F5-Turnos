@@ -46,11 +46,16 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
     }
   }, [open, initialCourt, initialDate, initialHour])
 
+  // Fetch horarios whenever court + date are both set
   useEffect(() => {
-    if (selectedCourt && selectedDate) {
+    if (selectedCourt?.id && selectedDate) {
       fetchHorarios(selectedCourt.id, selectedDate)
+    } else {
+      setHorarios([])
+      setSelectedHorario(null)
     }
-  }, [selectedCourt, selectedDate])
+  }, [selectedCourt?.id, selectedDate])
+
 
   const findCanchasForSlot = async (date, hour) => {
     const available = []

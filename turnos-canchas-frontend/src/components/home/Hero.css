@@ -1,35 +1,33 @@
 /* ============================================
-   Hero — Identidad campo nocturno
-   Fondo: --pitch (#0D1F0F)
-   Acento: --electric solo en indicador live
+   Hero — Base clara, franja imagen en pitch
+   Amigable · limpio · sin abrumar
    ============================================ */
 
 .hero {
-  background: var(--pitch);
+  background: var(--chalk);
   overflow: hidden;
-  position: relative;
 }
 
-/* ── Visual: imagen diagonal ───────────────── */
+/* ── Franja visual (imagen diagonal) ────────── */
 .hero__visual {
   position: relative;
   width: 100%;
-  padding: var(--space-4) var(--space-4) 0;
+  padding: var(--space-6) var(--space-4) 0;
+  background: var(--pitch);   /* solo esta franja es oscura */
 }
 
 .hero__diagonal {
   position: relative;
-  height: 260px;
-  border-radius: var(--radius-xl);
+  height: 240px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   overflow: hidden;
-  background: var(--pitch-mid);
-  border: 1px solid var(--pitch-border);
+  background: #162A18;
   max-width: 1280px;
   margin: 0 auto;
 }
-@media (min-width: 640px)  { .hero__diagonal { height: 340px; } }
-@media (min-width: 768px)  { .hero__diagonal { height: 420px; } }
-@media (min-width: 1024px) { .hero__diagonal { height: 500px; } }
+@media (min-width: 640px)  { .hero__diagonal { height: 310px; } }
+@media (min-width: 768px)  { .hero__diagonal { height: 380px; } }
+@media (min-width: 1024px) { .hero__diagonal { height: 440px; } }
 
 .hero__pane {
   position: absolute;
@@ -45,53 +43,50 @@
 
 .hero__pane--football {
   background-image:
-    linear-gradient(180deg, rgba(13,31,15,0) 20%, rgba(13,31,15,0.72) 100%),
+    linear-gradient(180deg, transparent 30%, rgba(13,31,15,0.65) 100%),
     url("/diagonal.jpg");
   clip-path: polygon(0 0, 68% 0, 58% 100%, 0 100%);
   background-position: center top;
 }
 .hero__pane--padel {
   background-image:
-    linear-gradient(180deg, rgba(13,31,15,0) 20%, rgba(13,31,15,0.72) 100%),
+    linear-gradient(180deg, transparent 30%, rgba(13,31,15,0.65) 100%),
     url("/diagonal.jpg");
   clip-path: polygon(68% 0, 100% 0, 100% 100%, 58% 100%);
   background-position: center bottom;
 }
 
-/* Etiquetas sobre la imagen — sin badge genérico */
+/* Etiquetas sobre la imagen */
 .hero__pane-label {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: rgba(13,31,15,0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--pitch-border);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.20);
   border-radius: var(--radius-lg);
-  padding: var(--space-2) var(--space-3);
-  max-width: 210px;
+  padding: 8px 12px;
 }
-@media (min-width: 640px) {
-  .hero__pane-label { padding: var(--space-3) var(--space-4); max-width: 250px; }
-}
+@media (min-width: 640px) { .hero__pane-label { padding: 10px 14px; } }
+
 .hero__pane-label--right { margin-left: auto; }
 
 .hero__pane-label strong {
   display: block;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
-  color: var(--chalk);
-  letter-spacing: 0.02em;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
+  color: #fff;
+  letter-spacing: 0.01em;
 }
 @media (min-width: 640px) { .hero__pane-label strong { font-size: var(--text-sm); } }
 
 .hero__pane-label span:not(.hero__pane-icon) {
   font-size: 10px;
-  color: rgba(240,237,228,0.55);
-  font-weight: var(--weight-regular);
+  color: rgba(255,255,255,0.60);
 }
 
 .hero__pane-icon {
@@ -101,157 +96,148 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  background: rgba(200,250,95,0.12);
+  background: rgba(34,197,94,0.20);
   color: var(--electric);
-  border: 1px solid rgba(200,250,95,0.20);
+  border: 1px solid rgba(34,197,94,0.30);
 }
-@media (min-width: 640px) { .hero__pane-icon { width: 34px; height: 34px; } }
 
-/* La línea diagonal — elemento audaz único */
+/* La línea divisoria */
 .hero__diagonal-line {
   position: absolute;
   left: 63%;
-  top: -5%;
-  bottom: -5%;
-  width: 2px;
-  background: rgba(240,237,228,0.50);
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(255,255,255,0.35);
   transform: rotate(6deg);
-  border-radius: var(--radius-full);
+  transform-origin: top center;
   z-index: 2;
-  /* Sin sombra extra — la línea es el elemento, no su decoración */
 }
 
-/* ── Stats ─────────────────────────────────── */
+/* ── Transición entre imagen y contenido ─────── */
+/* El pitch termina en curva, el chalk empieza limpio */
+.hero__visual::after {
+  content: '';
+  display: block;
+  height: 32px;
+  background: var(--chalk);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  margin-top: -1px;
+}
+
+/* ── Copy — sobre fondo chalk ────────────────── */
+.hero__content {
+  background: var(--chalk);
+  padding: var(--space-8) var(--space-4) var(--space-12);
+}
+@media (min-width: 768px)  { .hero__content { padding: var(--space-10) var(--space-6) var(--space-14); } }
+@media (min-width: 1024px) { .hero__content { padding: var(--space-10) var(--space-8) var(--space-16); display: grid; grid-template-columns: 1fr auto; align-items: start; gap: var(--space-12); } }
+
+.hero__copy { max-width: 580px; }
+
+/* Stats integradas en el copy (desktop: columna derecha) */
 .hero__stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-3);
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: var(--space-4) 0 0;
+  margin-top: var(--space-8);
+}
+@media (min-width: 1024px) {
+  .hero__stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: 0;
+    min-width: 160px;
+  }
 }
 
 .hero__stat {
-  background: var(--pitch-mid);
-  border: 1px solid var(--pitch-border);
+  background: var(--white-pure);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  text-align: center;
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-xs);
 }
-/* Sin hover translateY — las stats son informativas, no interactivas */
+@media (min-width: 1024px) {
+  .hero__stat { padding: var(--space-5) var(--space-6); }
+}
 
 .hero__stat strong {
   display: block;
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  font-family: var(--font-mono);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
   font-weight: var(--weight-medium);
-  color: var(--electric);
+  color: var(--gray-900);
   line-height: 1;
   letter-spacing: -0.02em;
 }
 .hero__stat span {
-  font-size: 10px;
-  color: rgba(240,237,228,0.45);
-  font-weight: var(--weight-medium);
-  text-transform: none;
-  letter-spacing: 0;
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
 }
 
-/* ── Copy ───────────────────────────────────── */
-.hero__content {
-  padding: var(--space-8) var(--space-4) var(--space-12);
-}
-@media (min-width: 768px)  { .hero__content { padding: var(--space-10) var(--space-6) var(--space-14); } }
-@media (min-width: 1024px) { .hero__content { padding: var(--space-12) var(--space-8) var(--space-16); } }
-
-.hero__copy { max-width: 640px; }
-
-/* Live indicator — reemplaza el eyebrow en MAYÚSCULAS */
+/* Live indicator */
 .hero__live {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 8px;
   font-size: 12px;
   font-weight: var(--weight-medium);
-  color: rgba(240,237,228,0.50);
-  margin-bottom: var(--space-5);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
 }
-
-/* El único uso del color eléctrico en el hero */
 .hero__live-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--electric);
-  animation: live-pulse 2.4s ease-in-out infinite;
+  animation: live-pulse 2.5s ease-in-out infinite;
 }
 @keyframes live-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  50%       { opacity: 0.4; }
 }
 
+/* Título */
 .hero__title {
   font-family: var(--font-display);
   font-size: var(--text-display);
   line-height: var(--leading-tight);
-  letter-spacing: -0.04em;
-  font-weight: var(--weight-bold);
-  color: var(--chalk);
-  /* Sin gradiente, sin acento de color: el tamaño es el acento */
+  letter-spacing: -0.03em;
+  font-weight: var(--weight-extrabold);
+  color: var(--gray-900);
 }
 
+/* Descripción */
 .hero__desc {
-  margin-top: var(--space-5);
-  color: rgba(240,237,228,0.55);
+  margin-top: var(--space-4);
+  color: var(--text-muted);
   font-size: 1.05rem;
   line-height: 1.7;
-  max-width: 52ch;
-  font-family: var(--font-sans);
-  font-weight: var(--weight-regular);
+  max-width: 50ch;
 }
 
+/* CTAs */
 .hero__ctas {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
-  margin-top: var(--space-8);
-}
-
-/* Botón primario sobre fondo oscuro — overrides */
-.hero .btn--primary {
-  background: var(--electric);
-  color: var(--pitch);
-  border-color: var(--electric);
-  font-weight: var(--weight-bold);
-}
-.hero .btn--primary:hover {
-  background: #d8ff7a;
-  border-color: #d8ff7a;
-}
-
-.hero .btn--secondary {
-  background: transparent;
-  color: var(--chalk);
-  border-color: var(--pitch-border);
-}
-.hero .btn--secondary:hover {
-  background: var(--pitch-mid);
-  border-color: rgba(240,237,228,0.25);
+  margin-top: var(--space-7);
 }
 
 /* Trust bar */
 .hero__trust {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-5);
   margin-top: var(--space-6);
   font-size: var(--text-xs);
-  color: rgba(240,237,228,0.35);
-  font-family: var(--font-sans);
+  color: var(--text-faint);
 }
 .hero__trust span {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
-.hero__trust svg { opacity: 0.5; }
