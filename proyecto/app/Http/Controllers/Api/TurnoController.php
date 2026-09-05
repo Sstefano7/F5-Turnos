@@ -55,7 +55,7 @@ class TurnoController extends Controller
         // Verificar que no haya otro turno que se solape en ese horario
         $turnoExistente = Turno::where('cancha_id', $request->cancha_id)
             ->whereDate('fecha', $request->fecha)
-            ->whereIn('estado', ['pendiente', 'confirmado'])
+            ->whereIn('estado', ['pendiente', 'confirmado', 'pendiente_senia'])
             ->where(function ($q) use ($request) {
                 $q->where('hora_inicio', '<', $request->hora_fin)
                   ->where('hora_fin', '>', $request->hora_inicio);
@@ -105,7 +105,7 @@ class TurnoController extends Controller
             'fecha' => 'date|after_or_equal:today',
             'hora_inicio' => 'date_format:H:i',
             'hora_fin' => 'date_format:H:i|after:hora_inicio',
-            'estado' => 'in:pendiente,confirmado,cancelado,completado',
+            'estado' => 'in:pendiente,confirmado,cancelado,completado,pendiente_senia',
             'observaciones' => 'nullable|string',
         ]);
 
@@ -118,7 +118,7 @@ class TurnoController extends Controller
 
             $turnoExistente = Turno::where('cancha_id', $canchaId)
                 ->whereDate('fecha', $fecha)
-                ->whereIn('estado', ['pendiente', 'confirmado'])
+                ->whereIn('estado', ['pendiente', 'confirmado', 'pendiente_senia'])
                 ->where(function ($q) use ($horaInicio, $horaFin) {
                     $q->where('hora_inicio', '<', $horaFin)
                       ->where('hora_fin', '>', $horaInicio);

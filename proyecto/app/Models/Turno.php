@@ -21,14 +21,18 @@ class Turno extends Model implements Auditable
         'hora_fin',
         'precio',
         'estado',
+        'senia_vence_en',
+        'monto_senia',
         'observaciones'
     ];
 
     protected $casts = [
-        'fecha'       => 'date',
-        'hora_inicio' => 'datetime:H:i',
-        'hora_fin'    => 'datetime:H:i',
-        'precio'      => 'decimal:2',
+        'fecha'          => 'date',
+        'hora_inicio'    => 'datetime:H:i',
+        'hora_fin'       => 'datetime:H:i',
+        'precio'         => 'decimal:2',
+        'senia_vence_en' => 'datetime',
+        'monto_senia'    => 'decimal:2',
     ];
 
     // Relaciones
