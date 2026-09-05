@@ -47,17 +47,17 @@ class BackupController extends Controller
     // 2. Listar todos los backups existentes (Queda igual)
     public function index()
     {
-        $files = Storage::disk('local')->allFiles();
+        $files = Storage::disk('supabase')->allFiles();
         $backups = [];
         foreach ($files as $file) {
             if (pathinfo($file, PATHINFO_EXTENSION) === 'zip') {
                 $backups[] = [
                     'name' => basename($file),
-                    'size' => round(Storage::disk('local')->size($file) / 1048576, 2) . ' MB',
-                    'date' => Carbon::createFromTimestamp(Storage::disk('local')->lastModified($file))
+                    'size' => round(Storage::disk('supabase')->size($file) / 1048576, 2) . ' MB',
+                    'date' => Carbon::createFromTimestamp(Storage::disk('supabase')->lastModified($file))
                                 ->setTimezone('America/Argentina/Buenos_Aires')
                                 ->format('d/m/Y H:i:s'),
-                    'timestamp' => Storage::disk('local')->lastModified($file) 
+                    'timestamp' => Storage::disk('supabase')->lastModified($file) 
                 ];
             }
         }
@@ -80,19 +80,12 @@ class BackupController extends Controller
             return response()->json(['error' => 'Tipo de archivo no permitido'], 403);
         }
 
-        // Buscar solo dentro del directorio de backups (no en todo el storage)
-        $files = Storage::disk('local')->allFiles();
+        // Buscar solo dentro del bucket de backups (no en todo el storage)
+        $files = Storage::disk('supabase')->allFiles();
 
         foreach ($files as $file) {
             if (basename($file) === $fileName) {
-                $rutaAbsoluta = Storage::disk('local')->path($file);
-
-                // Verificar que la ruta absoluta está dentro del disco local
-                if (!str_starts_with(realpath($rutaAbsoluta), realpath(Storage::disk('local')->path('/')))) {
-                    return response()->json(['error' => 'Acceso no permitido'], 403);
-                }
-
-                return response()->download($rutaAbsoluta);
+                return Storage::disk('supabase')->download($file);
             }
         }
 
