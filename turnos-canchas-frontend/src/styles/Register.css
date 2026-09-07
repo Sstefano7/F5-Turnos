@@ -14,10 +14,10 @@ Mobile-first | Design System tokens
 }
 
 .reg-card {
-  background: var(--white-pure);
+  background: var(--surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
-  border: 1px solid var(--gray-100);
+  border: 1px solid var(--border);
   width: 100%;
   max-width: 680px;
   padding: var(--space-6) var(--space-5) var(--space-8);

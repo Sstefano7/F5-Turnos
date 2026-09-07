@@ -8,61 +8,63 @@
 .booking-step-content { display: flex; flex-direction: column; gap: var(--space-4); }
 .booking-label { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--gray-700); }
 .booking-input {
-  width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md); font-size: var(--text-sm); background: var(--white-pure);
-  transition: border-color var(--duration-fast) var(--ease-out);
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-size: var(--text-sm); background: var(--surface-raised);
+  color: var(--text); transition: border-color var(--duration-fast) var(--ease-out);
 }
 .booking-input:focus { outline: none; border-color: var(--green-grass); box-shadow: 0 0 0 3px var(--green-light); }
-.booking-hint { font-size: var(--text-sm); color: var(--gray-500); }
+.booking-hint { font-size: var(--text-sm); color: var(--text-muted); }
 .booking-error {
-  background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+  background: var(--red-soft); border: 1px solid rgba(239, 68, 68, 0.25); color: var(--red-error);
   padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-size: var(--text-sm);
 }
 .booking-canchas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
 .booking-cancha-card {
-  text-align: left; padding: var(--space-3); border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md); background: var(--white-pure);
+  text-align: left; padding: var(--space-3); border: 1px solid var(--border);
+  border-radius: var(--radius-md); background: var(--surface-raised);
   transition: all var(--duration-fast) var(--ease-out);
 }
 .booking-cancha-card.is-selected { border-color: var(--green-grass); background: var(--green-soft); box-shadow: var(--shadow-green); }
-.booking-cancha-card strong { display: block; font-size: var(--text-sm); color: var(--gray-800); }
-.booking-cancha-card span { font-size: 11px; color: var(--gray-500); }
+.booking-cancha-card strong { display: block; font-size: var(--text-sm); color: var(--gray-900); }
+.booking-cancha-card span { font-size: 11px; color: var(--text-muted); }
 .booking-canchas-list { display: flex; flex-direction: column; gap: var(--space-2); }
 .booking-cancha-option {
   display: flex; align-items: center; justify-content: space-between;
-  padding: var(--space-3) var(--space-4); border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md); background: var(--white-pure); text-align: left;
+  padding: var(--space-3) var(--space-4); border: 1px solid var(--border);
+  border-radius: var(--radius-md); background: var(--surface-raised); text-align: left;
+  color: var(--text);
 }
 .booking-cancha-option:hover { border-color: var(--green-grass); background: var(--green-soft); }
 .booking-horarios { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .booking-horario {
   padding: 8px 12px; border-radius: var(--radius-full);
-  border: 1px solid var(--gray-200); background: var(--white-pure);
-  font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--gray-700);
+  border: 1px solid var(--border); background: var(--surface-raised);
+  font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--gray-800);
+  cursor: pointer;
 }
-.booking-horario.is-selected { background: var(--green-grass); color: var(--white-pure); border-color: var(--green-grass); box-shadow: var(--shadow-green); }
+.booking-horario.is-selected { background: var(--green-grass); color: #fff; border-color: var(--green-grass); box-shadow: var(--shadow-green); }
 .booking-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
 .booking-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .booking-field { display: flex; flex-direction: column; gap: 6px; }
-.booking-field span { font-size: 11px; font-weight: var(--weight-semibold); color: var(--gray-600); letter-spacing: 0.02em; }
+.booking-field span { font-size: 11px; font-weight: var(--weight-semibold); color: var(--text-muted); letter-spacing: 0.02em; }
 .booking-field:first-child { grid-column: 1 / -1; }
 .booking-summary {
-  background: var(--gray-50); border: 1px solid var(--gray-200);
+  background: var(--surface-raised); border: 1px solid var(--border);
   border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
-  font-size: var(--text-sm); color: var(--gray-600);
+  font-size: var(--text-sm); color: var(--text-muted);
 }
 .booking-confirm-box {
-  background: var(--gray-50); border: 1px solid var(--gray-200);
+  background: var(--surface-raised); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--space-5);
 }
-.booking-confirm-box h4 { font-size: var(--text-lg); color: var(--gray-800); margin-bottom: var(--space-2); }
-.booking-confirm-box p { font-size: var(--text-sm); color: var(--gray-600); margin: 4px 0; }
-.booking-confirm-box hr { border: 0; border-top: 1px solid var(--gray-200); margin: var(--space-3) 0; }
+.booking-confirm-box h4 { font-size: var(--text-lg); color: var(--gray-900); margin-bottom: var(--space-2); }
+.booking-confirm-box p { font-size: var(--text-sm); color: var(--text-muted); margin: 4px 0; }
+.booking-confirm-box hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-3) 0; }
 .booking-confirm-hint { color: var(--green-hover) !important; font-weight: var(--weight-semibold); }
 .booking-success { text-align: center; padding: var(--space-2) 0; }
 .booking-success__icon { font-size: 48px; margin-bottom: var(--space-3); }
-.booking-success h3 { font-size: var(--text-xl); color: var(--gray-800); margin-bottom: var(--space-2); }
-.booking-success p { color: var(--gray-500); font-size: var(--text-sm); line-height: 1.6; }
+.booking-success h3 { font-size: var(--text-xl); color: var(--gray-900); margin-bottom: var(--space-2); }
+.booking-success p { color: var(--text-muted); font-size: var(--text-sm); line-height: 1.6; }
 
 /* ── Mobile responsive ──────────────────────── */
 @media (max-width: 560px) {

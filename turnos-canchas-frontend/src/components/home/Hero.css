@@ -158,7 +158,7 @@
 }
 
 .hero__stat {
-  background: var(--white-pure);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: var(--space-4) var(--space-5);

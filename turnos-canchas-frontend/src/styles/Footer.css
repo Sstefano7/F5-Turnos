@@ -4,7 +4,7 @@
    ============================================ */
 
 .site-footer {
-  background: linear-gradient(180deg, var(--gray-900) 0%, #0f172a 55%, #111d33 100%);
+  background: linear-gradient(180deg, #090e1a 0%, #0f172a 55%, #111d33 100%);
   color: var(--gray-300);
   padding: var(--space-12) var(--space-5) var(--space-6);
   margin-top: var(--space-16);

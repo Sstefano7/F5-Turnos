@@ -373,7 +373,7 @@
   padding: var(--space-3) var(--space-5);
   background: var(--red-soft);
   color: var(--red-error);
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: var(--radius-full);
   font-weight: var(--weight-bold);
   cursor: pointer;
@@ -381,7 +381,52 @@
   font-size: var(--text-sm);
 }
 .mr-btn-cancelar:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.2);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+/* === Dark Mode Adjustments === */
+:root[data-theme="dark"] .mr-estado-pendiente {
+  background: rgba(234, 179, 8, 0.14);
+  color: #facc15;
+  border-color: rgba(234, 179, 8, 0.3);
+}
+:root[data-theme="dark"] .mr-estado-confirmado {
+  background: rgba(52, 211, 153, 0.14);
+  color: #4ade80;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+:root[data-theme="dark"] .mr-estado-cancelado {
+  background: rgba(239, 68, 68, 0.14);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+:root[data-theme="dark"] .mr-estado-completado {
+  background: rgba(96, 165, 250, 0.14);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+:root[data-theme="dark"] .mr-estado-pendiente-senia {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+:root[data-theme="dark"] .mr-senia-box--active {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+:root[data-theme="dark"] .mr-senia-box__timer-label {
+  color: #fcd34d;
+}
+:root[data-theme="dark"] .mr-senia-box__timer-value {
+  color: #fbbf24;
+}
+:root[data-theme="dark"] .mr-btn-logout {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+:root[data-theme="dark"] .mr-btn-logout:hover {
+  background: rgba(239, 68, 68, 0.22);
 }

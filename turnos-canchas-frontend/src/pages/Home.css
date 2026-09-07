@@ -3,7 +3,7 @@
    ============================================ */
 
 .home {
-  background: var(--chalk);
+  background: var(--bg);
   min-height: 100vh;
 }
 
@@ -12,16 +12,16 @@
   flex-direction: column;
 }
 
-/* ── Sección canchas — fondo blanco ──────────── */
+/* ── Sección canchas — fondo surface ──────────── */
 .home__section {
-  background: var(--white-pure);
+  background: var(--surface);
   padding: var(--space-14) 0;
   border-top: 1px solid var(--border);
 }
 
-/* ── Sección calendario — fondo chalk ───────── */
+/* ── Sección calendario — fondo bg ───────── */
 .home__section--calendar {
-  background: var(--chalk);
+  background: var(--bg);
   padding: var(--space-14) 0;
   border-top: 1px solid var(--border);
 }
@@ -61,7 +61,7 @@
 /* ── Error ──────────────────────────────────── */
 .home__error {
   background: var(--red-soft);
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.25);
   color: var(--red-error);
   padding: var(--space-4);
   border-radius: var(--radius-lg);

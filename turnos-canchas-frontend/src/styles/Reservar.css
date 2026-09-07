@@ -96,7 +96,7 @@
   margin-bottom: var(--space-4);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 1px solid #bfdbfe;
+  border: 1px solid color-mix(in srgb, var(--blue-sport) 28%, transparent);
 }
 .reservar-cancha-info .reservar-descripcion {
   color: var(--text-muted);
