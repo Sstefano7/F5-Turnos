@@ -63,3 +63,14 @@
 .booking-success__icon { font-size: 48px; margin-bottom: var(--space-3); }
 .booking-success h3 { font-size: var(--text-xl); color: var(--gray-800); margin-bottom: var(--space-2); }
 .booking-success p { color: var(--gray-500); font-size: var(--text-sm); line-height: 1.6; }
+
+/* ── Mobile responsive ──────────────────────── */
+@media (max-width: 560px) {
+  .booking-form-grid { grid-template-columns: 1fr; }
+  .booking-canchas-grid { grid-template-columns: 1fr; }
+  .booking-steps { flex-wrap: wrap; gap: var(--space-1); }
+  .booking-step__sep { display: none; }
+  .booking-actions { flex-direction: column-reverse; gap: var(--space-2); }
+  .booking-actions .btn { width: 100%; }
+  .booking-summary { font-size: var(--text-xs); }
+}

@@ -39,6 +39,7 @@ function Header() {
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen)
 
   return (
+    <>
     <header className="header" role="banner">
       <div className="header__container">
         <div className="container header__inner">
@@ -46,8 +47,8 @@ function Header() {
             <div className="header__logo" aria-hidden="true">
               <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="32" height="32">
                 <rect width="32" height="32" rx="8" fill="url(#headerGradient)"/>
-                <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" 
-                      font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="14" fill="white">
+                <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" 
+                      fontFamily="Inter, system-ui, sans-serif" fontWeight="800" fontSize="14" fill="white">
                   F5
                 </text>
                 <defs>
@@ -147,79 +148,80 @@ function Header() {
             <Menu size={24} aria-hidden="true" />
           </button>
         </div>
-
-        <div className={`header__mobile-wrapper${mobileMenuOpen ? ' is-open' : ''}`}>
-          <div className="header__mobile-overlay" onClick={closeMenus} />
-          <aside 
-            id="mobile-menu" 
-            className="header__mobile-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menú de navegación"
-          >
-            <div className="header__mobile-header">
-              <span className="header__mobile-title">Menú</span>
-              <button 
-                className="header__mobile-close" 
-                onClick={closeMenus}
-                aria-label="Cerrar menú"
-              >
-                <X size={24} aria-hidden="true" />
-              </button>
-            </div>
-            <nav className="header__mobile-nav" role="navigation">
-              <Link to="/" className="header__mobile-link" onClick={closeMenus}>Canchas</Link>
-              {user && <Link to="/mis-reservas" className="header__mobile-link" onClick={closeMenus}>Mis reservas</Link>}
-              {isAdmin() && <Link to="/admin" className="header__mobile-link header__mobile-link--admin" onClick={closeMenus}>Panel de administración</Link>}
-            </nav>
-
-            {user ? (
-              <div className="header__mobile-user">
-                <div className="header__mobile-user-info">
-                  <span className="header__avatar" aria-hidden="true">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                  <div>
-                    <span className="header__mobile-username">{user.name}</span>
-                    <span className="header__mobile-role">{isAdmin() ? "Administrador" : "Usuario"}</span>
-                  </div>
-                </div>
-                <div className="header__mobile-actions">
-                  <Button variant="secondary" className="header__mobile-btn" block onClick={() => { closeMenus(); navigate("/mis-reservas") }}>
-                    <CalendarDays size={18} aria-hidden="true" />
-                    Mis reservas
-                  </Button>
-                  {isAdmin() && (
-                    <Button variant="secondary" className="header__mobile-btn" block onClick={() => { closeMenus(); navigate("/admin") }}>
-                      <LayoutDashboard size={18} aria-hidden="true" />
-                      Administración
-                    </Button>
-                  )}
-                  <Button variant="ghost" className="header__mobile-btn header__mobile-btn--danger" block onClick={handleLogout}>
-                    <LogOut size={18} aria-hidden="true" />
-                    Cerrar sesión
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="header__mobile-auth">
-                <Button variant="primary" block onClick={() => { closeMenus(); navigate("/register") }}>
-                  Crear cuenta
-                </Button>
-                <Button variant="secondary" block onClick={() => { closeMenus(); navigate("/login") }}>
-                  Iniciar sesión
-                </Button>
-              </div>
-            )}
-
-            <button className="header__mobile-theme" onClick={toggleTheme}>
-              {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-              {theme === "dark" ? "Modo claro" : "Modo oscuro"}
-            </button>
-          </aside>
-        </div>
       </div>
     </header>
+
+    <div className={`header__mobile-wrapper${mobileMenuOpen ? ' is-open' : ''}`}>
+      <div className="header__mobile-overlay" onClick={closeMenus} />
+      <aside 
+        id="mobile-menu" 
+        className="header__mobile-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menú de navegación"
+      >
+        <div className="header__mobile-header">
+          <span className="header__mobile-title">Menú</span>
+          <button 
+            className="header__mobile-close" 
+            onClick={closeMenus}
+            aria-label="Cerrar menú"
+          >
+            <X size={24} aria-hidden="true" />
+          </button>
+        </div>
+        <nav className="header__mobile-nav" role="navigation">
+          <Link to="/" className="header__mobile-link" onClick={closeMenus}>Canchas</Link>
+          {user && <Link to="/mis-reservas" className="header__mobile-link" onClick={closeMenus}>Mis reservas</Link>}
+          {isAdmin() && <Link to="/admin" className="header__mobile-link header__mobile-link--admin" onClick={closeMenus}>Panel de administración</Link>}
+        </nav>
+
+        {user ? (
+          <div className="header__mobile-user">
+            <div className="header__mobile-user-info">
+              <span className="header__avatar" aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <div>
+                <span className="header__mobile-username">{user.name}</span>
+                <span className="header__mobile-role">{isAdmin() ? "Administrador" : "Usuario"}</span>
+              </div>
+            </div>
+            <div className="header__mobile-actions">
+              <Button variant="secondary" className="header__mobile-btn" block onClick={() => { closeMenus(); navigate("/mis-reservas") }}>
+                <CalendarDays size={18} aria-hidden="true" />
+                Mis reservas
+              </Button>
+              {isAdmin() && (
+                <Button variant="secondary" className="header__mobile-btn" block onClick={() => { closeMenus(); navigate("/admin") }}>
+                  <LayoutDashboard size={18} aria-hidden="true" />
+                  Administración
+                </Button>
+              )}
+              <Button variant="ghost" className="header__mobile-btn header__mobile-btn--danger" block onClick={handleLogout}>
+                <LogOut size={18} aria-hidden="true" />
+                Cerrar sesión
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="header__mobile-auth">
+            <Button variant="primary" block onClick={() => { closeMenus(); navigate("/register") }}>
+              Crear cuenta
+            </Button>
+            <Button variant="secondary" block onClick={() => { closeMenus(); navigate("/login") }}>
+              Iniciar sesión
+            </Button>
+          </div>
+        )}
+
+        <button className="header__mobile-theme" onClick={toggleTheme}>
+          {theme === "dark" ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+          {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+        </button>
+      </aside>
+    </div>
+    </>
   )
 }
 

@@ -263,7 +263,7 @@ function Reservar() {
           </div>
 
           {fecha && (
-            <div className="form-section">
+            <div className="reservar-form-section">
               <h3>2. Seleccioná el horario</h3>
               {loadingHorarios ? (
                 <p>Cargando horarios...</p>
@@ -287,7 +287,7 @@ function Reservar() {
           )}
 
           {horarioSeleccionado && (
-            <div className="form-section">
+            <div className="reservar-form-section">
               <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span>3. Tus datos</span>
                 {buscandoDni && <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>Buscando... ⏳</span>}

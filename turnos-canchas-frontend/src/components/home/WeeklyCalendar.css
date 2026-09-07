@@ -87,8 +87,23 @@
 .weekly-calendar__scroll {
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--gray-200) transparent;
+  scrollbar-color: var(--gray-300) transparent;
   -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+/* Scroll fade hint on right edge (mobile only) */
+@media (max-width: 767px) {
+  .weekly-calendar__scroll {
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+  .weekly-calendar__scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  .weekly-calendar__scroll::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: var(--radius-full);
+  }
 }
 
 .weekly-calendar__grid {

@@ -160,7 +160,7 @@ function MisReservas() {
                     <div className="mr-info-item">
                       <span className="mr-label">Fecha:</span>
                       <span className="mr-value">
-                        {new Date(turno.fecha).toLocaleDateString('es-AR', {
+                        {new Date(turno.fecha + 'T00:00:00').toLocaleDateString('es-AR', {
                           weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                         })}
                       </span>

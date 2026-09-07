@@ -78,10 +78,18 @@ export default function Home() {
                   <div key={i} className="court-card court-card--skeleton"><div className="skeleton shimmer" style={{ height: "340px" }} /></div>
                 ))}
               </div>
-            ) : error ? (
-              <div className="home__error">Error: {error}</div>
             ) : (
               <>
+                {error && (
+                  <div className="home__error" style={{ marginBottom: 'var(--space-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                    <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                    <div>
+                      <strong>No se pudo conectar con el servidor.</strong>
+                      <br />
+                      <span style={{ fontSize: 'var(--text-sm)', opacity: 0.85 }}>Mostrando canchas de referencia. Intentá de nuevo más tarde.</span>
+                    </div>
+                  </div>
+                )}
                 <div className="home__grid">
                   {(canchas.length > 0 ? canchas : featuredCourts).map(court => (
                     <CourtCard key={court.id} court={court} onReserve={handleReserve} />
