@@ -84,15 +84,47 @@ function AdminDashboard() {
             </button>
 
            {isSuperAdmin() && (
-            <button 
-              className="menu-card super-admin-card"
-              onClick={() => navigate('/admin/bug-reports')}
-            >
-              <div className="menu-icon">💡</div>
-              <h3>Ideas y Comentarios</h3>
-              <p>Ver y gestionar mensajes</p>
-              <span className="superadmin-badge">Super Admin</span>
-            </button>
+            <>
+              <button 
+                className="menu-card super-admin-card"
+                onClick={() => navigate('/admin/bug-reports')}
+              >
+                <div className="menu-icon">💡</div>
+                <h3>Ideas y Comentarios</h3>
+                <p>Ver y gestionar mensajes</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+
+              <button 
+                className="menu-card super-admin-card"
+                onClick={() => navigate('/admin/audits')}
+              >
+                <div className="menu-icon">🛡️</div>
+                <h3>Auditoría del Sistema</h3>
+                <p>Registro histórico de cambios y acciones</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+
+              <button 
+                className="menu-card super-admin-card"
+                onClick={() => navigate('/admin/logs')}
+              >
+                <div className="menu-icon">📜</div>
+                <h3>Logs del Sistema</h3>
+                <p>Registro de eventos y errores técnicos</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+
+              <button 
+                className="menu-card super-admin-card"
+                onClick={() => navigate('/admin/backups')}
+              >
+                <div className="menu-icon">💾</div>
+                <h3>Copias de Seguridad</h3>
+                <p>Respaldos automáticos y manuales de BD</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
+            </>
           )}
             
           </div> 

@@ -17,10 +17,10 @@ class ClienteController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
-                $q->where('dni', 'like', "%{$searchTerm}%")
-                  ->orWhere('nombre', 'like', "%{$searchTerm}%")
-                  ->orWhere('apellido', 'like', "%{$searchTerm}%")
-                  ->orWhere('email', 'like', "%{$searchTerm}%");
+                $q->where('dni', 'ilike', "%{$searchTerm}%")
+                  ->orWhere('nombre', 'ilike', "%{$searchTerm}%")
+                  ->orWhere('apellido', 'ilike', "%{$searchTerm}%")
+                  ->orWhere('email', 'ilike', "%{$searchTerm}%");
             });
         }
 

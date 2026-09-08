@@ -38,12 +38,22 @@ class Turno extends Model implements Auditable
     // Relaciones
     public function cancha()
     {
-        return $this->belongsTo(Cancha::class);
+        return $this->belongsTo(Cancha::class)->withTrashed();
     }
 
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class);
+        return $this->belongsTo(Cliente::class)->withTrashed();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function pago()
+    {
+        return $this->hasOne(Pago::class);
     }
 
     // Scopes

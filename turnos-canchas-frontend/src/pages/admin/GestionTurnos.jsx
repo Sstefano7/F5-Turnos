@@ -195,17 +195,23 @@ function GestionTurnos() {
                 turnos.map((turno) => (
                   <tr key={turno.id}>
                     <td>{turno.id}</td>
-                    <td>{turno.cancha.nombre}</td>
+                    <td>{turno.cancha?.nombre || 'Cancha eliminada'}</td>
                     <td>
-                      {turno.cliente.nombre} {turno.cliente.apellido}
-                      <br />
-                      <small style={{ color: '#666' }}>{turno.cliente.email}</small>
+                      {turno.cliente ? (
+                        <>
+                          {turno.cliente.nombre} {turno.cliente.apellido}
+                          <br />
+                          <small style={{ color: '#666' }}>{turno.cliente.email}</small>
+                        </>
+                      ) : (
+                        <span style={{ color: '#888', fontStyle: 'italic' }}>Usuario #{turno.user_id || 'N/A'}</span>
+                      )}
                     </td>
                     <td>
-                      {turno.fecha.split('T')[0].split('-').reverse().join('/')}
+                      {turno.fecha ? (typeof turno.fecha === 'string' ? turno.fecha.split('T')[0].split('-').reverse().join('/') : turno.fecha) : '-'}
                     </td>
                     <td>
-                      {turno.hora_inicio.slice(0, 5)} - {turno.hora_fin.slice(0, 5)}
+                      {turno.hora_inicio ? turno.hora_inicio.slice(0, 5) : ''} - {turno.hora_fin ? turno.hora_fin.slice(0, 5) : ''}
                     </td>
                     <td className="precio">${turno.precio}</td>
                     <td>

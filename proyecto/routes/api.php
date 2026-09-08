@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\BackupScheduleController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\PagoController;
 
 // Rutas públicas (sin autenticación)
 
@@ -83,6 +84,14 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Gestión de horarios
         Route::apiResource('horarios', HorarioController::class);
+
+        // Gestión de pagos
+        Route::get('/pagos/export-pdf', [PagoController::class, 'exportPdf']);
+        Route::get('/pagos', [PagoController::class, 'index']);
+        Route::post('/pagos', [PagoController::class, 'store']);
+        Route::get('/pagos/{id}', [PagoController::class, 'show']);
+        Route::put('/pagos/{id}', [PagoController::class, 'update']);
+        Route::delete('/pagos/{id}', [PagoController::class, 'destroy']);
     });
 
     // --- RUTAS EXCLUSIVAS DE SUPER ADMIN ---

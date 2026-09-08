@@ -22,8 +22,16 @@ class DashboardController extends Controller
 
             $ingresosMes = Pago::whereMonth('created_at', $mesActual)
                 ->whereYear('created_at', $añoActual)
-                ->where('estado', 'completado')
+                ->whereIn('estado', ['pagado', 'completado'])
                 ->sum('monto');
+
+            // Fallback: si aún no hay pagos registrados en la tabla pagos, calcular sobre turnos confirmados/completados
+            if ($ingresosMes <= 0) {
+                $ingresosMes = Turno::whereMonth('fecha', $mesActual)
+                    ->whereYear('fecha', $añoActual)
+                    ->whereIn('estado', ['confirmado', 'completado'])
+                    ->sum('precio');
+            }
 
             return [
                 'totalCanchas'     => Cancha::count(),
