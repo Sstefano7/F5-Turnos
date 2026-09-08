@@ -10,10 +10,12 @@ class BackupSchedule extends Model
         'dia_semana',
         'hora',
         'activo',
+        'ultimo_backup_at',
     ];
 
     protected $casts = [
         'activo' => 'boolean',
+        'ultimo_backup_at' => 'datetime',
     ];
 
     public function scopeActivos($query)

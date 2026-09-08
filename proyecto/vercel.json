@@ -5,6 +5,12 @@
       "runtime": "vercel-php@0.7.4"
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/backups",
+      "schedule": "0 * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

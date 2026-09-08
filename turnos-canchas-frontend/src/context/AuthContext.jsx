@@ -4,13 +4,19 @@ import { authService } from '../services/authService';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      return authService.getCurrentUser();
+    } catch (e) {
+      console.error('Error al recuperar sesión de localStorage:', e);
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Verificar si hay un usuario guardado al cargar la app
     const savedUser = authService.getCurrentUser();
-    if (savedUser) {
+    if (savedUser && (!user || user.id !== savedUser.id)) {
       setUser(savedUser);
     }
     setLoading(false);

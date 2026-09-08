@@ -127,7 +127,16 @@ function GestionAudits() {
                 audits.map((audit) => (
                   <tr key={audit.id}>
                     <td>{new Date(audit.created_at).toLocaleString('es-AR')}</td>
-                    <td>{audit.user ? audit.user.name : 'Sistema'}</td>
+                    <td>
+                      <div style={{ fontWeight: '600' }}>
+                        {audit.user ? audit.user.name : 'Sistema'}
+                      </div>
+                      {audit.user?.email && (
+                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                          {audit.user.email}
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <span className={`badge ${getEventClass(audit.event)}`}>
                         {traducirEvento(audit.event)}

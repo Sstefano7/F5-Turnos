@@ -27,15 +27,40 @@ class BackupController extends Controller
         }
     }
 
-    // 2. Listar todos los backups existentes
+    // 2. Listar todos los backups existentes y procesar pendientes si corresponde
     public function index()
     {
         try {
+            // Verificar de manera oportunista si hay algún backup programado pendiente para hoy
+            try {
+                \App\Console\Commands\CheckBackupSchedule::processDueSchedules();
+            } catch (\Throwable $e) {
+                // Si falla el scheduled check, no interrumpimos el listado
+            }
+
             $backups = DatabaseBackupService::listBackups();
             return response()->json($backups);
         } catch (\Throwable $e) {
             return response()->json([
                 'error' => 'Error al listar backups: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // 5. Endpoint de cron para ejecutar backups programados pendientes
+    public function runScheduled(Request $request)
+    {
+        try {
+            set_time_limit(300);
+            $executed = \App\Console\Commands\CheckBackupSchedule::processDueSchedules();
+
+            return response()->json([
+                'message' => "Proceso completado. Se ejecutaron {$executed} backup(s).",
+                'executed_count' => $executed,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => 'Error al procesar backups programados: ' . $e->getMessage()
             ], 500);
         }
     }

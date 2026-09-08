@@ -44,6 +44,9 @@ Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
 
+// Endpoint de cron para backups programados (Vercel Cron / cron-job.org)
+Route::get('/cron/backups', [\App\Http\Controllers\Api\BackupController::class, 'runScheduled']);
+
 // Rutas protegidas (requieren autenticación)
 Route::middleware('auth:sanctum')->group(function () {
     

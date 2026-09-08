@@ -2,7 +2,11 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function AdminRoute({ children }) {
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isAdmin, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Cargando sesión...</div>;
+  }
 
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;

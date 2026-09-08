@@ -72,7 +72,12 @@
             @foreach($audits as $audit)
             <tr>
                 <td>{{ $audit->created_at->format('d/m/Y H:i:s') }}</td>
-                <td>{{ $audit->user ? $audit->user->name : 'Sistema' }}</td>
+                <td>
+                    <strong>{{ $audit->user ? $audit->user->name : 'Sistema' }}</strong>
+                    @if($audit->user && $audit->user->email)
+                        <br><span style="color: #666; font-size: 10px;">{{ $audit->user->email }}</span>
+                    @endif
+                </td>
                 <td>
                     @php
                         $color = 'grey';
