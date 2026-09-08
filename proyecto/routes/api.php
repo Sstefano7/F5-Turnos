@@ -123,6 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/backups', [\App\Http\Controllers\Api\BackupController::class, 'index']);
         Route::post('/backups/create', [\App\Http\Controllers\Api\BackupController::class, 'create']);
         Route::get('/backups/download/{filename}', [\App\Http\Controllers\Api\BackupController::class, 'download']);
+        Route::delete('/backups/{filename}', [\App\Http\Controllers\Api\BackupController::class, 'destroy']);
         Route::get('/backups/schedule', [BackupScheduleController::class, 'index']);
         Route::post('/backups/schedule', [BackupScheduleController::class, 'store']);
         Route::put('/backups/schedule/{id}', [BackupScheduleController::class, 'update']);

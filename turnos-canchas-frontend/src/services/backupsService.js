@@ -16,5 +16,10 @@ export const backupsService = {
             responseType: 'blob'
         });
         return response.data;
+    },
+
+    delete: async (fileName) => {
+        const response = await api.delete(`/backups/${fileName}`);
+        return response.data;
     }
 };

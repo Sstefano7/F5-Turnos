@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\BackupSchedule;
-use Illuminate\Support\Facades\Artisan;
+use App\Services\DatabaseBackupService;
 
 class CheckBackupSchedule extends Command
 {
@@ -29,10 +29,14 @@ class CheckBackupSchedule extends Command
 
         foreach ($schedules as $schedule) {
             $this->info("Ejecutando backup programado: {$schedule->dia_semana} {$schedule->hora}");
-            Artisan::call('backup:run', ['--disable-notifications' => true]);
-            $this->info(Artisan::output());
+            try {
+                $backup = DatabaseBackupService::createBackup();
+                $this->info("Backup generado exitosamente: {$backup['name']} ({$backup['size']})");
+            } catch (\Throwable $e) {
+                $this->error("Error al generar backup programado: " . $e->getMessage());
+            }
         }
 
-        $this->info("Se ejecutaron {$schedules->count()} backup(s) programado(s).");
+        $this->info("Se procesaron {$schedules->count()} backup(s) programado(s).");
     }
 }

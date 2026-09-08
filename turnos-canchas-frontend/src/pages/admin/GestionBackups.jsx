@@ -89,6 +89,30 @@ function GestionBackups() {
     }
   };
 
+  const handleDeleteBackup = async (fileName) => {
+    const result = await Swal.fire({
+      title: '¿Eliminar backup?',
+      text: `El archivo "${fileName}" se eliminará permanentemente del almacenamiento.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await backupsService.delete(fileName);
+      Swal.fire('¡Eliminado!', 'El backup ha sido eliminado.', 'success');
+      fetchBackups();
+    } catch (error) {
+      console.error('Error al eliminar backup:', error);
+      Swal.fire('Error', 'No se pudo eliminar el archivo.', 'error');
+    }
+  };
+
   const handleCreateSchedule = async (e) => {
     e.preventDefault();
     try {
@@ -198,6 +222,14 @@ function GestionBackups() {
                       >
                         <Download size={16} aria-hidden="true" />
                         Descargar
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteBackup(backup.name)}
+                        className="btn-delete"
+                        title="Eliminar"
+                        style={{ marginLeft: '8px' }}
+                      >
+                        <Trash2 size={16} aria-hidden="true" />
                       </button>
                     </td>
                   </tr>

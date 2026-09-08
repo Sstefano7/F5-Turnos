@@ -158,7 +158,7 @@ return [
         /*
          * The directory where the temporary files will be stored.
          */
-        'temporary_directory' => env('BACKUP_TEMP_DIRECTORY', storage_path('app/backup-temp')),
+        'temporary_directory' => env('BACKUP_TEMP_DIRECTORY', rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR . 'backup-temp'),
 
         /*
          * The password to be used for archive encryption.
