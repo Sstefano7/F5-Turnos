@@ -1,13 +1,15 @@
 # Archivos internos de Antigravity IDE / herramientas de desarrollo
 .gstack/
 
-# Archivos multimedia no versionados
-diagonal.jpg
-*.jpg
+# Archivos multimedia no versionados en raíz
+/diagonal.jpg
+/messipadel.jpg
 *.jpeg
-*.png
 *.gif
 *.webp
+
+# Permitir imágenes del frontend
+!turnos-canchas-frontend/public/**
 
 # OS
 .DS_Store
