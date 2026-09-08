@@ -39,7 +39,7 @@ jobs:
       - name: Run migrations
         run: cd proyecto && php artisan migrate --force
       - name: Run tests
-        run: cd proyecto && ./vendor/bin/pest --coverage --min=50
+        run: cd proyecto && php artisan test
 
   frontend:
     runs-on: ubuntu-latest

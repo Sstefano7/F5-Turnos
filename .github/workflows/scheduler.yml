@@ -2,7 +2,7 @@ name: Scheduler - Liberar Turnos Expirados
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Cada 5 minutos
+    - cron: '*/15 * * * *'  # Cada 15 minutos
   workflow_dispatch:
 
 jobs:
@@ -13,26 +13,33 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: pgsql, pdo_pgsql
+          extensions: pgsql, pdo_pgsql, bcmath, zip
       - name: Install dependencies
         run: |
           cd proyecto
           composer install --no-dev --prefer-dist --no-interaction
-      - name: Liberar turnos expirados
-        run: cd proyecto && php artisan turnos:liberar-expirados
+      - name: Liberar turnos expirados y verificar backups
+        run: |
+          cd proyecto
+          php artisan turnos:liberar-expirados
+          php artisan backups:check-schedule
         env:
-          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_KEY: ${{ secrets.APP_KEY || 'base64:vzEVYyllWT9hAuEWrbEvj65HO4z4EKHDQ0dU/k+OJHA=' }}
           APP_ENV: production
           APP_DEBUG: false
           APP_NAME: "Gestión de Turnos"
-          APP_URL: ${{ secrets.APP_URL }}
+          APP_URL: ${{ secrets.APP_URL || 'https://f5-turnos-frontend.vercel.app' }}
           DB_CONNECTION: pgsql
-          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_HOST: ${{ secrets.DB_HOST || 'aws-0-sa-east-1.pooler.supabase.com' }}
           DB_PORT: 5432
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE || 'postgres' }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME || 'postgres.zaroujeqysxgwughvsnd' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD || 'rUusjngOjWamaNVq' }}
           DB_SSLMODE: require
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://zaroujeqysxgwughvsnd.supabase.co' }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphcm91amVxeXN4Z3d1Z2h2c25kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4NjE3NDIsImV4cCI6MjEwMzQzNzc0Mn0.Ag_o8xQhMP2oQlPX5By27IJrt-nG1AwUKWRzUA0Wv5Q' }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphcm91amVxeXN4Z3d1Z2h2c25kIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Nzg2MTc0MiwiZXhwIjoyMTAzNDM3NzQyfQ.38Kfc4aLrM7hBBjdi8M6HFRQbHNIJfnGgjh_3zCsOXQ' }}
+          SUPABASE_BUCKET: ${{ secrets.SUPABASE_BUCKET || 'turnos-storage' }}
           CACHE_STORE: array
           SESSION_DRIVER: array
           QUEUE_CONNECTION: sync
