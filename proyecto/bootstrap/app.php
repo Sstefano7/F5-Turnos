@@ -28,6 +28,32 @@ return Application::configure(basePath: dirname(__DIR__))
         ]));
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Registrar excepciones críticas automáticamente en la base de datos
+        $exceptions->report(function (Throwable $e) {
+            if ($e instanceof ValidationException || $e instanceof AuthenticationException) {
+                return;
+            }
+
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('system_logs')) {
+                    \App\Models\SystemLog::create([
+                        'level'   => 'error',
+                        'message' => $e->getMessage() . ' (' . basename($e->getFile()) . ':' . $e->getLine() . ')',
+                        'context' => [
+                            'exception' => get_class($e),
+                            'file'      => $e->getFile(),
+                            'line'      => $e->getLine(),
+                            'url'       => request()->fullUrl(),
+                            'ip'        => request()->ip(),
+                            'user_id'   => request()->user()?->id,
+                        ],
+                    ]);
+                }
+            } catch (\Throwable $t) {
+                // Silenciar para evitar bucles recursivos si la BD falla
+            }
+        });
+
         $exceptions->render(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 // Validación de formularios: HTTP 422 con errores por campo

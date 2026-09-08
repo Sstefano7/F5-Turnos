@@ -2,18 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\File;
+use App\Models\SystemLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 class LogController extends Controller
 {
     /**
-     * Devuelve los últimos 200 registros del log del sistema parseados.
+     * Devuelve los últimos 200 registros del log del sistema.
+     * Prioriza la base de datos (PostgreSQL/Supabase) para persistencia en entornos serverless (Vercel),
+     * y utiliza storage/logs/laravel.log como fallback en desarrollo local.
      */
     public function index()
     {
+        // 1. Verificar registros en base de datos
+        if (Schema::hasTable('system_logs')) {
+            $dbLogs = SystemLog::orderBy('id', 'desc')->limit(200)->get();
+
+            if ($dbLogs->isNotEmpty()) {
+                $formatted = $dbLogs->map(function ($log) {
+                    return [
+                        'id'        => $log->id,
+                        'logged_at' => $log->created_at ? $log->created_at->toDateTimeString() : now()->toDateTimeString(),
+                        'level'     => strtolower($log->level ?? 'info'),
+                        'message'   => $log->message,
+                    ];
+                });
+
+                return response()->json($formatted);
+            }
+        }
+
+        // 2. Fallback a archivo de texto local storage/logs/laravel.log
         $logPath = storage_path('logs/laravel.log');
 
         if (!File::exists($logPath)) {
@@ -54,21 +77,18 @@ class LogController extends Controller
     }
 
     /**
-     * Elimina una entrada concreta del log (por ID de posición en la respuesta).
-     * Como el log es un archivo de texto, "eliminar" equivale a limpiar el archivo completo.
-     * Para logs en producción se recomienda usar una tabla de base de datos.
+     * Limpia los logs del sistema (base de datos y archivo local).
      */
     public function destroy($id)
     {
-        // En implementaciones con archivo de texto, no se puede eliminar una línea individualmente
-        // de forma eficiente y segura. Se limpian todos los logs del archivo.
-        $logPath = storage_path('logs/laravel.log');
-
-        if (!File::exists($logPath)) {
-            return response()->json(['message' => 'No hay archivo de logs.'], 404);
+        if (Schema::hasTable('system_logs')) {
+            SystemLog::truncate();
         }
 
-        File::put($logPath, '');
+        $logPath = storage_path('logs/laravel.log');
+        if (File::exists($logPath)) {
+            File::put($logPath, '');
+        }
 
         return response()->json(['message' => 'Logs limpiados correctamente.']);
     }
@@ -78,19 +98,63 @@ class LogController extends Controller
      */
     public function exportLogsPdf()
     {
-        $logPath = storage_path('logs/laravel.log');
+        $lines = [];
 
-        if (!File::exists($logPath)) {
-            return response()->json(['message' => 'No hay archivo de logs disponible.'], 404);
+        // 1. Obtener desde base de datos
+        if (Schema::hasTable('system_logs')) {
+            $dbLogs = SystemLog::orderBy('id', 'desc')->limit(100)->get();
+            foreach ($dbLogs as $log) {
+                $date = $log->created_at ? $log->created_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s');
+                $lines[] = "[{$date}] " . strtoupper($log->level) . ": " . $log->message;
+            }
         }
 
-        $logContent = File::get($logPath);
-        $lines = array_reverse(explode("\n", $logContent));
-        $logs = array_slice(array_filter($lines), 0, 100);
+        // 2. Si no hay en BD, buscar en archivo local
+        if (empty($lines)) {
+            $logPath = storage_path('logs/laravel.log');
+            if (File::exists($logPath)) {
+                $logContent = File::get($logPath);
+                $fileLines = array_reverse(explode("\n", $logContent));
+                $lines = array_slice(array_filter($fileLines), 0, 100);
+            }
+        }
 
-        $pdf = Pdf::loadView('pdf.logs_report', compact('logs'));
+        if (empty($lines)) {
+            $lines = ['[' . now()->format('Y-m-d H:i:s') . '] INFO: No hay registros de logs disponibles en el sistema.'];
+        }
+
+        $pdf = Pdf::loadView('pdf.logs_report', ['logs' => $lines]);
         $pdf->setPaper('a4', 'landscape');
 
         return $pdf->download('reporte_logs_sistema.pdf');
+    }
+
+    /**
+     * Genera un log de prueba (solo superadmin).
+     */
+    public function storeTestLog(Request $request)
+    {
+        $user = $request->user();
+        $userName = $user ? $user->name : 'Superadmin';
+
+        $log = SystemLog::create([
+            'level'   => $request->get('level', 'info'),
+            'message' => $request->get('message', "Log de prueba generado por {$userName} desde el Panel de Administración."),
+            'context' => [
+                'user_id' => $user?->id,
+                'ip'      => $request->ip(),
+                'agent'   => $request->header('User-Agent'),
+            ],
+        ]);
+
+        return response()->json([
+            'message' => 'Log de prueba generado correctamente.',
+            'log'     => [
+                'id'        => $log->id,
+                'logged_at' => $log->created_at->toDateTimeString(),
+                'level'     => $log->level,
+                'message'   => $log->message,
+            ],
+        ], 201);
     }
 }

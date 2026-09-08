@@ -207,4 +207,37 @@ class AdminImprovementsTest extends TestCase
                 'message' => 'No se puede restaurar el turno porque el horario ya fue reservado por otro cliente.'
             ]);
     }
+
+    public function test_sistema_de_logs_en_base_de_datos()
+    {
+        $superadmin = User::factory()->create(['role' => 'superadmin']);
+        Sanctum::actingAs($superadmin);
+
+        // Crear un log de prueba
+        $createRes = $this->postJson('/api/logs/test', [
+            'level'   => 'warning',
+            'message' => 'Alerta de prueba en el sistema',
+        ]);
+        $createRes->assertCreated()
+            ->assertJsonFragment(['message' => 'Log de prueba generado correctamente.']);
+
+        // Consultar logs
+        $listRes = $this->getJson('/api/logs');
+        $listRes->assertOk();
+        $this->assertNotEmpty($listRes->json());
+        $this->assertEquals('warning', $listRes->json('0.level'));
+
+        // Exportar PDF
+        $pdfRes = $this->get('/api/logs/export-pdf');
+        $pdfRes->assertOk();
+
+        // Limpiar logs
+        $cleanRes = $this->deleteJson('/api/logs/all');
+        $cleanRes->assertOk();
+
+        // Verificar que quedó vacío
+        $emptyRes = $this->getJson('/api/logs');
+        $emptyRes->assertOk();
+        $this->assertEmpty($emptyRes->json());
+    }
 }

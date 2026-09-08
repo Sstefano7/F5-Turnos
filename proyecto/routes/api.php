@@ -116,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/audits', [AuditController::class, 'index']);
         Route::get('/audits/{id}', [AuditController::class, 'show']);
         Route::get('/logs', [LogController::class, 'index']);
+        Route::post('/logs/test', [LogController::class, 'storeTestLog']);
         Route::delete('/logs/{id}', [LogController::class, 'destroy']);
         
         // Gestión de usuarios (SOLO SUPERADMIN)

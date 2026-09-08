@@ -21,6 +21,7 @@ function GestionLogs() {
   const [loading, setLoading] = useState(true);
   const [exportLoading, setExportLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(null);
+  const [testLoading, setTestLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -41,6 +42,20 @@ function GestionLogs() {
   useEffect(() => {
     fetchLogs();
   }, []);
+
+  const generarLogPrueba = async () => {
+    setTestLoading(true);
+    try {
+      await logsService.createTest();
+      await fetchLogs();
+      Swal.fire('¡Éxito!', 'Log de prueba registrado correctamente.', 'success');
+    } catch (err) {
+      Swal.fire('Error', 'No se pudo generar el log de prueba.', 'error');
+      console.error(err);
+    } finally {
+      setTestLoading(false);
+    }
+  };
 
   const exportarPDF = async () => {
     setExportLoading(true);
@@ -117,6 +132,13 @@ function GestionLogs() {
             <span className="logs-note">(mostrando los últimos 200 registros)</span>
           </p>
           <div className="logs-actions">
+            <button
+              onClick={generarLogPrueba}
+              className="btn-secondary"
+              disabled={testLoading}
+            >
+              {testLoading ? 'Generando...' : '🧪 Probar Log'}
+            </button>
             <button
               onClick={exportarPDF}
               className="btn-primary"

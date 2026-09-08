@@ -11,6 +11,11 @@ export const logsService = {
         return response.data;
     },
 
+    createTest: async () => {
+        const response = await api.post('/logs/test');
+        return response.data;
+    },
+
     exportPdf: async (params = {}) => {
         const response = await api.get('/logs/export-pdf', { 
             params,
