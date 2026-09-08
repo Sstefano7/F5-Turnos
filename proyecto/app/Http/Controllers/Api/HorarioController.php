@@ -107,13 +107,15 @@ class HorarioController extends Controller
         // Obtener turnos ya reservados para esa fecha
         $turnosReservados = Turno::where('cancha_id', $canchaId)
             ->whereDate('fecha', $fecha)
-            ->whereIn('estado', ['pendiente', 'confirmado', 'completado'])
+            ->whereIn('estado', ['pendiente', 'confirmado', 'completado', 'pendiente_senia'])
             ->get();
 
         // Filtrar horarios disponibles
         $horariosDisponibles = $horarios->filter(function($horario) use ($turnosReservados) {
+            $hInicio = substr((string)$horario->hora_inicio, 0, 5);
             foreach ($turnosReservados as $turno) {
-                if ($horario->hora_inicio == $turno->hora_inicio) {
+                $tInicio = substr((string)$turno->hora_inicio, 0, 5);
+                if ($hInicio === $tInicio) {
                     return false;
                 }
             }

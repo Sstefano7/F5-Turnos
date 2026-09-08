@@ -59,6 +59,8 @@ export default function Home() {
     }
   ]
 
+  const displayCourts = canchas.length > 0 ? canchas : featuredCourts
+
   return (
     <div className="home">
       <Header />
@@ -91,7 +93,7 @@ export default function Home() {
                   </div>
                 )}
                 <div className="home__grid">
-                  {(canchas.length > 0 ? canchas : featuredCourts).map(court => (
+                  {displayCourts.map(court => (
                     <CourtCard key={court.id} court={court} onReserve={handleReserve} />
                   ))}
                 </div>
@@ -106,7 +108,7 @@ export default function Home() {
               <h2 className="home__section-title">Disponibilidad semanal</h2>
               <p className="home__section-desc">Tocá un horario verde para reservar al instante. Ves en cada slot cuántas canchas quedan libres.</p>
             </div>
-            <WeeklyCalendar canchas={canchas} onSelectSlot={handleSlotSelect} />
+            <WeeklyCalendar canchas={displayCourts} onSelectSlot={handleSlotSelect} />
           </div>
         </section>
       </main>
@@ -117,7 +119,7 @@ export default function Home() {
         initialCourt={booking.court}
         initialDate={booking.date}
         initialHour={booking.hour}
-        canchas={canchas}
+        canchas={displayCourts}
       />
     </div>
   )
