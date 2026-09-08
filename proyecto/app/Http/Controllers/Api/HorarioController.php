@@ -110,11 +110,23 @@ class HorarioController extends Controller
             ->whereIn('estado', ['pendiente', 'confirmado', 'completado', 'pendiente_senia'])
             ->get();
 
+        $formatHora = function ($val) {
+            if ($val instanceof \DateTimeInterface) {
+                return $val->format('H:i');
+            }
+            $str = (string) $val;
+            if (str_contains($str, ' ')) {
+                $parts = explode(' ', $str);
+                return substr($parts[1], 0, 5);
+            }
+            return substr($str, 0, 5);
+        };
+
         // Filtrar horarios disponibles
-        $horariosDisponibles = $horarios->filter(function($horario) use ($turnosReservados) {
-            $hInicio = substr((string)$horario->hora_inicio, 0, 5);
+        $horariosDisponibles = $horarios->filter(function($horario) use ($turnosReservados, $formatHora) {
+            $hInicio = $formatHora($horario->hora_inicio);
             foreach ($turnosReservados as $turno) {
-                $tInicio = substr((string)$turno->hora_inicio, 0, 5);
+                $tInicio = $formatHora($turno->hora_inicio);
                 if ($hInicio === $tInicio) {
                     return false;
                 }
