@@ -14,6 +14,16 @@ class TurnoController extends Controller
     {
         $query = Turno::with(['cancha', 'cliente']);
 
+        $user = $request->user();
+        $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+
+        // Filtro de papelera para administradores
+        if ($isAdmin && $request->boolean('solo_eliminados')) {
+            $query->onlyTrashed();
+        } elseif ($isAdmin && $request->boolean('con_eliminados')) {
+            $query->withTrashed();
+        }
+
         // Filtros opcionales
         if ($request->has('fecha')) {
             $query->whereDate('fecha', $request->fecha);
@@ -27,10 +37,12 @@ class TurnoController extends Controller
             $query->where('cancha_id', $request->cancha_id);
         }
 
+        $perPage = min((int) $request->get('per_page', 15), 100);
+
         // Paginación
         $turnos = $query->orderBy('fecha', 'desc')
                        ->orderBy('hora_inicio')
-                       ->paginate(15);
+                       ->paginate($perPage);
 
         return response()->json($turnos);
     }
@@ -161,6 +173,45 @@ class TurnoController extends Controller
 
         return response()->json([
             'message' => 'Turno eliminado correctamente'
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $turno = Turno::withTrashed()->findOrFail($id);
+
+        if (!$turno->trashed()) {
+            return response()->json([
+                'message' => 'El turno no está eliminado.'
+            ], 422);
+        }
+
+        $fecha = Carbon::parse($turno->fecha)->toDateString();
+        $horaInicio = Carbon::parse($turno->hora_inicio)->format('H:i');
+        $horaFin = Carbon::parse($turno->hora_fin)->format('H:i');
+
+        // Verificar si existe solapamiento con otro turno activo antes de restaurar
+        $solapado = Turno::where('cancha_id', $turno->cancha_id)
+            ->whereDate('fecha', $fecha)
+            ->whereIn('estado', ['pendiente', 'confirmado', 'pendiente_senia'])
+            ->where('id', '!=', $turno->id)
+            ->where(function ($q) use ($horaInicio, $horaFin) {
+                $q->where('hora_inicio', '<', $horaFin)
+                  ->where('hora_fin', '>', $horaInicio);
+            })
+            ->exists();
+
+        if ($solapado) {
+            return response()->json([
+                'message' => 'No se puede restaurar el turno porque el horario ya fue reservado por otro cliente.'
+            ], 422);
+        }
+
+        $turno->restore();
+
+        return response()->json([
+            'message' => 'Turno restaurado correctamente.',
+            'turno'   => $turno->load(['cancha', 'cliente'])
         ]);
     }
 

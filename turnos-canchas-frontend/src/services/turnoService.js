@@ -31,6 +31,11 @@ export const turnoService = {
         return response.data;
     },
 
+    restore: async (id) => {
+        const response = await api.patch(`/turnos/${id}/restore`);
+        return response.data;
+    },
+
     getMisTurnos: async () => {
         const response = await api.get('/mis-turnos');
         return response.data;

@@ -135,11 +135,9 @@ class BugReportController extends Controller
     }
     public function exportPdf() 
     {
-        // 1. Obtener los datos de la base de datos
-        $bugs = BugReport::all(); 
+        // Obtener los últimos 500 registros para evitar sobrecarga de memoria
+        $bugs = BugReport::with('user')->orderBy('id', 'desc')->limit(500)->get(); 
 
-        // 2. Pasar los datos a la vista usando compact('bugs')
-        // El nombre dentro de compact debe ser el mismo que el de la variable
         $pdf = Pdf::loadView('pdf.bug_reports', compact('bugs'));
 
         return $pdf->download('reporte_bugs.pdf');

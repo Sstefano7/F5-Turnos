@@ -527,4 +527,102 @@ class AuthController extends Controller
             'message' => 'Tu contraseña ha sido restablecida exitosamente.'
         ]);
     }
+
+    /**
+     * Listar todos los usuarios del sistema (solo superadmin).
+     */
+    public function getAllUsers(Request $request)
+    {
+        $query = User::select(['id', 'name', 'email', 'role', 'email_verified_at', 'created_at']);
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('name', $like, "%{$search}%")
+                  ->orWhere('email', $like, "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        $perPage = min((int) $request->get('per_page', 20), 100);
+        $users = $query->orderBy('id', 'desc')->paginate($perPage);
+
+        return response()->json($users);
+    }
+
+    /**
+     * Actualizar rol de un usuario (solo superadmin).
+     * Protege contra degradar al último superadmin y auto-degradación.
+     */
+    public function updateUserRole(Request $request, $id)
+    {
+        $request->validate([
+            'role' => 'required|in:user,admin,superadmin',
+        ]);
+
+        $targetUser = User::findOrFail($id);
+        $currentUser = $request->user();
+
+        // 1. Evitar que el superadmin se auto-degrade
+        if ($currentUser && $currentUser->id === $targetUser->id && $request->role !== 'superadmin') {
+            return response()->json([
+                'message' => 'No puedes remover tu propio rol de superadmin.'
+            ], 403);
+        }
+
+        // 2. Evitar degradar al último superadmin del sistema
+        if ($targetUser->role === 'superadmin' && $request->role !== 'superadmin') {
+            $superadminCount = User::where('role', 'superadmin')->count();
+            if ($superadminCount <= 1) {
+                return response()->json([
+                    'message' => 'No se puede degradar al único superadmin del sistema.'
+                ], 422);
+            }
+        }
+
+        $targetUser->role = $request->role;
+        $targetUser->save();
+
+        return response()->json([
+            'message' => 'Rol de usuario actualizado correctamente.',
+            'user'    => $targetUser
+        ]);
+    }
+
+    /**
+     * Eliminar un usuario del sistema (solo superadmin).
+     * Protege contra auto-eliminación y eliminar al último superadmin.
+     */
+    public function deleteUser(Request $request, $id)
+    {
+        $targetUser = User::findOrFail($id);
+        $currentUser = $request->user();
+
+        // 1. Evitar auto-eliminación
+        if ($currentUser && $currentUser->id === $targetUser->id) {
+            return response()->json([
+                'message' => 'No puedes eliminar tu propia cuenta.'
+            ], 403);
+        }
+
+        // 2. Evitar eliminar al último superadmin
+        if ($targetUser->role === 'superadmin') {
+            $superadminCount = User::where('role', 'superadmin')->count();
+            if ($superadminCount <= 1) {
+                return response()->json([
+                    'message' => 'No se puede eliminar al único superadmin del sistema.'
+                ], 422);
+            }
+        }
+
+        $targetUser->delete();
+
+        return response()->json([
+            'message' => 'Usuario eliminado correctamente.'
+        ]);
+    }
 }

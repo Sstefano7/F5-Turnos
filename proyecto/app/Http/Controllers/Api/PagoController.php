@@ -8,6 +8,7 @@ use App\Models\Turno;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PagoController extends Controller
 {
@@ -33,8 +34,9 @@ class PagoController extends Controller
 
         if ($request->filled('search')) {
             $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('referencia', 'ilike', "%{$search}%");
+            $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('referencia', $like, "%{$search}%");
 
                 if (is_numeric($search)) {
                     $q->orWhere('id', (int) $search)
@@ -42,10 +44,10 @@ class PagoController extends Controller
                       ->orWhere('monto', (float) $search);
                 }
 
-                $q->orWhereHas('turno.cliente', function ($cq) use ($search) {
-                    $cq->where('nombre', 'ilike', "%{$search}%")
-                       ->orWhere('apellido', 'ilike', "%{$search}%")
-                       ->orWhere('dni', 'ilike', "%{$search}%");
+                $q->orWhereHas('turno.cliente', function ($cq) use ($search, $like) {
+                    $cq->where('nombre', $like, "%{$search}%")
+                       ->orWhere('apellido', $like, "%{$search}%")
+                       ->orWhere('dni', $like, "%{$search}%");
                 });
             });
         }
@@ -138,8 +140,9 @@ class PagoController extends Controller
 
         if ($request->filled('search')) {
             $search = trim($request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('referencia', 'ilike', "%{$search}%");
+            $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('referencia', $like, "%{$search}%");
 
                 if (is_numeric($search)) {
                     $q->orWhere('id', (int) $search)
@@ -147,10 +150,10 @@ class PagoController extends Controller
                       ->orWhere('monto', (float) $search);
                 }
 
-                $q->orWhereHas('turno.cliente', function ($cq) use ($search) {
-                    $cq->where('nombre', 'ilike', "%{$search}%")
-                       ->orWhere('apellido', 'ilike', "%{$search}%")
-                       ->orWhere('dni', 'ilike', "%{$search}%");
+                $q->orWhereHas('turno.cliente', function ($cq) use ($search, $like) {
+                    $cq->where('nombre', $like, "%{$search}%")
+                       ->orWhere('apellido', $like, "%{$search}%")
+                       ->orWhere('dni', $like, "%{$search}%");
                 });
             });
         }

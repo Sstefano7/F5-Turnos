@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gestión de turnos (admin)
         Route::put('/turnos/{id}', [TurnoController::class, 'update']);
         Route::delete('/turnos/{id}', [TurnoController::class, 'destroy']);
+        Route::patch('/turnos/{id}/restore', [TurnoController::class, 'restore']);
         
         // Gestión de clientes (solo admin — contiene datos personales: DNI, teléfono, email)
         Route::get('/clientes', [ClienteController::class, 'index']);

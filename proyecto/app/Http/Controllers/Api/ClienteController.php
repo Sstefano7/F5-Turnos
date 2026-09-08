@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ClienteResource;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {
@@ -16,11 +17,12 @@ class ClienteController extends Controller
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('dni', 'ilike', "%{$searchTerm}%")
-                  ->orWhere('nombre', 'ilike', "%{$searchTerm}%")
-                  ->orWhere('apellido', 'ilike', "%{$searchTerm}%")
-                  ->orWhere('email', 'ilike', "%{$searchTerm}%");
+            $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function($q) use ($searchTerm, $like) {
+                $q->where('dni', $like, "%{$searchTerm}%")
+                  ->orWhere('nombre', $like, "%{$searchTerm}%")
+                  ->orWhere('apellido', $like, "%{$searchTerm}%")
+                  ->orWhere('email', $like, "%{$searchTerm}%");
             });
         }
 

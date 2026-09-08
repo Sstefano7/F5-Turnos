@@ -10,10 +10,10 @@ function GestionTurnos() {
   const [turnos, setTurnos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtros, setFiltros] = useState({
-    
     fecha: '',
     estado: '',
-    cancha_id: ''
+    cancha_id: '',
+    papelera: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -39,6 +39,8 @@ function GestionTurnos() {
     if (filtros.fecha) filtrosActivos.fecha = filtros.fecha;
     if (filtros.estado) filtrosActivos.estado = filtros.estado;
     if (filtros.cancha_id) filtrosActivos.cancha_id = filtros.cancha_id;
+    if (filtros.papelera === 'solo_eliminados') filtrosActivos.solo_eliminados = 1;
+    if (filtros.papelera === 'con_eliminados') filtrosActivos.con_eliminados = 1;
 
     const response = await turnoService.getAll(filtrosActivos);
     
@@ -71,12 +73,28 @@ function GestionTurnos() {
     setFiltros({
       fecha: '',
       estado: '',
-      cancha_id: ''
+      cancha_id: '',
+      papelera: ''
     });
     setLoading(true);
     setTimeout(() => {
       fetchTurnos();
     }, 100);
+  };
+
+  const handleRestaurarTurno = async (turnoId) => {
+    if (!window.confirm('¿Deseas restaurar este turno eliminado?')) {
+      return;
+    }
+
+    try {
+      await turnoService.restore(turnoId);
+      fetchTurnos(currentPage);
+      triggerRefresh();
+      alert('Turno restaurado correctamente');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error al restaurar el turno');
+    }
   };
 
   const handleCambiarEstado = async (turnoId, nuevoEstado) => {
@@ -157,6 +175,19 @@ function GestionTurnos() {
               </select>
             </div>
 
+            <div className="filtro-item">
+              <label>Papelera</label>
+              <select
+                name="papelera"
+                value={filtros.papelera}
+                onChange={handleFiltroChange}
+              >
+                <option value="">Solo activos</option>
+                <option value="con_eliminados">Todos (con eliminados)</option>
+                <option value="solo_eliminados">Solo papelera (eliminados)</option>
+              </select>
+            </div>
+
             <div className="filtro-actions">
               <button onClick={aplicarFiltros} className="btn-aplicar">
                 Aplicar Filtros
@@ -215,36 +246,52 @@ function GestionTurnos() {
                     </td>
                     <td className="precio">${turno.precio}</td>
                     <td>
-                      <span className={`estado-badge ${getEstadoClass(turno.estado)}`}>
-                        {getEstadoTexto(turno.estado)}
-                      </span>
+                      {turno.deleted_at ? (
+                        <span className="estado-badge estado-cancelado" style={{ opacity: 0.85 }}>
+                          Eliminado
+                        </span>
+                      ) : (
+                        <span className={`estado-badge ${getEstadoClass(turno.estado)}`}>
+                          {getEstadoTexto(turno.estado)}
+                        </span>
+                      )}
                     </td>
                     <td className="acciones">
-                      <div className="dropdown">
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              handleCambiarEstado(turno.id, e.target.value);
-                              e.target.value = '';
-                            }
-                          }}
-                          className="select-estado"
+                      {turno.deleted_at ? (
+                        <button
+                          onClick={() => handleRestaurarTurno(turno.id)}
+                          className="btn-aplicar"
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
                         >
-                          <option value="">Cambiar estado</option>
-                          {turno.estado !== 'pendiente' && (
-                            <option value="pendiente">Pendiente</option>
-                          )}
-                          {turno.estado !== 'confirmado' && (
-                            <option value="confirmado">Confirmado</option>
-                          )}
-                          {turno.estado !== 'cancelado' && (
-                            <option value="cancelado">Cancelado</option>
-                          )}
-                          {turno.estado !== 'completado' && (
-                            <option value="completado">Completado</option>
-                          )}
-                        </select>
-                      </div>
+                          Restaurar
+                        </button>
+                      ) : (
+                        <div className="dropdown">
+                          <select
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                handleCambiarEstado(turno.id, e.target.value);
+                                e.target.value = '';
+                              }
+                            }}
+                            className="select-estado"
+                          >
+                            <option value="">Cambiar estado</option>
+                            {turno.estado !== 'pendiente' && (
+                              <option value="pendiente">Pendiente</option>
+                            )}
+                            {turno.estado !== 'confirmado' && (
+                              <option value="confirmado">Confirmado</option>
+                            )}
+                            {turno.estado !== 'cancelado' && (
+                              <option value="cancelado">Cancelado</option>
+                            )}
+                            {turno.estado !== 'completado' && (
+                              <option value="completado">Completado</option>
+                            )}
+                          </select>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
