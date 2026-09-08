@@ -28,7 +28,7 @@ export function Hero({ onExplore }) {
               <span className="hero__pane-icon"><Volleyball size={15} /></span>
             </div>
           </div>
-          <div className="hero__diagonal-line" />
+
         </div>
       </div>
 

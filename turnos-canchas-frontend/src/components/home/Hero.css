@@ -101,18 +101,6 @@
   border: 1px solid rgba(34,197,94,0.30);
 }
 
-/* La línea divisoria */
-.hero__diagonal-line {
-  position: absolute;
-  left: 63%;
-  top: 0;
-  bottom: 0;
-  width: 1.5px;
-  background: rgba(255,255,255,0.35);
-  transform: rotate(6deg);
-  transform-origin: top center;
-  z-index: 2;
-}
 
 /* ── Transición entre imagen y contenido ─────── */
 /* El pitch termina en curva, el chalk empieza limpio */
