@@ -68,8 +68,8 @@ DB_CONNECTION=pgsql
 DB_HOST=aws-0-sa-east-1.pooler.supabase.com
 DB_PORT=5432
 DB_DATABASE=postgres
-DB_USERNAME=postgres.zaroujeqysxgwughvsnd
-DB_PASSWORD=rUusjngOjWamaNVq
+DB_USERNAME=postgres.<tu-project-ref>
+DB_PASSWORD=<tu-password-de-supabase>
 DB_SSLMODE=require
 
 CACHE_DRIVER=array
@@ -77,7 +77,7 @@ SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 FILESYSTEM_DISK=supabase
 
-SUPABASE_URL=https://zaroujeqysxgwughvsnd.supabase.co
+SUPABASE_URL=https://<tu-project-ref>.supabase.co
 SUPABASE_KEY=eyJhbGciOi... (anon public)
 SUPABASE_SERVICE_KEY=eyJhbGciOi... (service_role, solo backend)
 SUPABASE_BUCKET=turnos-storage
@@ -98,9 +98,11 @@ php artisan serve
 # → http://localhost:8000
 ```
 
-**Credenciales seed:**
-- `superadmin@canchas.com` / `password123` (superadmin)
-- `admin@canchas.com` / `password123` (admin)
+**Credenciales seed (solo entornos locales, nunca producción):**
+- `superadmin@canchas.com` / `SEED_ADMIN_PASSWORD` (por defecto `password123` en local)
+- `admin@canchas.com` / `SEED_ADMIN_PASSWORD`
+
+> En `APP_ENV=production` el seeder **no** crea usuarios admin: crealos manualmente con una contraseña fuerte.
 
 ### 3. Frontend (React)
 ```bash
@@ -223,9 +225,11 @@ MAIL_FROM_ADDRESS=tu-email@gmail.com
 ```
 
 ## 👥 Usuarios de Prueba
-- Superadmin: `superadmin@canchas.com` / `password123`
-- Admin: `admin@canchas.com` / `password123`
+- Superadmin: `superadmin@canchas.com` (solo local; contraseña vía `SEED_ADMIN_PASSWORD`)
+- Admin: `admin@canchas.com` (solo local; contraseña vía `SEED_ADMIN_PASSWORD`)
 - Clientes seed: `juan.perez@email.com`, `maria.gonzalez@email.com`, `carlos.rodriguez@email.com`
+
+> ⚠️ Si el sistema ya está desplegado con las contraseñas por defecto, **rotalas ahora** en la base de datos.
 
 ## 📝 Licencia
 MIT.
