@@ -1,12 +1,24 @@
-name: Deploy to Vercel (Manual)
+name: Deploy to Vercel
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID_FRONTEND: ${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}
   VERCEL_PROJECT_ID_API: ${{ secrets.VERCEL_PROJECT_ID_API }}
+  # URLs de producción (usadas por el smoke test)
+  PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL || 'https://f5-turnos-api.vercel.app' }}
+  PRODUCTION_FRONTEND_URL: ${{ secrets.PRODUCTION_FRONTEND_URL || 'https://f5-turnos-frontend.vercel.app' }}
 
 jobs:
   deploy-frontend-production:
@@ -34,3 +46,56 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_API }}
           vercel-args: '--prod'
           working-directory: ./proyecto
+
+  # Verifica que la API desplegada responda con el código recién pusheado.
+  # Si la API está stale (deploy fallido o no ejecutado), este job falla y
+  # deja el workflow en rojo en lugar de fallar en silencio.
+  smoke-test:
+    runs-on: ubuntu-latest
+    needs: [deploy-api-production, deploy-frontend-production]
+    steps:
+      - name: Esperar a que Vercel propague el deploy
+        run: sleep 30
+
+      - name: 'Smoke: GET /api/health (SHA desplegado)'
+        run: |
+          set -euo pipefail
+          body=$(curl -s --max-time 30 -H 'Accept: application/json' \
+            "$PRODUCTION_API_URL/api/health" || echo '{}')
+          echo "Respuesta: $body"
+          sha=$(printf '%s' "$body" | sed -n 's/.*"sha":"\([^"]*\)".*/\1/p')
+          if [ -z "$sha" ]; then
+            echo "::warning::/api/health no devolvió SHA (¿deploy viejo sin el endpoint?). Se valida por status solamente."
+            printf '%s' "$body" | grep -q '"status":"ok"' || { echo "::error::/api/health no respondió status ok"; exit 1; }
+          elif [ "$sha" != "$GITHUB_SHA" ]; then
+            echo "::error::La API corre el commit $sha pero se pusheó $GITHUB_SHA => deploy stale."
+            exit 1
+          else
+            echo "OK: la API corre $sha"
+          fi
+
+      - name: 'Smoke: GET /api/canchas (público)'
+        run: |
+          set -euo pipefail
+          code=$(curl -s -o /tmp/smoke-canchas.json -w '%{http_code}' \
+            -H 'Accept: application/json' \
+            --max-time 30 \
+            "$PRODUCTION_API_URL/api/canchas" || echo 000)
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::GET /api/canchas devolvió HTTP $code"
+            cat /tmp/smoke-canchas.json || true
+            exit 1
+          fi
+
+      - name: 'Smoke: frontend responde 200'
+        run: |
+          set -euo pipefail
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            --max-time 30 \
+            "$PRODUCTION_FRONTEND_URL" || echo 000)
+          echo "HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::El frontend devolvió HTTP $code"
+            exit 1
+          fi

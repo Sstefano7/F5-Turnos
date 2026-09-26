@@ -44,6 +44,9 @@ Route::get('/canchas', [CanchaController::class, 'index']);
 Route::get('/canchas/{id}', [CanchaController::class, 'show']);
 Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'disponibles']);
 
+// Health check público: expone el SHA desplegado para el smoke test del deploy
+Route::get('/health', \App\Http\Controllers\Api\HealthController::class);
+
 // Endpoint de cron para backups programados (Vercel Cron / cron-job.org)
 Route::get('/cron/backups', [\App\Http\Controllers\Api\BackupController::class, 'runScheduled']);
 

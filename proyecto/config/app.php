@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Deployed commit SHA
+    |--------------------------------------------------------------------------
+    |
+    | Expuesto por el endpoint /api/health para que el smoke test del deploy
+    | pueda verificar que la API corre el commit recién pusheado.
+    |
+    */
+
+    'sha' => env('VERCEL_GIT_COMMIT_SHA') ?: env('APP_SHA'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
