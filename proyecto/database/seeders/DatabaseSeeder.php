@@ -9,21 +9,29 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crear usuario super administrador
-        User::create([
-            'name' => 'Super Administrador',
-            'email' => 'superadmin@canchas.com',
-            'password' => bcrypt('password123'),
-            'role' => 'superadmin',
-        ]);
+        // Los usuarios administrador solo se crean fuera de producción.
+        // En producción deben crearse manualmente con una contraseña fuerte.
+        if (!app()->environment('production')) {
+            $password = env('SEED_ADMIN_PASSWORD', 'password123');
 
-        // Crear usuario administrador
-        User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@canchas.com',
-            'password' => bcrypt('password123'),
-            'role' => 'admin',
-        ]);
+            User::firstOrCreate(
+                ['email' => 'superadmin@canchas.com'],
+                [
+                    'name' => 'Super Administrador',
+                    'password' => bcrypt($password),
+                    'role' => 'superadmin',
+                ]
+            );
+
+            User::firstOrCreate(
+                ['email' => 'admin@canchas.com'],
+                [
+                    'name' => 'Administrador',
+                    'password' => bcrypt($password),
+                    'role' => 'admin',
+                ]
+            );
+        }
 
         // Llamar a los otros seeders
         $this->call([
