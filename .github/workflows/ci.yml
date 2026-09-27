@@ -39,6 +39,11 @@ jobs:
           cd proyecto
           composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Audit dependencies (CVEs)
+        run: |
+          cd proyecto
+          composer audit --format=plain
+
       - name: Prepare environment
         run: |
           cd proyecto
@@ -66,6 +71,9 @@ jobs:
 
       - name: Install dependencies
         run: cd turnos-canchas-frontend && npm ci
+
+      - name: Audit dependencies (CVEs)
+        run: cd turnos-canchas-frontend && npm audit --audit-level=high
 
       - name: Run lint
         run: cd turnos-canchas-frontend && npm run lint
