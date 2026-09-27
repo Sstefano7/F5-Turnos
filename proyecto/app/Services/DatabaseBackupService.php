@@ -15,9 +15,9 @@ class DatabaseBackupService
     protected static function getSupabaseConfig(): array
     {
         return [
-            'url' => rtrim(env('SUPABASE_URL', ''), '/'),
-            'key' => env('SUPABASE_SERVICE_KEY', env('SUPABASE_KEY', '')),
-            'bucket' => env('SUPABASE_BUCKET', 'turnos-storage'),
+            'url' => rtrim((string) config('services.supabase.url'), '/'),
+            'key' => (string) (config('services.supabase.service_key') ?: config('services.supabase.key')),
+            'bucket' => (string) config('services.supabase.bucket', 'turnos-storage'),
         ];
     }
 

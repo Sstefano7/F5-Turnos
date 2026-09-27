@@ -26,7 +26,7 @@ class VerificationMail extends Mailable
 
     public function content(): Content
     {
-        $url = rtrim(env('APP_FRONTEND_URL', 'http://localhost:5173'), '/')
+        $url = rtrim((string) config('app.frontend_url'), '/')
             . '/verify-email/' . $this->token;
 
         return new Content(

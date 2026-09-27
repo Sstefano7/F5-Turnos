@@ -28,9 +28,9 @@ class ProfileController extends Controller
                 Storage::disk('supabase')->delete($user->profile_photo);
             }
 
-            $url = rtrim(env('SUPABASE_URL'), '/')
+            $url = rtrim((string) config('services.supabase.url'), '/')
                 . '/storage/v1/object/public/'
-                . env('SUPABASE_BUCKET', 'turnos-storage')
+                . (string) config('services.supabase.bucket', 'turnos-storage')
                 . '/' . $path;
 
             $user->profile_photo = $path;
