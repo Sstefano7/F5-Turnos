@@ -7,16 +7,24 @@ use App\Models\Turno;
 use App\Models\Cancha;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class TurnoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Turno::with(['cancha', 'cliente']);
-
         $user = $request->user();
         $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+
+        $query = Turno::with(['cancha', 'cliente']);
+
+        // Sin scope por user_id, cualquier usuario autenticado podia listar
+        // TODAS las reservas con los datos personales de los clientes.
+        if (!$isAdmin) {
+            $query->where('user_id', $user->id);
+        }
 
         // Filtro de papelera para administradores
         if ($isAdmin && $request->boolean('solo_eliminados')) {
@@ -45,13 +53,56 @@ class TurnoController extends Controller
                        ->orderBy('hora_inicio')
                        ->paginate($perPage);
 
+        // Enmascarar PII de los clientes para usuarios no administradores
+        if (!$isAdmin) {
+            $turnos->getCollection()->transform(function ($turno) {
+                $data = $turno->toArray();
+                $data['cliente'] = $this->clienteParaUsuario($turno->cliente);
+                return $data;
+            });
+        }
+
         return response()->json($turnos);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         $turno = Turno::with(['cancha', 'cliente'])->findOrFail($id);
-        return response()->json($turno);
+
+        $user = $request->user();
+        $esAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+
+        // IDOR: sin esta validacion cualquier usuario podia leer cualquier
+        // turno (DNI, telefono, email y precio) incrementando el id.
+        if (!$esAdmin && $turno->user_id !== $user->id) {
+            return response()->json([
+                'message' => 'No tenés permiso para ver este turno.'
+            ], 403);
+        }
+
+        $payload = $turno->toArray();
+        if (!$esAdmin) {
+            $payload['cliente'] = $this->clienteParaUsuario($turno->cliente);
+        }
+
+        return response()->json($payload);
+    }
+
+    /**
+     * Versión sin PII sensible del cliente para usuarios no administradores.
+     */
+    private function clienteParaUsuario(?Cliente $cliente): ?array
+    {
+        if (!$cliente) {
+            return null;
+        }
+
+        return [
+            'id' => $cliente->id,
+            'nombre' => $cliente->nombre,
+            'apellido' => $cliente->apellido,
+            'nombre_completo' => $cliente->nombre_completo,
+        ];
     }
 
     public function store(Request $request)
@@ -76,22 +127,6 @@ class TurnoController extends Controller
             'observaciones' => 'nullable|string',
         ]);
 
-        // Verificar que no haya otro turno que se solape en ese horario
-        $turnoExistente = Turno::where('cancha_id', $request->cancha_id)
-            ->whereDate('fecha', $request->fecha)
-            ->whereIn('estado', ['pendiente', 'confirmado', 'pendiente_senia'])
-            ->where(function ($q) use ($request) {
-                $q->where('hora_inicio', '<', $request->hora_fin)
-                  ->where('hora_fin', '>', $request->hora_inicio);
-            })
-            ->first();
-
-        if ($turnoExistente) {
-            return response()->json([
-                'message' => 'Ya existe un turno reservado en ese horario'
-            ], 422);
-        }
-
         // Resolver el cliente en el servidor: el cliente normal no tiene
         // acceso al CRUD de clientes (contiene PII de todos los usuarios).
         $clienteId = $this->resolveClienteId($request, $esAdmin);
@@ -108,18 +143,55 @@ class TurnoController extends Controller
         $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
         $precioTotal   = round($cancha->precio_hora * $duracionHoras, 2);
 
-        // Crear turno en estado 'pendiente' (esperando confirmación del admin)
-        $turno = Turno::create([
-            'cancha_id'       => $request->cancha_id,
-            'cliente_id'      => $clienteId,
-            'user_id'         => $user ? $user->id : null,
-            'fecha'           => $request->fecha,
-            'hora_inicio'     => $request->hora_inicio,
-            'hora_fin'        => $request->hora_fin,
-            'precio'          => $precioTotal,
-            'estado'          => 'pendiente',
-            'observaciones'   => $request->observaciones,
-        ]);
+        // Check-then-insert sin transaccion = doble reserva bajo concurrencia.
+        // El lock sobre la fila de la cancha serializa los inserts del mismo
+        // horario (en SQLite el lock es un no-op, pero la constraint de
+        // exclusion de la migracion pgsql es el respaldo definitivo).
+        try {
+            $turno = DB::transaction(function () use ($request, $clienteId, $user, $cancha, $precioTotal) {
+                Cancha::whereKey($cancha->id)->lockForUpdate()->first();
+
+                $turnoExistente = Turno::where('cancha_id', $request->cancha_id)
+                    ->whereDate('fecha', $request->fecha)
+                    ->whereIn('estado', ['pendiente', 'confirmado', 'pendiente_senia'])
+                    ->where(function ($q) use ($request) {
+                        $q->where('hora_inicio', '<', $request->hora_fin)
+                          ->where('hora_fin', '>', $request->hora_inicio);
+                    })
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($turnoExistente) {
+                    return null;
+                }
+
+                return Turno::create([
+                    'cancha_id'       => $request->cancha_id,
+                    'cliente_id'      => $clienteId,
+                    'user_id'         => $user ? $user->id : null,
+                    'fecha'           => $request->fecha,
+                    'hora_inicio'     => $request->hora_inicio,
+                    'hora_fin'        => $request->hora_fin,
+                    'precio'          => $precioTotal,
+                    'estado'          => 'pendiente',
+                    'observaciones'   => $request->observaciones,
+                ]);
+            });
+        } catch (QueryException $e) {
+            // 23505 = unique_violation del indice parcial de solapamiento
+            if (($e->errorInfo[0] ?? null) === '23505') {
+                return response()->json([
+                    'message' => 'Ya existe un turno reservado en ese horario'
+                ], 422);
+            }
+            throw $e;
+        }
+
+        if ($turno === null) {
+            return response()->json([
+                'message' => 'Ya existe un turno reservado en ese horario'
+            ], 422);
+        }
 
         return response()->json([
             'turno'        => $turno->load(['cancha', 'cliente']),
@@ -181,8 +253,10 @@ class TurnoController extends Controller
             'observaciones' => 'nullable|string',
         ]);
 
-        // Si se cambia la fecha u hora, verificar disponibilidad
-        if ($request->has('fecha') || $request->has('hora_inicio') || $request->has('hora_fin')) {
+        // Si se cambia la cancha, la fecha u hora, verificar disponibilidad.
+        // Antes 'cancha_id' quedaba fuera del if: mover el turno a otra
+        // cancha lo hacia sin ningun chequeo de solapamiento.
+        if ($request->has('fecha') || $request->has('hora_inicio') || $request->has('hora_fin') || $request->has('cancha_id')) {
             $fecha = $request->fecha ?? $turno->fecha;
             $horaInicio = $request->hora_inicio ?? $turno->hora_inicio;
             $horaFin = $request->hora_fin ?? $turno->hora_fin;
