@@ -281,9 +281,14 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => $sent
-                ? 'Te enviamos un nuevo link de verificación a tu email.'
-                : 'Hubo un problema al enviar el email. Intentá nuevamente más tarde.',
-            'token_for_testing' => $sent ? null : $user->email_verification_token,
+                ? 'Te enviamos un nuevo link de verificaci�n a tu email.'
+                : 'Hubo un problema al enviar el email. Intent� nuevamente m�s tarde.',
+            // Solo en local: en producci�n el token jam�s debe salir en la
+            // respuesta (permitir�a auto-verificar cualquier cuenta si el
+            // SMTP falla). Mismo criterio que register().
+            'token_for_testing' => (app()->environment('local') && !$sent)
+                ? $user->email_verification_token
+                : null,
         ], $sent ? 200 : 500);
     }
 
