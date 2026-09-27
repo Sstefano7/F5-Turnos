@@ -77,9 +77,32 @@ class LogController extends Controller
     }
 
     /**
-     * Limpia los logs del sistema (base de datos y archivo local).
+     * Elimina un log del sistema por id.
+     * Antes ignoraba $id y truncaba TODA la tabla + el archivo de log,
+     * asi que DELETE /logs/123 borraba todo el historial.
      */
     public function destroy($id)
+    {
+        if (!ctype_digit((string) $id)) {
+            return response()->json(['message' => 'Id de log inválido.'], 422);
+        }
+
+        if (Schema::hasTable('system_logs')) {
+            $log = SystemLog::find($id);
+            if (!$log) {
+                return response()->json(['message' => 'Log no encontrado.'], 404);
+            }
+            $log->delete();
+        }
+
+        return response()->json(['message' => 'Log eliminado correctamente.']);
+    }
+
+    /**
+     * Limpia todos los logs del sistema (base de datos y archivo local).
+     * Ruta explicita: DELETE /logs/all.
+     */
+    public function clearAll()
     {
         if (Schema::hasTable('system_logs')) {
             SystemLog::truncate();
@@ -137,9 +160,16 @@ class LogController extends Controller
         $user = $request->user();
         $userName = $user ? $user->name : 'Superadmin';
 
+        // Sin validacion, un nivel fuera de varchar(20) o un mensaje enorme
+        // producia un 500 (log poisoning).
+        $validated = $request->validate([
+            'level' => 'required|in:debug,info,notice,warning,error,critical,alert,emergency',
+            'message' => 'nullable|string|max:1000',
+        ]);
+
         $log = SystemLog::create([
-            'level'   => $request->get('level', 'info'),
-            'message' => $request->get('message', "Log de prueba generado por {$userName} desde el Panel de Administración."),
+            'level'   => $validated['level'],
+            'message' => $validated['message'] ?? "Log de prueba generado por {$userName} desde el Panel de Administración.",
             'context' => [
                 'user_id' => $user?->id,
                 'ip'      => $request->ip(),
