@@ -1,4 +1,4 @@
-# F5 Turnos - Sistema de Gestión de Turnos (Fútbol 5 / Pádel)
+﻿# F5 Turnos - Sistema de Gestión de Turnos (Fútbol 5 / Pádel)
 
 Sistema web para la reserva de canchas de fútbol 5 y pádel. Flujo sin pagos online: el usuario solicita turno (estado `pendiente`), el administrador confirma (`confirmado`) y el pago se realiza 100% en el local el día del turno.
 
@@ -23,7 +23,7 @@ Sistema web para la reserva de canchas de fútbol 5 y pádel. Flujo sin pagos on
 - PostgreSQL 16 (Supabase, pooler `aws-0-sa-east-1.pooler.supabase.com:5432`, `DB_SSLMODE=require`)
 - Laravel Sanctum 4 (API tokens), Laravel Auditing 14, DomPDF 3.1, Spatie Backup 9.3
 - `pdo_pgsql` / `pgsql` habilitados en `C:\xampp\php\php.ini` (`extension=pdo_pgsql`, `extension=pgsql`)
-- Serverless: `proyecto/api/index.php` + `proyecto/vercel.json` (PHP 8.3, 10s timeout Hobby), `SESSION_DRIVER=cookie`, `CACHE_DRIVER=array`, `QUEUE_CONNECTION=sync`, `FILESYSTEM_DISK=supabase`, `LOG_CHANNEL=stderr`
+- Serverless: `proyecto/api/index.php` + `proyecto/vercel.json` (PHP 8.3, 10s timeout Hobby), `SESSION_DRIVER=cookie`, `CACHE_STORE=database`, `QUEUE_CONNECTION=sync`, `FILESYSTEM_DISK=supabase`, `LOG_CHANNEL=stderr`
 
 ### Frontend
 - React 19, Vite 7, React Router 7, Axios, SweetAlert2, CSS3
@@ -72,7 +72,7 @@ DB_USERNAME=postgres.<tu-project-ref>
 DB_PASSWORD=<tu-password-de-supabase>
 DB_SSLMODE=require
 
-CACHE_DRIVER=array
+CACHE_STORE=database
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 FILESYSTEM_DISK=supabase
@@ -130,7 +130,7 @@ npm run build  # producción frontend
 | `turnos-canchas-api` | `proyecto` | `composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache && php artisan view:cache` | `public` (`api/index.php` entry) |
 | `turnos-canchas-frontend` | `turnos-canchas-frontend` | `npm run build` | `dist` |
 
-`proyecto/vercel.json`: PHP 8.3, `maxDuration: 10` (Hobby), `memory: 1024`, env `SESSION_DRIVER=cookie`/`CACHE_DRIVER=array`/`QUEUE_CONNECTION=sync`/`FILESYSTEM_DISK=supabase`/`LOG_CHANNEL=stderr`
+`proyecto/vercel.json`: PHP 8.3, `maxDuration: 10` (Hobby), `memory: 1024`, env `SESSION_DRIVER=cookie`/`CACHE_STORE=database`/`QUEUE_CONNECTION=sync`/`FILESYSTEM_DISK=supabase`/`LOG_CHANNEL=stderr`
 `proyecto/.vercelignore`: excluye vendor, storage, tests, docker
 `turnos-canchas-frontend/vercel.json`: SPA rewrites, cache headers, `VITE_API_URL`
 `proyecto/api/index.php`: entry point serverless
