@@ -47,8 +47,11 @@ Route::get('/canchas/{id}/horarios-disponibles', [HorarioController::class, 'dis
 // Health check público: expone el SHA desplegado para el smoke test del deploy
 Route::get('/health', \App\Http\Controllers\Api\HealthController::class);
 
-// Endpoint de cron para backups programados (Vercel Cron / cron-job.org)
-Route::get('/cron/backups', [\App\Http\Controllers\Api\BackupController::class, 'runScheduled']);
+// Endpoint de cron para backups programados (Vercel Cron / cron-job.org).
+// Requiere `Authorization: Bearer ${CRON_SECRET}`: sin auth, cualquier
+// visitante podia disparar un dump completo de la base de datos.
+Route::get('/cron/backups', [\App\Http\Controllers\Api\BackupController::class, 'runScheduled'])
+    ->middleware('cron');
 
 // Rutas protegidas (requieren autenticación)
 Route::middleware('auth:sanctum')->group(function () {
@@ -123,6 +126,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/audits/{id}', [AuditController::class, 'show']);
         Route::get('/logs', [LogController::class, 'index']);
         Route::post('/logs/test', [LogController::class, 'storeTestLog']);
+        // 'all' debe registrarse antes de {id} para no capturarlo
+        Route::delete('/logs/all', [LogController::class, 'clearAll']);
         Route::delete('/logs/{id}', [LogController::class, 'destroy']);
         
         // Gestión de usuarios (SOLO SUPERADMIN)

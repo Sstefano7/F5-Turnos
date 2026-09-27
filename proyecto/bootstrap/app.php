@@ -22,10 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
-        $middleware->alias(([
+        $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'superadmin' => \App\Http\Middleware\IsSuperAdmin::class,
-        ]));
+            'cron' => \App\Http\Middleware\VerifyCronSecret::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Registrar excepciones críticas automáticamente en la base de datos

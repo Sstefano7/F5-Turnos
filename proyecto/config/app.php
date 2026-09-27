@@ -68,6 +68,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Cron secret
+    |--------------------------------------------------------------------------
+    |
+    | Secret que Vercel envía como `Authorization: Bearer <secret>` en los
+    | cron jobs (si CRON_SECRET está definido en el dashboard). Protege los
+    | endpoints /api/cron/* que ejecutan trabajo costoso.
+    |
+    */
+
+    'cron_secret' => env('CRON_SECRET'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
