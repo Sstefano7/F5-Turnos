@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { canchaService } from '../services/canchaService';
 import { turnoService } from '../services/turnoService';
@@ -25,8 +25,11 @@ function Reservar() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   
-  const [buscandoDni, setBuscandoDni] = useState(false);
   const [dniEncontrado, setDniEncontrado] = useState(false);
+  const redirigirTimer = useRef(null);
+
+  // Limpiar el timer de redirección al desmontar
+  useEffect(() => () => clearTimeout(redirigirTimer.current), []);
 
   const [clienteData, setClienteData] = useState({
     nombre: '',
@@ -42,44 +45,25 @@ function Reservar() {
       .catch(() => { setError('Error al cargar la cancha'); setLoading(false); });
   }, [id]);
 
-  // Efecto para autocompletar datos si el DNI ya existe
+  // Autocompletar con el cliente propio (el CRUD de clientes es admin-only).
   useEffect(() => {
-    const dni = clienteData.dni;
-    if (dni && dni.length >= 7) {
-      const delay = setTimeout(async () => {
-        setBuscandoDni(true);
-        try {
-          const response = await clienteService.getAll({ search: dni });
-          const clientes = Array.isArray(response) ? response : response.data;
-          
-          if (clientes && clientes.length > 0) {
-            const clienteMatch = clientes.find(c => c.dni === dni);
-            if (clienteMatch) {
-              setClienteData(prev => ({
-                ...prev,
-                nombre: clienteMatch.nombre,
-                apellido: clienteMatch.apellido,
-                email: clienteMatch.email,
-                telefono: clienteMatch.telefono
-              }));
-              setDniEncontrado(true);
-            } else {
-              setDniEncontrado(false);
-            }
-          } else {
-            setDniEncontrado(false);
-          }
-        } catch (err) {
-          console.error("Error buscando cliente:", err);
-        } finally {
-          setBuscandoDni(false);
-        }
-      }, 600);
-      return () => clearTimeout(delay);
-    } else {
-      setDniEncontrado(false);
-    }
-  }, [clienteData.dni]);
+    let cancelado = false;
+    clienteService.getMine()
+      .then((miCliente) => {
+        if (cancelado || !miCliente) return;
+        setClienteData(prev => ({
+          ...prev,
+          nombre: prev.nombre || miCliente.nombre || '',
+          apellido: prev.apellido || miCliente.apellido || '',
+          email: prev.email || miCliente.email || '',
+          telefono: prev.telefono || miCliente.telefono || '',
+          dni: prev.dni || miCliente.dni || '',
+        }));
+        if (miCliente.dni) setDniEncontrado(true);
+      })
+      .catch(() => { /* sin cliente previo: el formulario queda manual */ });
+    return () => { cancelado = true; };
+  }, []);
 
   useEffect(() => {
     if (fecha && cancha) fetchHorarios();
@@ -115,26 +99,19 @@ function Reservar() {
 
     setLoadingSubmit(true);
     try {
-      // Buscar o crear cliente
-      let clienteId;
-      const respuestaClientes = await clienteService.getAll();
-      const listaClientes = Array.isArray(respuestaClientes) ? respuestaClientes : respuestaClientes.data;
-      const clienteExistente = listaClientes?.find(c => c.email === clienteData.email);
-
-      if (clienteExistente) {
-        clienteId = clienteExistente.id;
-      } else {
-        const cliente = await clienteService.create(clienteData);
-        clienteId = cliente.id;
-      }
-
-      // Crear el turno en estado 'pendiente' (esperando confirmación del admin)
+      // El cliente se resuelve en el servidor (el CRUD de clientes es admin-only)
       await turnoService.create({
-        cancha_id:   parseInt(id),
-        cliente_id:  clienteId,
+        cancha_id:   parseInt(id, 10),
+        cliente: {
+          nombre:   clienteData.nombre.trim(),
+          apellido: clienteData.apellido.trim(),
+          email:    clienteData.email.trim(),
+          telefono: clienteData.telefono.trim(),
+          dni:      clienteData.dni.trim() || null,
+        },
         fecha,
-        hora_inicio: horarioSeleccionado.hora_inicio,
-        hora_fin:    horarioSeleccionado.hora_fin,
+        hora_inicio: horarioSeleccionado.hora_inicio.slice(0, 5),
+        hora_fin:    horarioSeleccionado.hora_fin.slice(0, 5),
         observaciones: '',
       });
 
@@ -142,7 +119,7 @@ function Reservar() {
       setSuccess(true);
       
       // Redirigir a mis reservas después de 2 segundos
-      setTimeout(() => navigate('/mis-reservas'), 2000);
+      redirigirTimer.current = setTimeout(() => navigate('/mis-reservas'), 2000);
 
     } catch (err) {
       console.error('Error:', err.response?.data);
@@ -152,7 +129,11 @@ function Reservar() {
     }
   };
 
-  const getMinDate = () => new Date().toISOString().split('T')[0];
+  const getMinDate = () => {
+    const hoy = new Date();
+    // Fecha local (no UTC): después de las 21 UTC-3 'hoy' dejaba de ser reservable
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+  };
 
   if (loading) return <div className="loading">Cargando...</div>;
   if (!cancha) return <div className="error">Cancha no encontrada</div>;
@@ -290,7 +271,6 @@ function Reservar() {
             <div className="reservar-form-section">
               <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span>3. Tus datos</span>
-                {buscandoDni && <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>Buscando... ⏳</span>}
                 {dniEncontrado && <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 'normal', background: '#dcfce7', padding: '2px 8px', borderRadius: '12px' }}>Datos autocompletados ✅</span>}
               </h3>
               <div className="reservar-form-grid">

@@ -10,6 +10,12 @@ import "./BookingModal.css"
 
 const fmtARS = (v) => new Intl.NumberFormat("es-AR").format(Number(v || 0))
 
+// Fecha local (no UTC): con toISOString() a las 21 UTC-3 'hoy' se volvía mañana
+const hoyLocal = () => {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 export function BookingModal({ open, onClose, initialCourt = null, initialDate = null, initialHour = null, canchas = [] }) {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -43,6 +49,22 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
       if (initialDate && initialHour && !initialCourt) {
         findCanchasForSlot(initialDate, initialHour)
       }
+      // Autocompletar con el cliente propio (el CRUD de clientes es admin-only)
+      if (user) {
+        clienteService.getMine()
+          .then((miCliente) => {
+            if (!miCliente) return
+            setClienteData(prev => ({
+              ...prev,
+              nombre: prev.nombre || miCliente.nombre || "",
+              apellido: prev.apellido || miCliente.apellido || "",
+              email: prev.email || miCliente.email || "",
+              telefono: prev.telefono || miCliente.telefono || "",
+              dni: prev.dni || miCliente.dni || "",
+            }))
+          })
+          .catch(() => { /* sin cliente previo: formulario manual */ })
+      }
     }
   }, [open, initialCourt, initialDate, initialHour])
 
@@ -61,26 +83,28 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
     const available = []
     for (const cancha of canchas) {
       try {
-        if (typeof cancha.id === 'number') {
+        if (Number.isInteger(Number(cancha.id))) {
           const horarios = await canchaService.getHorariosDisponibles(cancha.id, date)
           if (Array.isArray(horarios) && horarios.some(h => h.hora_inicio.slice(0, 5) === hour)) {
             available.push(cancha)
           }
         }
-      } catch {}
+      } catch {
+        // Si una cancha no responde, se omite de la lista en lugar de
+        // asumir que está disponible
+      }
     }
-    const finalAvailable = available.length > 0 ? available : canchas
-    setAvailableCanchasForSlot(finalAvailable)
-    if (finalAvailable.length === 1) setSelectedCourt(finalAvailable[0])
+    setAvailableCanchasForSlot(available)
+    if (available.length === 1) setSelectedCourt(available[0])
   }
 
   const fetchHorarios = async (canchaId, fecha) => {
     setLoadingHorarios(true)
     setSelectedHorario(null)
     try {
-      if (typeof canchaId === 'number') {
+      if (Number.isInteger(Number(canchaId))) {
         const data = await canchaService.getHorariosDisponibles(canchaId, fecha)
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setHorarios(data)
           if (initialHour) {
             const match = data.find(h => h.hora_inicio.slice(0, 5) === initialHour)
@@ -88,29 +112,14 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
           }
           return
         }
+        throw new Error("Respuesta inválida de horarios")
       }
-      // Fallback slots if mock court or backend offline
-      const mockSlots = [
-        { id: 'm-08', hora_inicio: '08:00', hora_fin: '09:00', disponible: true },
-        { id: 'm-09', hora_inicio: '09:00', hora_fin: '10:00', disponible: true },
-        { id: 'm-10', hora_inicio: '10:00', hora_fin: '11:00', disponible: true },
-        { id: 'm-11', hora_inicio: '11:00', hora_fin: '12:00', disponible: true },
-        { id: 'm-14', hora_inicio: '14:00', hora_fin: '15:00', disponible: true },
-        { id: 'm-15', hora_inicio: '15:00', hora_fin: '16:00', disponible: true },
-        { id: 'm-16', hora_inicio: '16:00', hora_fin: '17:00', disponible: true },
-        { id: 'm-17', hora_inicio: '17:00', hora_fin: '18:00', disponible: true },
-        { id: 'm-18', hora_inicio: '18:00', hora_fin: '19:00', disponible: true },
-        { id: 'm-19', hora_inicio: '19:00', hora_fin: '20:00', disponible: true },
-        { id: 'm-20', hora_inicio: '20:00', hora_fin: '21:00', disponible: true },
-        { id: 'm-21', hora_inicio: '21:00', hora_fin: '22:00', disponible: true },
-      ]
-      setHorarios(mockSlots)
-      if (initialHour) {
-        const match = mockSlots.find(h => h.hora_inicio.slice(0, 5) === initialHour)
-        if (match) setSelectedHorario(match)
-      }
+      // Cancha mock / sin id numérico: no inventar horarios
+      setHorarios([])
+      setError("No se pudieron cargar los horarios de esta cancha")
     } catch {
       setHorarios([])
+      setError("No se pudieron cargar los horarios. Revisá tu conexión e intentá de nuevo.")
     } finally {
       setLoadingHorarios(false)
     }
@@ -132,38 +141,30 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
     }
     setSubmitting(true)
     try {
-      let clienteId = 1
-      try {
-        const res = await clienteService.getAll()
-        const lista = Array.isArray(res) ? res : res?.data
-        const existente = lista?.find(c => c.email === clienteData.email)
-        if (existente) {
-          clienteId = existente.id
-        } else {
-          const cliente = await clienteService.create(clienteData)
-          clienteId = cliente.id
-        }
-      } catch (errClient) {
-        console.warn("Cliente service error:", errClient)
+      // El cancha_id debe ser numérico: si es un mock, no tiene sentido reservar
+      const canchaId = Number(selectedCourt.id)
+      if (!Number.isInteger(canchaId) || canchaId <= 0) {
+        setError("No se pudo identificar la cancha seleccionada")
+        setSubmitting(false)
+        return
       }
 
-      try {
-        await turnoService.create({
-          cancha_id: typeof selectedCourt.id === 'number' ? selectedCourt.id : 1,
-          cliente_id: clienteId,
-          fecha: selectedDate,
-          hora_inicio: selectedHorario.hora_inicio.slice(0, 5),
-          hora_fin: selectedHorario.hora_fin.slice(0, 5),
-          observaciones: "",
-        })
-      } catch (errTurno) {
-        if (errTurno.response?.data?.message) {
-          setError(errTurno.response.data.message)
-          setSubmitting(false)
-          return
-        }
-        console.warn("Turno creation fallback handled:", errTurno)
-      }
+      // El cliente se resuelve en el servidor (el CRUD de clientes es admin-only)
+      await turnoService.create({
+        cancha_id: canchaId,
+        cliente: {
+          nombre: clienteData.nombre.trim(),
+          apellido: clienteData.apellido.trim(),
+          email: clienteData.email.trim(),
+          telefono: clienteData.telefono.trim(),
+          dni: clienteData.dni.trim() || null,
+        },
+        fecha: selectedDate,
+        hora_inicio: selectedHorario.hora_inicio.slice(0, 5),
+        hora_fin: selectedHorario.hora_fin.slice(0, 5),
+        observaciones: "",
+      })
+
       setSuccess(true)
       setStep(4)
     } catch (e) {
@@ -179,7 +180,7 @@ export function BookingModal({ open, onClose, initialCourt = null, initialDate =
     return true
   }
 
-  const minDate = new Date().toISOString().slice(0, 10)
+  const minDate = hoyLocal()
 
   return (
     <Modal open={open} onClose={onClose} title={success ? "¡Reserva confirmada!" : "Reservar cancha"}>
