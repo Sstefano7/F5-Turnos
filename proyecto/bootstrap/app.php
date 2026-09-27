@@ -22,6 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
+        // Detras de Vercel el REMOTE_ADDR es el del router: sin proxies de
+        // confianza, todos los usuarios comparten la misma key de throttle
+        // (y el captcha se dispara para todos a la vez).
+        $middleware->trustProxies(at: '*');
+
+        // Rate limiting global para la API. Sin esto, los endpoints sin
+        // throttle explicito (GET /canchas, POST /turnos, exports PDF...)
+        // quedaban sin limite por IP.
+        $middleware->throttleApi();
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'superadmin' => \App\Http\Middleware\IsSuperAdmin::class,
@@ -78,16 +88,34 @@ return Application::configure(basePath: dirname(__DIR__))
                 } elseif ($e instanceof UrlGenerationException) {
                     $status = 404;
                 }
+
+                // Sin APP_DEBUG, no exponer la clase de la excepcion ni la
+                // ruta/linea del archivo: permite fingerprintear el codigo.
+                if (!config('app.debug')) {
+                    $public = collect([
+                        'ValidationException', 'ModelNotFoundException',
+                        'AuthorizationException', 'MethodNotAllowedHttpException',
+                        'NotFoundHttpException',
+                    ]);
+                    $esPublica = $status < 500
+                        || $public->contains(fn ($c) => $e instanceof $c);
+
+                    return new JsonResponse([
+                        'message' => $esPublica && $e->getMessage()
+                            ? $e->getMessage()
+                            : ($status < 500 ? 'Bad Request' : 'Server Error'),
+                        'error_id' => substr(md5(microtime(true) . $e->getFile() . $e->getLine()), 0, 12),
+                    ], $status);
+                }
+
                 $data = [
                     'message' => $e->getMessage() ?: 'Server Error',
                     'exception' => get_class($e),
                     'file' => $e->getFile() . ':' . $e->getLine(),
+                    'trace' => collect($e->getTrace())->take(15)->map(fn($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ' ' . ($t['class'] ?? '') . ($t['type'] ?? '') . ($t['function'] ?? ''))->toArray(),
                 ];
-                if (config('app.debug')) {
-                    $data['trace'] = collect($e->getTrace())->take(15)->map(fn($t) => ($t['file'] ?? '') . ':' . ($t['line'] ?? '') . ' ' . ($t['class'] ?? '') . ($t['type'] ?? '') . ($t['function'] ?? ''))->toArray();
-                    if ($e->getPrevious()) {
-                        $data['previous'] = get_class($e->getPrevious()) . ': ' . $e->getPrevious()->getMessage();
-                    }
+                if ($e->getPrevious()) {
+                    $data['previous'] = get_class($e->getPrevious()) . ': ' . $e->getPrevious()->getMessage();
                 }
                 return new JsonResponse($data, $status);
             }
