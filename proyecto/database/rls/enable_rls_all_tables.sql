@@ -43,6 +43,9 @@ ALTER TABLE public.clientes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.turnos ENABLE ROW LEVEL SECURITY;
 -- Contiene: relación cliente-cancha, fechas, precios, estados de pago
 
+ALTER TABLE public.pagos ENABLE ROW LEVEL SECURITY;
+-- Contiene: montos, comprobantes, estados de transacciones
+
 -- ─────────────────────────────────────────────────────────────────────────────
 -- TABLAS DE NEGOCIO (Riesgo: MEDIO)
 -- Sin datos personales pero proteger de escritura pública
@@ -59,6 +62,7 @@ ALTER TABLE public.promocodes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bug_reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.backup_schedules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.system_logs ENABLE ROW LEVEL SECURITY;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- TABLAS INTERNAS DE LARAVEL (Riesgo: MEDIO)
