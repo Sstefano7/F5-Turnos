@@ -58,6 +58,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/resend-verification', [AuthController::class, 'resendVerification']);
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto']);
+
+    // Cliente propio (autocompletado del flujo de reserva)
+    Route::get('/mi-cliente', [ClienteController::class, 'mine']);
     
     // Gestión de turnos (usuarios normales)
     Route::get('/turnos', [TurnoController::class, 'index']);

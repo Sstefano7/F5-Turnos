@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Turno;
 use App\Models\Cancha;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -55,9 +56,20 @@ class TurnoController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->user();
+        $esAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+
         $request->validate([
             'cancha_id' => 'required|exists:canchas,id',
-            'cliente_id' => 'required|exists:clientes,id',
+            // cliente_id solo lo puede indicar un admin; para el resto el
+            // cliente se resuelve en el servidor desde `cliente`.
+            'cliente_id' => $esAdmin ? 'nullable|exists:clientes,id' : 'prohibited',
+            'cliente' => $esAdmin ? 'nullable|array' : 'required|array',
+            'cliente.nombre' => 'required|string|max:255',
+            'cliente.apellido' => 'required|string|max:255',
+            'cliente.email' => 'required|email|max:255',
+            'cliente.telefono' => 'required|string|max:255',
+            'cliente.dni' => 'nullable|string|max:20',
             'fecha' => 'required|date|after_or_equal:today',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
@@ -80,6 +92,15 @@ class TurnoController extends Controller
             ], 422);
         }
 
+        // Resolver el cliente en el servidor: el cliente normal no tiene
+        // acceso al CRUD de clientes (contiene PII de todos los usuarios).
+        $clienteId = $this->resolveClienteId($request, $esAdmin);
+        if ($clienteId === null) {
+            return response()->json([
+                'message' => 'No se pudieron resolver los datos del cliente'
+            ], 422);
+        }
+
         // Calcular el precio total
         $cancha = Cancha::findOrFail($request->cancha_id);
         $horaInicio = Carbon::parse($request->hora_inicio);
@@ -90,8 +111,8 @@ class TurnoController extends Controller
         // Crear turno en estado 'pendiente' (esperando confirmación del admin)
         $turno = Turno::create([
             'cancha_id'       => $request->cancha_id,
-            'cliente_id'      => $request->cliente_id,
-            'user_id'         => $request->user() ? $request->user()->id : null,
+            'cliente_id'      => $clienteId,
+            'user_id'         => $user ? $user->id : null,
             'fecha'           => $request->fecha,
             'hora_inicio'     => $request->hora_inicio,
             'hora_fin'        => $request->hora_fin,
@@ -105,6 +126,45 @@ class TurnoController extends Controller
             'precio_total' => $precioTotal,
             'message'      => 'Reserva solicitada. Queda pendiente de confirmación por el administrador.'
         ], 201);
+    }
+
+    /**
+     * Devuelve (o crea) el cliente al que pertenece la reserva, sin exponer
+     * el listado de clientes al usuario normal.
+     */
+    private function resolveClienteId(Request $request, bool $esAdmin): ?int
+    {
+        if ($esAdmin && $request->filled('cliente_id')) {
+            return (int) $request->cliente_id;
+        }
+
+        $data = $request->input('cliente', []);
+        $email = strtolower(trim($data['email'] ?? ''));
+        $dni = trim($data['dni'] ?? '');
+
+        if ($email === '') {
+            return null;
+        }
+
+        // Reutilizar el cliente existente (por email o por DNI) para no
+        // duplicar registros ni chocar con los únicos de la tabla.
+        $cliente = Cliente::where('email', $email)
+            ->when($dni !== '', fn ($q) => $q->orWhere('dni', $dni))
+            ->first();
+
+        if ($cliente) {
+            return $cliente->id;
+        }
+
+        $cliente = Cliente::create([
+            'nombre'   => trim($data['nombre'] ?? ''),
+            'apellido' => trim($data['apellido'] ?? ''),
+            'email'    => $email,
+            'telefono' => trim($data['telefono'] ?? ''),
+            'dni'      => $dni !== '' ? $dni : null,
+        ]);
+
+        return $cliente->id;
     }
 
     public function update(Request $request, $id)

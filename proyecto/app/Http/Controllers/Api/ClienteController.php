@@ -10,6 +10,33 @@ use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {
+    /**
+     * Cliente propio del usuario autenticado (match por email).
+     * Lo usa el flujo de reserva para autocompletar sin exponer el
+     * listado de clientes (PII de todos los usuarios) a roles normales.
+     */
+    public function mine(Request $request)
+    {
+        $user = $request->user();
+        $cliente = Cliente::where('email', $user->email)->first();
+
+        if (!$cliente) {
+            return response()->json(['cliente' => null]);
+        }
+
+        // El dueño del registro siempre ve sus propios datos completos
+        return response()->json([
+            'cliente' => [
+                'id' => $cliente->id,
+                'nombre' => $cliente->nombre,
+                'apellido' => $cliente->apellido,
+                'email' => $cliente->email,
+                'telefono' => $cliente->telefono,
+                'dni' => $cliente->dni,
+            ],
+        ]);
+    }
+
     public function index(Request $request)
     {
         $perPage = min((int) $request->get('per_page', 15), 100);
