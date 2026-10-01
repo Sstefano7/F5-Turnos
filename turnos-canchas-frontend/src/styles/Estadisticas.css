@@ -1,0 +1,338 @@
+/* ============================================================
+   Estadisticas.css — Estilos visuales para el panel analítico
+   ============================================================ */
+
+.estadisticas-container {
+  min-height: 100vh;
+  background-color: var(--gray-50, #f8fafc);
+  padding: 24px 20px;
+}
+
+.estadisticas-header {
+  max-width: 1200px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.estadisticas-header h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.estadisticas-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tarjetas KPI Superiores */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.kpi-icon {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-icon.blue   { background: #eff6ff; }
+.kpi-icon.green  { background: #f0fdf4; }
+.kpi-icon.amber  { background: #fffbeb; }
+.kpi-icon.purple { background: #faf5ff; }
+.kpi-icon.emerald{ background: #ecfdf5; }
+
+.kpi-data h3 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.kpi-data p {
+  margin: 4px 0 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.kpi-subtext {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.kpi-subtext.positive { color: #16a34a; }
+.kpi-subtext.neutral  { color: #64748b; }
+
+/* Grid de Análisis (Gráficos) */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-header {
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-header span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Gráfico de Barras - Últimos 7 Días */
+.bar-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 190px;
+  padding-top: 24px;
+  gap: 12px;
+}
+
+.bar-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar-wrapper {
+  width: 100%;
+  max-width: 38px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 4px;
+  position: relative;
+}
+
+.bar-fill:hover {
+  filter: brightness(1.15);
+}
+
+.bar-count-tooltip {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.bar-label {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Barras de Progreso de Estados */
+.status-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.status-item-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.status-track {
+  width: 100%;
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.status-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.status-fill.confirmado { background: #16a34a; }
+.status-fill.pendiente  { background: #eab308; }
+.status-fill.completado { background: #3b82f6; }
+.status-fill.cancelado  { background: #ef4444; }
+
+/* Comparativa de Deportes */
+.sports-comparison-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sports-track {
+  width: 100%;
+  height: 20px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  display: flex;
+  overflow: hidden;
+}
+
+.sports-segment-futbol {
+  background: #16a34a;
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.sports-segment-padel {
+  background: #0284c7;
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.sports-legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 6px;
+}
+
+.sports-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.futbol { background: #16a34a; }
+.legend-dot.padel  { background: #0284c7; }
+
+/* Ranking de Canchas */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ranking-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ranking-pos {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ranking-pos.gold   { background: #eab308; }
+.ranking-pos.silver { background: #94a3b8; }
+.ranking-pos.bronze { background: #d97706; }
+
+.ranking-cancha-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.ranking-turnos-badge {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
