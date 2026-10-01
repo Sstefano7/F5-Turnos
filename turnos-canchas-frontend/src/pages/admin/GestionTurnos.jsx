@@ -5,6 +5,7 @@ import { useDashboard } from '../../context/DashboardContext';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/GestionTurnos.css';
 import Pagination from '../../components/Pagination';
+import Swal from 'sweetalert2';
 
 function GestionTurnos() {
   const [turnos, setTurnos] = useState([]);
@@ -83,31 +84,70 @@ function GestionTurnos() {
   };
 
   const handleRestaurarTurno = async (turnoId) => {
-    if (!window.confirm('¿Deseas restaurar este turno eliminado?')) {
-      return;
-    }
+    const result = await Swal.fire({
+      title: '¿Restaurar turno?',
+      text: '¿Deseas restaurar este turno eliminado para reincorporarlo a la agenda?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, restaurar',
+      cancelButtonText: 'Cancelar'
+    });
 
-    try {
-      await turnoService.restore(turnoId);
-      fetchTurnos(currentPage);
-      triggerRefresh();
-      alert('Turno restaurado correctamente');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Error al restaurar el turno');
+    if (result.isConfirmed) {
+      try {
+        await turnoService.restore(turnoId);
+        fetchTurnos(currentPage);
+        triggerRefresh();
+        Swal.fire({
+          title: '¡Restaurado!',
+          text: 'Turno restaurado correctamente.',
+          icon: 'success',
+          confirmButtonColor: '#16a34a'
+        });
+      } catch (err) {
+        Swal.fire({
+          title: 'Error',
+          text: err.response?.data?.message || 'Error al restaurar el turno',
+          icon: 'error',
+          confirmButtonColor: '#ef4444'
+        });
+      }
     }
   };
 
   const handleCambiarEstado = async (turnoId, nuevoEstado) => {
-    if (!window.confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) {
-      return;
-    }
+    const result = await Swal.fire({
+      title: '¿Cambiar estado?',
+      text: `¿Deseas cambiar el estado de este turno a "${nuevoEstado}"?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#2563eb',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    });
 
-    try {
-      await turnoService.update(turnoId, { estado: nuevoEstado });
-      fetchTurnos();
-      triggerRefresh(); // Actualizar el dashboard
-    } catch (err) {
-      alert('Error al cambiar el estado del turno');
+    if (result.isConfirmed) {
+      try {
+        await turnoService.update(turnoId, { estado: nuevoEstado });
+        fetchTurnos(currentPage);
+        triggerRefresh(); // Actualizar el dashboard
+        Swal.fire({
+          title: 'Estado actualizado',
+          text: `El turno ahora está "${nuevoEstado}".`,
+          icon: 'success',
+          confirmButtonColor: '#16a34a'
+        });
+      } catch (err) {
+        Swal.fire({
+          title: 'Error',
+          text: err.response?.data?.message || 'Error al cambiar el estado del turno',
+          icon: 'error',
+          confirmButtonColor: '#ef4444'
+        });
+      }
     }
   };
 

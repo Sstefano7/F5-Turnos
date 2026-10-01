@@ -148,8 +148,16 @@ const handleExportarPDF = async () => {
     try {
       await bugReportService.update(reportId, { estado: nuevoEstado });
       fetchReports(currentPage);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: `Estado actualizado a "${nuevoEstado}"`,
+        showConfirmButton: false,
+        timer: 2000
+      });
     } catch (err) {
-      alert('Error al cambiar el estado');
+      Swal.fire('Error', err.response?.data?.message || 'Error al cambiar el estado', 'error');
     }
   };
 
@@ -157,21 +165,39 @@ const handleExportarPDF = async () => {
     try {
       await bugReportService.update(reportId, { prioridad: nuevaPrioridad });
       fetchReports(currentPage);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: `Prioridad actualizada a "${nuevaPrioridad}"`,
+        showConfirmButton: false,
+        timer: 2000
+      });
     } catch (err) {
-      alert('Error al cambiar la prioridad');
+      Swal.fire('Error', err.response?.data?.message || 'Error al cambiar la prioridad', 'error');
     }
   };
 
   const handleEliminar = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este reporte?')) {
-      return;
-    }
+    const result = await Swal.fire({
+      title: '¿Eliminar reporte?',
+      text: '¿Estás seguro de eliminar este reporte de ideas y comentarios? Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
 
-    try {
-      await bugReportService.delete(id);
-      fetchReports(currentPage);
-    } catch (err) {
-      alert('Error al eliminar el reporte');
+    if (result.isConfirmed) {
+      try {
+        await bugReportService.delete(id);
+        fetchReports(currentPage);
+        Swal.fire('Eliminado', 'El reporte ha sido eliminado correctamente.', 'success');
+      } catch (err) {
+        Swal.fire('Error', err.response?.data?.message || 'Error al eliminar el reporte', 'error');
+      }
     }
   };
 
