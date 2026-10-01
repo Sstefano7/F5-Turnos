@@ -25,6 +25,7 @@ import GestionAudits from './pages/admin/GestionAudits';
 import GestionLogs from './pages/admin/GestionLogs';
 import GestionPagos from './pages/admin/GestionPagos';
 import GestionBackups from './pages/admin/GestionBackups';
+import GestionUsuarios from './pages/admin/GestionUsuarios';
 
 
 
@@ -162,6 +163,15 @@ function App() {
             </SuperAdminRoute>
           } 
         />  
+
+        <Route 
+          path="/admin/users" 
+          element={
+            <SuperAdminRoute>
+              <GestionUsuarios />
+            </SuperAdminRoute>
+          } 
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

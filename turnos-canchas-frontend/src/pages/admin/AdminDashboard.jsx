@@ -124,6 +124,16 @@ function AdminDashboard() {
                 <p>Respaldos automáticos y manuales de BD</p>
                 <span className="superadmin-badge">Super Admin</span>
               </button>
+
+              <button 
+                className="menu-card super-admin-card"
+                onClick={() => navigate('/admin/users')}
+              >
+                <div className="menu-icon">👥</div>
+                <h3>Gestión de Usuarios</h3>
+                <p>Administrar roles, accesos y cuentas</p>
+                <span className="superadmin-badge">Super Admin</span>
+              </button>
             </>
           )}
             
