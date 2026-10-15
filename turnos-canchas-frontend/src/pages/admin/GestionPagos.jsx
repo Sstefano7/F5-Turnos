@@ -183,18 +183,16 @@ function GestionPagos() {
       const p = response.data || response;
       Swal.fire({
         title: `Detalle del Pago #${p.id}`,
-        html: `
-          <div style="text-align: left; display: grid; gap: 12px; margin-top: 16px;">
-            <div><strong>Turno:</strong> #${p.turno_id} - ${p.turno?.cancha?.nombre || 'N/A'}</div>
-            <div><strong>Cliente:</strong> ${p.turno?.cliente?.nombre || ''} ${p.turno?.cliente?.apellido || ''}</div>
-            <div><strong>Monto:</strong> $${Number(p.monto).toLocaleString('es-AR')}</div>
-            <div><strong>Método:</strong> <span class="badge badge-${p.metodo_pago}">${getMetodoTexto(p.metodo_pago)}</span></div>
-            <div><strong>Estado:</strong> <span class="badge badge-${p.estado}">${getEstadoTexto(p.estado)}</span></div>
-            <div><strong>Referencia:</strong> ${p.referencia || '-'}</div>
-            <div><strong>Fecha de pago:</strong> ${p.fecha_pago ? new Date(p.fecha_pago).toLocaleString('es-AR') : 'No pagado'}</div>
-            <div><strong>Creado:</strong> ${new Date(p.created_at).toLocaleString('es-AR')}</div>
-          </div>
-        `,
+        text: [
+          `Turno: #${p.turno_id} - ${p.turno?.cancha?.nombre || 'N/A'}`,
+          `Cliente: ${p.turno?.cliente?.nombre || ''} ${p.turno?.cliente?.apellido || ''}`,
+          `Monto: $${Number(p.monto).toLocaleString('es-AR')}`,
+          `Método: ${getMetodoTexto(p.metodo_pago)}`,
+          `Estado: ${getEstadoTexto(p.estado)}`,
+          `Referencia: ${p.referencia || '-'}`,
+          `Fecha de pago: ${p.fecha_pago ? new Date(p.fecha_pago).toLocaleString('es-AR') : 'No pagado'}`,
+          `Creado: ${new Date(p.created_at).toLocaleString('es-AR')}`,
+        ].join('\n'),
         confirmButtonColor: '#16a34a',
         confirmButtonText: 'Cerrar',
         width: '500px'

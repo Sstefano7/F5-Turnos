@@ -8,7 +8,7 @@ return [
 
     'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', env('APP_FRONTEND_URL', 'http://localhost:5173') . ',http://localhost:5173,https://f5-turnos-frontend.vercel.app')),
 
-    'allowed_origins_patterns' => ['https://f5-turnos-frontend-.*\.vercel\.app'],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
@@ -16,6 +16,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];

@@ -21,8 +21,9 @@ class BackupController extends Controller
                 'backup' => $backupInfo,
             ]);
         } catch (\Throwable $e) {
+            report($e);
             return response()->json([
-                'error' => 'Error al generar backup: ' . $e->getMessage()
+                'error' => 'No se pudo generar el backup. Consultá los logs con el identificador de la solicitud.'
             ], 500);
         }
     }
@@ -41,8 +42,9 @@ class BackupController extends Controller
             $backups = DatabaseBackupService::listBackups();
             return response()->json($backups);
         } catch (\Throwable $e) {
+            report($e);
             return response()->json([
-                'error' => 'Error al listar backups: ' . $e->getMessage()
+                'error' => 'No se pudieron listar los backups.'
             ], 500);
         }
     }
@@ -59,8 +61,9 @@ class BackupController extends Controller
                 'executed_count' => $executed,
             ]);
         } catch (\Throwable $e) {
+            report($e);
             return response()->json([
-                'error' => 'Error al procesar backups programados: ' . $e->getMessage()
+                'error' => 'No se pudieron procesar los backups programados.'
             ], 500);
         }
     }
@@ -87,7 +90,8 @@ class BackupController extends Controller
                 'Content-Length' => strlen($content),
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'Error al descargar el backup: ' . $e->getMessage()], 500);
+            report($e);
+            return response()->json(['error' => 'No se pudo descargar el backup.'], 500);
         }
     }
 
@@ -109,7 +113,8 @@ class BackupController extends Controller
 
             return response()->json(['message' => 'Backup eliminado exitosamente']);
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'Error al eliminar el backup: ' . $e->getMessage()], 500);
+            report($e);
+            return response()->json(['error' => 'No se pudo eliminar el backup.'], 500);
         }
     }
 }

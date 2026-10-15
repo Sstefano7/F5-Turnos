@@ -35,15 +35,21 @@ export function WeeklyCalendar({ canchas = [], onSelectSlot }) {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()))
   const [counts, setCounts] = useState({}) // { "2026-08-28": { "08:00": 2, ... } }
   const [loading, setLoading] = useState(false)
+  const [availabilityError, setAvailabilityError] = useState(false)
 
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart])
 
   useEffect(() => {
-    if (!canchas.length) return
+    if (!canchas.length) {
+      setCounts({})
+      setLoading(false)
+      return
+    }
     let cancelled = false
     setLoading(true)
     const fetchWeek = async () => {
       const result = {}
+      let failed = false
       const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
       for (const day of days) {
         const iso = toISO(day)
@@ -51,7 +57,6 @@ export function WeeklyCalendar({ canchas = [], onSelectSlot }) {
         // No consultar horarios de días pasados
         const isPastDay = day < startOfToday
         if (!isPastDay) {
-          let hasRealData = false
           // Para cada cancha, traer horarios disponibles de ese día y contar por hora
           await Promise.all(
             canchas.map(async (cancha) => {
@@ -62,24 +67,20 @@ export function WeeklyCalendar({ canchas = [], onSelectSlot }) {
                     for (const h of horarios) {
                       const key = h.hora_inicio.slice(0, 5)
                       perHour[key] = (perHour[key] || 0) + 1
-                      hasRealData = true
                     }
                   }
                 }
-              } catch {}
+              } catch {
+                failed = true
+              }
             })
           )
-          // Si no hubo respuesta del servidor (canchas mock o error de red), generar disponibilidad de muestra
-          if (!hasRealData) {
-            HOURS.forEach(h => {
-              perHour[h] = Math.max(1, canchas.length)
-            })
-          }
         }
         result[iso] = perHour
       }
       if (!cancelled) {
         setCounts(result)
+        setAvailabilityError(failed)
         setLoading(false)
       }
     }
@@ -148,6 +149,7 @@ export function WeeklyCalendar({ canchas = [], onSelectSlot }) {
 
       <p className="weekly-calendar__legend">
         <span className="legend-dot legend-dot--green" /> Disponible
+        {availabilityError && ' · No se pudo verificar toda la disponibilidad.'}
         <span className="legend-dot legend-dot--gray" /> Sin disponibilidad
         <span className="weekly-calendar__hint">· Clic en un horario verde para reservar</span>
       </p>

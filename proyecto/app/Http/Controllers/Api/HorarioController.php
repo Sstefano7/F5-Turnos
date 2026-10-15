@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Horario;
 use App\Models\Turno;
+use App\Models\Cancha;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -91,6 +92,10 @@ class HorarioController extends Controller
 
         $fecha = Carbon::parse($request->fecha);
 
+        if (!Cancha::whereKey($canchaId)->where('activa', true)->exists()) {
+            return response()->json([]);
+        }
+
         // Fechas pasadas: devolver arreglo vacío (la UI deshabilita esos días)
         if ($fecha->isBefore(Carbon::today())) {
             return response()->json([]);
@@ -125,9 +130,11 @@ class HorarioController extends Controller
         // Filtrar horarios disponibles
         $horariosDisponibles = $horarios->filter(function($horario) use ($turnosReservados, $formatHora) {
             $hInicio = $formatHora($horario->hora_inicio);
+            $hFin = $formatHora($horario->hora_fin);
             foreach ($turnosReservados as $turno) {
                 $tInicio = $formatHora($turno->hora_inicio);
-                if ($hInicio === $tInicio) {
+                $tFin = $formatHora($turno->hora_fin);
+                if ($hInicio < $tFin && $hFin > $tInicio) {
                     return false;
                 }
             }

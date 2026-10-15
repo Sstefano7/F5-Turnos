@@ -36,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'superadmin' => \App\Http\Middleware\IsSuperAdmin::class,
             'cron' => \App\Http\Middleware\VerifyCronSecret::class,
+            'verified.email' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

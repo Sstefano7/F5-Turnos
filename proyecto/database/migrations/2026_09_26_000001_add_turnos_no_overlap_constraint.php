@@ -34,7 +34,7 @@ return new class extends Migration
                     '[)'
                 ) WITH &&
             )
-            WHERE (estado IN ('pendiente', 'confirmado', 'pendiente_senia'))
+            WHERE (deleted_at IS NULL AND estado IN ('pendiente', 'confirmado', 'pendiente_senia'))
         SQL);
     }
 

@@ -143,6 +143,7 @@ class AuthController extends Controller
             'newsletter' => $request->boolean('newsletter'),
             'sms_notifications' => $request->boolean('sms_notifications'),
             'email_verification_token' => $verificationToken,
+            'email_verification_sent_at' => now(),
         ]);
 
         // Auto-crear Cliente para que las reservas vinculen automáticamente.
@@ -183,10 +184,11 @@ class AuthController extends Controller
         $nombre = $parts[0] ?? '';
         $apellido = $parts[1] ?? '';
 
-        $cliente = Cliente::where('email', $user->email)->first();
+        $cliente = Cliente::whereNull('user_id')->where('email', $user->email)->first();
 
         if ($cliente) {
             $cliente->update([
+                'user_id' => $user->id,
                 'telefono' => trim($validated['phone']),
                 'dni' => $validated['dni'] ?? $cliente->dni,
             ]);
@@ -194,6 +196,7 @@ class AuthController extends Controller
         }
 
         Cliente::create([
+            'user_id' => $user->id,
             'nombre' => $nombre,
             'apellido' => $apellido,
             'email' => $user->email,
@@ -245,7 +248,9 @@ class AuthController extends Controller
     {
         $user = User::where('email_verification_token', $token)->first();
 
-        if (!$user) {
+        $sentAt = $user?->email_verification_sent_at ?? $user?->created_at;
+
+        if (!$user || !$sentAt || $sentAt->copy()->addHours(24)->isPast()) {
             return response()->json([
                 'message' => 'El enlace de verificación es inválido o ya fue utilizado.',
             ], 422);
@@ -275,6 +280,7 @@ class AuthController extends Controller
         }
 
         $user->email_verification_token = Str::random(64);
+        $user->email_verification_sent_at = now();
         $user->save();
 
         $sent = $this->sendVerificationEmail($user);
@@ -421,10 +427,18 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ], [
-            'email.exists' => 'No existe ninguna cuenta con este email.'
+            'email' => 'required|email',
         ]);
+
+        $user = User::where('email', $request->email)->first();
+        $response = [
+            'message' => 'Si existe una cuenta con ese email, te enviamos un código de recuperación.',
+        ];
+
+        // Respuesta uniforme para evitar enumeración de cuentas.
+        if (!$user) {
+            return response()->json($response);
+        }
 
         // Generar token
         $token = Str::random(64);
@@ -441,8 +455,6 @@ class AuthController extends Controller
 
         // Enviar email
         try {
-            $user = User::where('email', $request->email)->first();
-
             Mail::raw(
                 "Hola {$user->name},\n\n" .
                 "Has solicitado restablecer tu contraseña.\n\n" .
@@ -458,8 +470,7 @@ class AuthController extends Controller
                 }
             );
 
-            return response()->json([
-                'message' => 'Te hemos enviado un código de recuperación a tu email.',
+            return response()->json($response + [
                 // Solo en local para facilitar el desarrollo sin email configurado
                 'token_for_testing' => app()->environment('local') ? $token : null,
             ]);
@@ -475,9 +486,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            return response()->json([
-                'message' => 'Hubo un problema al enviar el email. Por favor intenta nuevamente más tarde.'
-            ], 500);
+            return response()->json($response);
         }
     }
 
@@ -487,7 +496,7 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
             'token' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -522,8 +531,14 @@ class AuthController extends Controller
 
         // Actualizar contraseña
         $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Token inválido o expirado.'], 422);
+        }
         $user->password = Hash::make($request->password);
         $user->save();
+
+        // Cierra sesiones previas tras un cambio de contraseña.
+        $user->tokens()->delete();
 
         // Eliminar token usado
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();

@@ -12,7 +12,7 @@ export const logsService = {
     },
 
     createTest: async () => {
-        const response = await api.post('/logs/test');
+        const response = await api.post('/logs/test', { level: 'info' });
         return response.data;
     },
 

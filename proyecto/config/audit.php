@@ -84,7 +84,16 @@ return [
     |
     */
 
-    'exclude' => [],
+    'exclude' => [
+        'password',
+        'remember_token',
+        'email_verification_token',
+        'dni',
+        'telefono',
+        'email',
+        'birth_date',
+        'profile_photo',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -140,7 +149,7 @@ return [
     |
     */
 
-    'threshold' => 0,
+    'threshold' => (int) env('AUDIT_THRESHOLD', 1000),
 
     /*
     |--------------------------------------------------------------------------

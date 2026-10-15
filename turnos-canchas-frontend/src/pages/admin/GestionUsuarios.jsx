@@ -60,7 +60,7 @@ function GestionUsuarios() {
 
     const result = await Swal.fire({
       title: '¿Modificar rol de usuario?',
-      html: `¿Confirmas cambiar el rol de <strong>${userName}</strong> a <strong>${newRole.toUpperCase()}</strong>?`,
+      text: `¿Confirmas cambiar el rol de ${userName} a ${newRole.toUpperCase()}?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#2563eb',
@@ -98,7 +98,7 @@ function GestionUsuarios() {
 
     const result = await Swal.fire({
       title: '¿Eliminar usuario?',
-      html: `¿Estás seguro de que deseas eliminar permanentemente a <strong>${userName}</strong>?`,
+      text: `¿Estás seguro de que deseas eliminar permanentemente a ${userName}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Turno;
 use App\Models\Cancha;
 use App\Models\Cliente;
+use App\Models\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -129,7 +130,7 @@ class TurnoController extends Controller
 
         // Resolver el cliente en el servidor: el cliente normal no tiene
         // acceso al CRUD de clientes (contiene PII de todos los usuarios).
-        $clienteId = $this->resolveClienteId($request, $esAdmin);
+        $clienteId = $this->resolveClienteId($request, $esAdmin, $user);
         if ($clienteId === null) {
             return response()->json([
                 'message' => 'No se pudieron resolver los datos del cliente'
@@ -137,7 +138,26 @@ class TurnoController extends Controller
         }
 
         // Calcular el precio total
-        $cancha = Cancha::findOrFail($request->cancha_id);
+        $cancha = Cancha::whereKey($request->cancha_id)->where('activa', true)->first();
+        if (!$cancha) {
+            return response()->json(['message' => 'La cancha no está disponible para reservas.'], 422);
+        }
+
+        $diaSemana = [
+            0 => 'domingo', 1 => 'lunes', 2 => 'martes', 3 => 'miercoles',
+            4 => 'jueves', 5 => 'viernes', 6 => 'sabado',
+        ][Carbon::parse($request->fecha)->dayOfWeek];
+
+        $horarioDisponible = Horario::where('cancha_id', $cancha->id)
+            ->where('dia_semana', $diaSemana)
+            ->where('disponible', true)
+            ->where('hora_inicio', $request->hora_inicio)
+            ->where('hora_fin', $request->hora_fin)
+            ->exists();
+
+        if (!$horarioDisponible) {
+            return response()->json(['message' => 'El horario seleccionado no está disponible para esa cancha.'], 422);
+        }
         $horaInicio = Carbon::parse($request->hora_inicio);
         $horaFin    = Carbon::parse($request->hora_fin);
         $duracionHoras = $horaInicio->diffInMinutes($horaFin) / 60;
@@ -178,8 +198,8 @@ class TurnoController extends Controller
                 ]);
             });
         } catch (QueryException $e) {
-            // 23505 = unique_violation del indice parcial de solapamiento
-            if (($e->errorInfo[0] ?? null) === '23505') {
+            // 23P01 = exclusion_violation de PostgreSQL; 23505 cubre índices únicos.
+            if (in_array($e->errorInfo[0] ?? null, ['23P01', '23505'], true)) {
                 return response()->json([
                     'message' => 'Ya existe un turno reservado en ese horario'
                 ], 422);
@@ -194,7 +214,7 @@ class TurnoController extends Controller
         }
 
         return response()->json([
-            'turno'        => $turno->load(['cancha', 'cliente']),
+            'turno'        => $this->turnoParaUsuario($turno->load(['cancha', 'cliente'])),
             'precio_total' => $precioTotal,
             'message'      => 'Reserva solicitada. Queda pendiente de confirmación por el administrador.'
         ], 201);
@@ -204,39 +224,21 @@ class TurnoController extends Controller
      * Devuelve (o crea) el cliente al que pertenece la reserva, sin exponer
      * el listado de clientes al usuario normal.
      */
-    private function resolveClienteId(Request $request, bool $esAdmin): ?int
+    private function resolveClienteId(Request $request, bool $esAdmin, $user): ?int
     {
         if ($esAdmin && $request->filled('cliente_id')) {
             return (int) $request->cliente_id;
         }
 
-        $data = $request->input('cliente', []);
-        $email = strtolower(trim($data['email'] ?? ''));
-        $dni = trim($data['dni'] ?? '');
+        return $user?->cliente?->id;
+    }
 
-        if ($email === '') {
-            return null;
-        }
+    private function turnoParaUsuario(Turno $turno): array
+    {
+        $data = $turno->toArray();
+        $data['cliente'] = $this->clienteParaUsuario($turno->cliente);
 
-        // Reutilizar el cliente existente (por email o por DNI) para no
-        // duplicar registros ni chocar con los únicos de la tabla.
-        $cliente = Cliente::where('email', $email)
-            ->when($dni !== '', fn ($q) => $q->orWhere('dni', $dni))
-            ->first();
-
-        if ($cliente) {
-            return $cliente->id;
-        }
-
-        $cliente = Cliente::create([
-            'nombre'   => trim($data['nombre'] ?? ''),
-            'apellido' => trim($data['apellido'] ?? ''),
-            'email'    => $email,
-            'telefono' => trim($data['telefono'] ?? ''),
-            'dni'      => $dni !== '' ? $dni : null,
-        ]);
-
-        return $cliente->id;
+        return $data;
     }
 
     public function update(Request $request, $id)
@@ -365,7 +367,7 @@ class TurnoController extends Controller
             ->orderBy('hora_inicio')
             ->get();
 
-        return response()->json($turnos);
+        return response()->json($turnos->map(fn (Turno $turno) => $this->turnoParaUsuario($turno)));
     }
 
     public function cancelar($id, Request $request)

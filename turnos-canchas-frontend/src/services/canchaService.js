@@ -3,8 +3,7 @@ import api from '../config/api';
 export const canchaService = {
     // Un solo método inteligente para traer las canchas
     getAll: async (isAdmin = false) => {
-        // Si isAdmin es true, le pide TODAS a Laravel. Si es false, trae solo las activas.
-        const url = isAdmin ? '/canchas?admin=true' : '/canchas';
+        const url = isAdmin ? '/admin/canchas' : '/canchas';
         const response = await api.get(url);
         return response.data;
     },

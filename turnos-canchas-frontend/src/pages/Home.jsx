@@ -28,38 +28,7 @@ export default function Home() {
     setBooking({ open: true, court: null, date, hour })
   }
 
-  // Mock data for the 3 featured courts as per design spec
-  const featuredCourts = [
-    {
-      id: "featured-1",
-      nombre: "Cancha A - Fútbol 5",
-      tipo: "futbol5",
-      descripcion: "Cancha de fútbol 5 con césped sintético de última generación y arco blanco profesional.",
-      precio_hora: 8000,
-      activa: true,
-      imagen: "https://images.unsplash.com/photo-1510526292299-20af3f62d453?w=800&q=80&auto=format&fit=crop"
-    },
-    {
-      id: "featured-2",
-      nombre: "Cancha B - Pádel",
-      tipo: "padel",
-      descripcion: "Cancha de pádel panorámica con superficie azul y paredes de vidrio templado.",
-      precio_hora: 8000,
-      activa: true,
-      imagen: "https://acdn-us.mitiendanube.com/stores/001/408/700/products/full-360-5-b1a2ca90efa7b1d7c917368620610522-1024-1024.webp"
-    },
-    {
-      id: "featured-3",
-      nombre: "Cancha C - Pádel",
-      tipo: "padel",
-      descripcion: "Cancha de pádel profesional con superficie azul y paredes de vidrio.",
-      precio_hora: 6500,
-      activa: true,
-      imagen: "https://acdn-us.mitiendanube.com/stores/001/408/700/products/full-360-5-b1a2ca90efa7b1d7c917368620610522-1024-1024.webp"
-    }
-  ]
-
-  const displayCourts = canchas.length > 0 ? canchas : featuredCourts
+  const displayCourts = error ? [] : canchas
 
   return (
     <div className="home">
@@ -88,7 +57,7 @@ export default function Home() {
                     <div>
                       <strong>No se pudo conectar con el servidor.</strong>
                       <br />
-                      <span style={{ fontSize: 'var(--text-sm)', opacity: 0.85 }}>Mostrando canchas de referencia. Intentá de nuevo más tarde.</span>
+                       <span style={{ fontSize: 'var(--text-sm)', opacity: 0.85 }}>La disponibilidad no puede verificarse en este momento. Intentá de nuevo más tarde.</span>
                     </div>
                   </div>
                 )}
@@ -97,6 +66,9 @@ export default function Home() {
                     <CourtCard key={court.id} court={court} onReserve={handleReserve} />
                   ))}
                 </div>
+                {!error && displayCourts.length === 0 && (
+                  <p className="home__empty">No hay canchas disponibles en este momento.</p>
+                )}
               </>
             )}
           </div>

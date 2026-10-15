@@ -1,6 +1,6 @@
 ﻿# F5 Turnos - Sistema de Gestión de Turnos (Fútbol 5 / Pádel)
 
-Sistema web para la reserva de canchas de fútbol 5 y pádel. Flujo sin pagos online: el usuario solicita turno (estado `pendiente`), el administrador confirma (`confirmado`) y el pago se realiza 100% en el local el día del turno.
+Sistema web para la reserva de canchas de fútbol 5 y pádel. El usuario solicita un turno (estado `pendiente`), el administrador lo confirma (`confirmado`) y registra pagos operativos desde el panel. No hay checkout ni webhooks de pagos online.
 
 > Repositorio de deploy: [Sstefano7/F5-Turnos](https://github.com/Sstefano7/F5-Turnos) · Backend + Frontend en Vercel · DB en Supabase (PostgreSQL).
 
@@ -9,7 +9,7 @@ Sistema web para la reserva de canchas de fútbol 5 y pádel. Flujo sin pagos on
 - **Autenticación**: Registro/login con roles `user` / `admin` / `superadmin` (Sanctum)
 - **Gestión de Canchas**: CRUD (tipo `futbol5` / `padel`, precio/hora, activa/inactiva, imagen en Supabase Storage)
 - **Sistema de Reservas**: Selección fecha + horario (08:00-23:00) con validación de solapamiento; estado `pendiente` → admin confirma a `confirmado` → `completado`/`cancelado`
-- **Sin seña ni MercadoPago**: sin webhooks ni seña; reserva queda pendiente de confirmación
+- **Pagos operativos**: registro administrativo de efectivo, tarjeta, transferencia o MercadoPago; sin checkout ni webhooks
 - **Panel Administración**: Dashboard con stats, gestión de turnos/clientes/horarios, paginación
 - **Superadmin**: Bug reports, auditoría, logs, backups, gestión de usuarios y export PDF
 - **Auditoría y Backups**: `owen-it/laravel-auditing` + `spatie/laravel-backup`
@@ -32,7 +32,7 @@ Sistema web para la reserva de canchas de fútbol 5 y pádel. Flujo sin pagos on
 ### Infra
 - **Vercel** (2 proyectos: `turnos-canchas-frontend` + `turnos-canchas-api`)
 - **Supabase** (PostgreSQL 500MB + Storage 1GB free tier, buckets `turnos-storage` privado, extensiones `uuid-ossp`/`pg_trgm`)
-- GitHub Actions: CI (Pest/Postgres + lint/build) + deploy (preview/prod) + scheduler `turnos:liberar-expirados` cada 5 min
+- GitHub Actions: CI (PHPUnit sobre SQLite y PostgreSQL, lint/build) + deploy de producción tras CI + scheduler cada 15 min
 
 ## 📦 Requisitos Previos
 
@@ -90,7 +90,7 @@ Crear bucket y credenciales en Supabase Dashboard:
 - Settings → API: copiar `Project URL`, `anon public`, `service_role secret`
 - Settings → Database → Connection Pooling: Transaction, port 5432, host `aws-0-sa-east-1.pooler.supabase.com`
 
-Migrar y seedear (requiere `pdo_pgsql` habilitado):
+Migrar y seedear solo en entorno local (requiere `pdo_pgsql` habilitado):
 ```bash
 php artisan migrate:fresh --seed --force
 # → 4 canchas, 420 horarios (4×7×15), 3 clientes, 2 users
@@ -142,7 +142,7 @@ npm run build  # producción frontend
 DNS: `A @ → 76.76.21.21`, `CNAME www/api → cname.vercel-dns.com` (Proxied si Cloudflare)
 
 ### Supabase (producción)
-Usa las mismas credenciales del `.env` anterior. Migraciones ya aplicadas vía `migrate:fresh --seed` local apuntando a Supabase. Para cambios futuros: push a `main` → GitHub Actions (`.github/workflows/ci.yml`, `deploy.yml`, `scheduler.yml`) hace CI + deploy.
+Configurar las credenciales exclusivamente como secretos de Vercel y GitHub Actions. Para cambios de esquema en producción, ejecutar `php artisan migrate --force` desde un proceso controlado; nunca usar `migrate:fresh`. Un push a `main` ejecuta CI y, si este finaliza correctamente, despliega con GitHub Actions.
 
 ## 🎯 Uso del Sistema
 
@@ -157,7 +157,7 @@ Iniciar Sesión → Regístrate → completar → reservas habilitadas
 ### Hacer una Reserva (sin seña)
 1. Login como user
 2. Elegir cancha → fecha → horario disponible
-3. Completar datos (DNI autocompleta si existe)
+3. Completar datos personales propios y verificar el email
 4. Confirmar → turno `pendiente` → mensaje "Pago total en el local: $X. Sin seña ni pagos online. Se paga todo el día del turno."
 5. Mis Reservas: ver estado `pendiente` → admin confirma a `confirmado`
 
@@ -173,18 +173,18 @@ Iniciar Sesión → Regístrate → completar → reservas habilitadas
 proyecto/
 ├── api/index.php              # Entry Vercel
 ├── vercel.json / .vercelignore
-├── app/Http/Controllers/Api/  # Cancha, Turno (simplificado sin seña/MP), Cliente, Horario, Auth, Dashboard...
+├── app/Http/Controllers/Api/  # Cancha, Turno, Cliente, Horario, Auth, Pagos, Dashboard...
 ├── app/Models/                # Cancha, Turno (pendiente/confirmado/cancelado/completado), Cliente, User...
 ├── database/migrations/       # Compatibles PG (enum→check, hasTable guards)
-├── routes/api.php             # Sin /mp/* ni /pagos/*; admin confirma via PUT /turnos/{id}
+├── routes/api.php             # Reservas, pagos administrativos y gestión por roles
 └── config/filesystems.php     # Disco supabase (S3)
 
 turnos-canchas-frontend/
 ├── vercel.json / vite.config.js
 ├── src/config/api.js          # VITE_API_URL
-├── src/pages/Reservar.jsx     # Sin flujo pago: pendiente → mensaje pago 100% en local
-├── src/pages/admin/           # GestionTurnos con confirmar, sin GestionPagos
-└── src/services/              # sin pagoService.js
+├── src/pages/Reservar.jsx     # Solicitud pendiente de confirmación
+├── src/pages/admin/           # Gestión operativa, incluidos pagos
+└── src/services/              # Clientes HTTP de la API
 
 .github/workflows/
 ├── ci.yml / deploy.yml / scheduler.yml
@@ -195,7 +195,8 @@ turnos-canchas-frontend/
 # Backend
 php artisan cache:clear; php artisan config:clear; php artisan route:clear
 php artisan route:list
-php artisan migrate:fresh --seed  # CUIDADO: borra todo (Supabase o local)
+php artisan migrate --force       # Aplicar migraciones de forma no destructiva
+php artisan migrate:fresh --seed  # SOLO base local de desarrollo: borra todo
 php artisan tinker
 composer dump-autoload
 
@@ -233,6 +234,10 @@ MAIL_FROM_ADDRESS=tu-email@gmail.com
 
 ## 📝 Licencia
 MIT.
+
+## 🔒 Seguridad
+
+Consultar [`SECURITY.md`](SECURITY.md) para la rotación de secretos, respuesta ante exposición de credenciales y controles obligatorios de datos y backups.
 
 ## 👨‍💻 Autor
 Stefano Schneider · GitHub: [@Sstefano7](https://github.com/Sstefano7) · Repo deploy: [F5-Turnos](https://github.com/Sstefano7/F5-Turnos)

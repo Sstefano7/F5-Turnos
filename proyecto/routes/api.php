@@ -67,7 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Gestión de turnos (usuarios normales)
     Route::get('/turnos', [TurnoController::class, 'index']);
-    Route::post('/turnos', [TurnoController::class, 'store']);
+    Route::post('/turnos', [TurnoController::class, 'store'])->middleware('verified.email');
     Route::get('/turnos/{id}', [TurnoController::class, 'show']);
     Route::get('/mis-turnos', [TurnoController::class, 'misTurnos']);
     Route::patch('/turnos/{id}/cancelar', [TurnoController::class, 'cancelar']);
@@ -79,6 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
         
         // Gestión de canchas (usar ?per_page= para paginación en index)
+        Route::get('/admin/canchas', [CanchaController::class, 'adminIndex']);
         Route::post('/canchas', [CanchaController::class, 'store']);
         Route::put('/canchas/{id}', [CanchaController::class, 'update']);
         Route::delete('/canchas/{id}', [CanchaController::class, 'destroy']);

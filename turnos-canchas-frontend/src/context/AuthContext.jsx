@@ -12,14 +12,33 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = authService.getCurrentUser();
-    if (savedUser && (!user || user.id !== savedUser.id)) {
-      setUser(savedUser);
+    let active = true;
+
+    if (!authService.isAuthenticated()) {
+      setUser(null);
+      setLoading(false);
+      return undefined;
     }
-    setLoading(false);
+
+    authService.fetchCurrentUser()
+      .then((currentUser) => {
+        if (active) setUser(currentUser);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (active) setUser(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -46,6 +65,7 @@ export const AuthProvider = ({ children }) => {
         error: error.response?.data?.message || 'Error al registrarse',
         errors: error.response?.data?.errors || null,
         status: error.response?.status || null,
+        data: error.response?.data || null,
       };
     }
   };
@@ -53,10 +73,9 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authService.logout();
-      setUser(null);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      // Aunque falle en el backend, limpiamos el estado local
+    } finally {
       setUser(null);
     }
   };

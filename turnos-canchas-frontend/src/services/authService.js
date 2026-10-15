@@ -20,14 +20,23 @@ export const authService = {
     },
 
     logout: async () => {
-        await api.post('/logout');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        try {
+            await api.post('/logout');
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
     },
 
     getCurrentUser: () => {
         const user = localStorage.getItem('user');
         return user ? JSON.parse(user) : null;
+    },
+
+    fetchCurrentUser: async () => {
+        const response = await api.get('/user');
+        localStorage.setItem('user', JSON.stringify(response.data));
+        return response.data;
     },
 
     isAuthenticated: () => {

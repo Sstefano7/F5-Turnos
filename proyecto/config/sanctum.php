@@ -47,9 +47,8 @@ return [
     |
     */
 
-    // Tokens de la API: 7 dias. Antes era null, o sea que un token robado
-    // o perdido valia para siempre y no existia rotation.
-    'expiration' => (int) env('SANCTUM_EXPIRATION_MINUTES', 10080),
+    // Limita la ventana de uso de un token expuesto en el navegador.
+    'expiration' => (int) env('SANCTUM_EXPIRATION_MINUTES', 1440),
 
     /*
     |--------------------------------------------------------------------------

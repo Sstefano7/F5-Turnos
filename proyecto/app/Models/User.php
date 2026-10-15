@@ -35,6 +35,7 @@ class User extends Authenticatable
         'newsletter',
         'sms_notifications',
         'email_verification_token',
+        'email_verification_sent_at',
         'email_verified_at',
     ];
 
@@ -58,6 +59,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_verification_sent_at' => 'datetime',
             'birth_date' => 'date',
             'preferred_days' => 'array',
             'preferred_times' => 'array',
@@ -69,7 +71,7 @@ class User extends Authenticatable
 
     public function cliente()
     {
-        return $this->hasOne(Cliente::class, 'email', 'email');
+        return $this->hasOne(Cliente::class);
     }
 
     public function promocodes()

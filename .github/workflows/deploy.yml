@@ -1,8 +1,10 @@
 name: Deploy to Vercel
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
     branches: [main]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -19,12 +21,16 @@ env:
   # URLs de producción (usadas por el smoke test)
   PRODUCTION_API_URL: ${{ secrets.PRODUCTION_API_URL || 'https://f5-turnos-api.vercel.app' }}
   PRODUCTION_FRONTEND_URL: ${{ secrets.PRODUCTION_FRONTEND_URL || 'https://f5-turnos-frontend.vercel.app' }}
+  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
   deploy-frontend-production:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
       - name: Deploy Frontend Production
         uses: amondnet/vercel-action@v25
         with:
@@ -35,9 +41,12 @@ jobs:
           working-directory: ./turnos-canchas-frontend
 
   deploy-api-production:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
       - name: Deploy API Production
         uses: amondnet/vercel-action@v25
         with:
@@ -67,8 +76,8 @@ jobs:
           if [ -z "$sha" ]; then
             echo "::warning::/api/health no devolvió SHA (¿deploy viejo sin el endpoint?). Se valida por status solamente."
             printf '%s' "$body" | grep -q '"status":"ok"' || { echo "::error::/api/health no respondió status ok"; exit 1; }
-          elif [ "$sha" != "$GITHUB_SHA" ]; then
-            echo "::error::La API corre el commit $sha pero se pusheó $GITHUB_SHA => deploy stale."
+          elif [ "$sha" != "$DEPLOY_SHA" ]; then
+            echo "::error::La API corre el commit $sha pero se desplegó $DEPLOY_SHA => deploy stale."
             exit 1
           else
             echo "OK: la API corre $sha"

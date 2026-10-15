@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\DB;
 class ClienteController extends Controller
 {
     /**
-     * Cliente propio del usuario autenticado (match por email).
+     * Cliente propio del usuario autenticado.
      * Lo usa el flujo de reserva para autocompletar sin exponer el
      * listado de clientes (PII de todos los usuarios) a roles normales.
      */
     public function mine(Request $request)
     {
         $user = $request->user();
-        $cliente = Cliente::where('email', $user->email)->first();
+        $cliente = $user->cliente;
 
         if (!$cliente) {
             return response()->json(['cliente' => null]);

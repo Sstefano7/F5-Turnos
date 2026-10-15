@@ -13,11 +13,7 @@ class CanchaController extends Controller
         // Iniciamos la consulta vacía
         $query = Cancha::query();
 
-        // 1. FILTRO DE ESTADO:
-        // Si la petición NO tiene el parámetro ?admin=true, ocultamos las inactivas
-        if (!$request->boolean('admin')) {
-            $query->where('activa', true);
-        }
+        $query->where('activa', true);
 
         // 2. PAGINACIÓN VS LISTA COMPLETA:
         // Si React nos envía el parámetro ?per_page=..., paginamos.
@@ -27,6 +23,17 @@ class CanchaController extends Controller
         }
 
         // Si no piden paginación, devolvemos el arreglo limpio con todas
+        return response()->json($query->get());
+    }
+
+    public function adminIndex(Request $request)
+    {
+        $query = Cancha::query();
+
+        if ($request->has('per_page')) {
+            return response()->json($query->paginate($request->integer('per_page', 20)));
+        }
+
         return response()->json($query->get());
     }
 

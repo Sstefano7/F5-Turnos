@@ -5,13 +5,16 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { DashboardProvider } from './context/DashboardContext.jsx'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <DashboardProvider>
-          <App />
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
         </DashboardProvider>
       </AuthProvider>
     </BrowserRouter>

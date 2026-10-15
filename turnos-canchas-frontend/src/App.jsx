@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -8,27 +9,23 @@ import VerifyEmail from './pages/VerifyEmail';
 
 import Reservar from './pages/Reservar';
 import MisReservas from './pages/MisReservas';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import Estadisticas from './pages/admin/Estadisticas';
-import GestionCanchas from './pages/admin/GestionCanchas';
-import GestionTurnos from './pages/admin/GestionTurnos';
-import GestionClientes from './pages/admin/GestionClientes';
-import GestionHorarios from './pages/admin/GestionHorarios';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
-import GestionBugReports from './pages/admin/GestionBugReports';
 import SuperAdminRoute from './components/SuperAdminRoute';
-
-import GestionAudits from './pages/admin/GestionAudits'; 
-import GestionLogs from './pages/admin/GestionLogs';
-import GestionPagos from './pages/admin/GestionPagos';
-import GestionBackups from './pages/admin/GestionBackups';
-import GestionUsuarios from './pages/admin/GestionUsuarios';
-
-
-
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const Estadisticas = lazy(() => import('./pages/admin/Estadisticas'));
+const GestionCanchas = lazy(() => import('./pages/admin/GestionCanchas'));
+const GestionTurnos = lazy(() => import('./pages/admin/GestionTurnos'));
+const GestionClientes = lazy(() => import('./pages/admin/GestionClientes'));
+const GestionHorarios = lazy(() => import('./pages/admin/GestionHorarios'));
+const GestionBugReports = lazy(() => import('./pages/admin/GestionBugReports'));
+const GestionAudits = lazy(() => import('./pages/admin/GestionAudits'));
+const GestionLogs = lazy(() => import('./pages/admin/GestionLogs'));
+const GestionPagos = lazy(() => import('./pages/admin/GestionPagos'));
+const GestionBackups = lazy(() => import('./pages/admin/GestionBackups'));
+const GestionUsuarios = lazy(() => import('./pages/admin/GestionUsuarios'));
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -36,6 +33,7 @@ function App() {
   return (
     <> {/* <--- Abrimos Fragmento */}
       <main className="main-content">
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px' }}>Cargando...</div>}>
         <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -174,7 +172,8 @@ function App() {
         />
 
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+        </Suspense>
       </main>
 
       {/* Footer principal que incluye el botón de reportar bug */}

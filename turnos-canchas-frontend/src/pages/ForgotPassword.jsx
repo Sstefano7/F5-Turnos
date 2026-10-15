@@ -10,7 +10,7 @@ function ForgotPassword() {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [resetComplete, setResetComplete] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -21,7 +21,6 @@ function ForgotPassword() {
 
     try {
       const response = await authService.forgotPassword(email);
-      setSuccess(true);
       setStep(2);
       
       // Si estamos en desarrollo y hay un token de prueba, mostrarlo
@@ -54,7 +53,7 @@ function ForgotPassword() {
 
     try {
       await authService.resetPassword(email, token, password, passwordConfirmation);
-      setSuccess(true);
+      setResetComplete(true);
       
       // Redirigir al login después de 2 segundos
       setTimeout(() => {
@@ -66,7 +65,7 @@ function ForgotPassword() {
     }
   };
 
-  if (success && step === 2 && !error) {
+  if (resetComplete) {
     return (
       <div className="login-container">
         <div className="login-box">

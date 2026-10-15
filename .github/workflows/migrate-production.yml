@@ -1,0 +1,43 @@
+name: Migrate Production Database
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type MIGRATE to apply pending Laravel migrations in production
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    if: ${{ inputs.confirm == 'MIGRATE' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pgsql, pdo_pgsql, bcmath, curl
+
+      - name: Install dependencies
+        run: cd proyecto && composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+      - name: Apply pending migrations
+        run: cd proyecto && php artisan migrate --force
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_ENV: production
+          APP_DEBUG: false
+          APP_URL: ${{ secrets.APP_URL }}
+          DB_CONNECTION: pgsql
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: 5432
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_SSLMODE: require
