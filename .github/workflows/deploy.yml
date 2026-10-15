@@ -34,7 +34,6 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Deploy Frontend Production
         run: npx vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./turnos-canchas-frontend
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}
@@ -49,7 +48,6 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Deploy API Production
         run: npx vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: ./proyecto
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_API }}
