@@ -27,6 +27,7 @@ jobs:
   deploy-frontend-production:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,6 +44,7 @@ jobs:
   deploy-api-production:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push') }}
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,6 +63,7 @@ jobs:
   # deja el workflow en rojo en lugar de fallar en silencio.
   smoke-test:
     runs-on: ubuntu-latest
+    environment: production
     needs: [deploy-api-production, deploy-frontend-production]
     steps:
       - name: Esperar a que Vercel propague el deploy
