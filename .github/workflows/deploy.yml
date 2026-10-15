@@ -31,14 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.DEPLOY_SHA }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Deploy Frontend Production
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@v42
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}
+          vercel-version: 'latest'
           vercel-args: '--prod'
+          github-comment: false
           working-directory: ./turnos-canchas-frontend
 
   deploy-api-production:
@@ -48,14 +50,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.DEPLOY_SHA }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Deploy API Production
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@v42
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_API }}
+          vercel-version: 'latest'
           vercel-args: '--prod'
+          github-comment: false
           working-directory: ./proyecto
 
   # Verifica que la API desplegada responda con el código recién pusheado.
